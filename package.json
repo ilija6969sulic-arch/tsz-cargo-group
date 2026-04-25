@@ -4,6 +4,7 @@
   "description": "Jednostavni lokalni server za pokretanje web stranice.",
   "main": "server.js",
   "scripts": {
+    "build": "npm rebuild sqlite3 --build-from-source",
     "start": "node server.js"
   },
   "author": "",
