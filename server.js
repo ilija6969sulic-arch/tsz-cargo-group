@@ -352,15 +352,14 @@
 //   console.log(`Server running on port ${port}`);
 // });
 
-const express = require('express');
-const app = express();
-
+const http = require('http');
 const port = process.env.PORT;
 
-app.get('/', (req, res) => {
-  res.send('Radi!');
+const server = http.createServer((req, res) => {
+  res.writeHead(200, { 'Content-Type': 'text/plain' });
+  res.end('Radi!');
 });
 
-app.listen(port, '0.0.0.0', () => {
+server.listen(port, '0.0.0.0', () => {
   console.log('Running on', port);
 });
