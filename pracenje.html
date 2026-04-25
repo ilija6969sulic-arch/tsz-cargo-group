@@ -104,6 +104,12 @@
         }
         .search-strip button:hover { background: var(--dark); }
         .search-strip .info-text { font-size: 0.82rem; color: #4a5878; }
+        .search-strip .info-text.contact-line {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            flex-wrap: wrap;
+        }
         .legend {
             display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;
             margin-left: auto; font-size: 0.8rem;
@@ -132,6 +138,7 @@
         .shipment-list {
             overflow-y: auto; flex: 1;
             padding: 0.5rem;
+            -webkit-overflow-scrolling: touch;
         }
 
         .shipment-card {
@@ -218,14 +225,22 @@
             0%, 100% { transform: scale(1) rotate(-35deg); box-shadow: 0 3px 10px rgba(0,0,0,0.3), 0 0 0 0 rgba(20,115,230,0.5); }
             50% { transform: scale(1.1) rotate(-35deg); box-shadow: 0 4px 14px rgba(0,0,0,0.2), 0 0 0 10px rgba(20,115,230,0); }
         }
+        @media (hover: none) {
+            .shipment-card:hover {
+                transform: none;
+            }
+        }
         @media (max-width: 750px) {
             html, body {
                 overflow: auto;
+                height: auto;
+                min-height: 100dvh;
             }
             .topbar {
                 padding: calc(0.75rem + env(safe-area-inset-top)) 1rem 0.75rem;
                 flex-wrap: wrap;
                 justify-content: center;
+                gap: 0.65rem;
             }
             .topbar .logo-area,
             .topbar .page-title,
@@ -234,12 +249,23 @@
                 text-align: center;
                 justify-content: center;
             }
+            .topbar .logo-area {
+                min-height: 52px;
+            }
+            .topbar .page-title {
+                font-size: 0.92rem;
+            }
+            .topbar a.nav-link {
+                min-height: 48px;
+                font-size: 0.95rem;
+            }
             .topbar .spacer {
                 display: none;
             }
             .search-strip {
                 padding: 0.75rem 1rem;
                 flex-wrap: wrap;
+                gap: 0.75rem;
             }
             .search-strip input,
             .search-strip button {
@@ -247,9 +273,20 @@
                 max-width: none;
                 font-size: 16px;
             }
+            .search-strip input {
+                min-height: 54px;
+            }
+            .search-strip button {
+                min-height: 54px;
+                font-size: 1rem;
+            }
             .search-strip .info-text {
                 width: 100%;
                 line-height: 1.45;
+            }
+            .search-strip .info-text.contact-line {
+                font-size: 0.9rem;
+                line-height: 1.6;
             }
             .search-strip .info-text,
             .card-route,
@@ -259,24 +296,83 @@
                 overflow-wrap: anywhere;
                 word-break: break-word;
             }
-            .sidebar { width: 100%; position: absolute; bottom: 0; left: 0; z-index: 600; max-height: 45vh; border-top: 2px solid #dbe8ff; border-right: none; }
-            #map { position: absolute; top: 0; left: 0; right: 0; bottom: 45vh; }
-            .app-body { position: relative; flex-direction: column; }
-            .detail-panel { min-width: 0; width: 100%; max-width: 100%; border-radius: 0; left: 0; }
+            .app-body {
+                position: static;
+                display: flex;
+                flex-direction: column;
+                overflow: visible;
+                gap: 0.85rem;
+                padding: 0.85rem;
+            }
+            #map {
+                order: 1;
+                position: relative;
+                flex: none;
+                width: 100%;
+                height: 38dvh;
+                min-height: 280px;
+                max-height: 420px;
+                border-radius: 1rem;
+                overflow: hidden;
+                box-shadow: var(--shadow);
+            }
+            .sidebar {
+                order: 2;
+                width: 100%;
+                position: relative;
+                bottom: auto;
+                left: auto;
+                z-index: auto;
+                max-height: none;
+                min-height: 0;
+                border-top: none;
+                border-right: none;
+                border-radius: 1rem;
+                box-shadow: var(--shadow);
+            }
+            .sidebar-header {
+                padding: 0.95rem 1rem 0.7rem;
+            }
+            .shipment-list {
+                max-height: none;
+                overflow: visible;
+                padding: 0.75rem;
+            }
+            .shipment-card {
+                padding: 0.9rem;
+            }
+            .detail-panel {
+                order: 3;
+                position: relative;
+                bottom: auto;
+                right: auto;
+                left: auto;
+                min-width: 0;
+                width: 100%;
+                max-width: 100%;
+                border-radius: 1rem;
+                border: 1px solid #dbe8ff;
+                box-shadow: var(--shadow);
+            }
             .legend { display: none; }
         }
         @media (max-width: 480px) {
-            .sidebar {
-                max-height: 50vh;
-            }
             #map {
-                bottom: 50vh;
+                height: 33dvh;
+                min-height: 240px;
             }
             .sidebar-header,
             .shipment-list,
             .detail-panel {
                 padding-left: 1rem;
                 padding-right: 1rem;
+            }
+            .card-header {
+                flex-wrap: wrap;
+                row-gap: 0.35rem;
+            }
+            .status-badge {
+                margin-left: 0;
             }
             .detail-row {
                 flex-direction: column;
@@ -314,7 +410,7 @@
     <button onclick="searchShipment()"><i class="fas fa-search"></i> Pretraži</button>
     <span class="info-text"><i class="fas fa-info-circle"></i> Kliknite na pošiljku ili marker</span>
     <span class="info-text"><i class="fas fa-map-marker-alt"></i> Lokacija: Zagreb</span>
-    <span class="info-text"><i class="fas fa-envelope"></i> tszcargogroup@gmail.com | <i class="fas fa-phone-alt"></i> +385 97 652 2231</span>
+    <span class="info-text contact-line"><i class="fas fa-envelope"></i> tszcargogroup@gmail.com | <i class="fas fa-phone-alt"></i> +385 97 652 2231</span>
     <div class="legend">
         <div class="legend-item"><div class="legend-dot" style="background:#e06c00;"></div> U tranzitu</div>
         <div class="legend-item"><div class="legend-dot" style="background:#16a34a;"></div> Isporučeno</div>
@@ -704,6 +800,17 @@ const animMarkers = {};
 const animState = {};
 let animIntervalId = null;
 
+function isMobileTrackingLayout() {
+    return window.matchMedia('(max-width: 750px)').matches;
+}
+
+function refreshMapSize(callback) {
+    requestAnimationFrame(() => {
+        map.invalidateSize();
+        if (callback) callback();
+    });
+}
+
 function getStatusColor(status) {
     if (status === 'delivered') return '#16a34a';
     if (status === 'transit') return '#e06c00';
@@ -813,7 +920,9 @@ function selectShipment(id) {
     if (!s) return;
 
     const bounds = L.latLngBounds([s.fromCoords, s.toCoords, s.currentCoords]);
-    map.fitBounds(bounds, { padding: [40, 40] });
+    refreshMapSize(() => {
+        map.fitBounds(bounds, { padding: isMobileTrackingLayout() ? [24, 24] : [40, 40] });
+    });
 
     const panel = document.getElementById('detailPanel');
     panel.classList.add('visible');
@@ -864,6 +973,7 @@ function closeDetail() {
     activeShipmentId = null;
     renderSidebar();
     renderMap();
+    refreshMapSize();
 }
 
 function searchShipment() {
@@ -888,6 +998,11 @@ document.getElementById('searchInput').addEventListener('keydown', e => {
 
 function startVehicleAnimation() {
     if (animIntervalId) clearInterval(animIntervalId);
+
+    if (isMobileTrackingLayout() || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        animIntervalId = null;
+        return;
+    }
 
     shipments.forEach(s => {
         if (s.status !== 'transit') return;
@@ -922,10 +1037,16 @@ function startVehicleAnimation() {
     }, 60);
 }
 
+window.addEventListener('resize', () => {
+    refreshMapSize();
+    startVehicleAnimation();
+});
+
 
 renderSidebar();
 renderMap();
 startVehicleAnimation();
+refreshMapSize();
 
 selectShipment('TŠZ-1001');
 
