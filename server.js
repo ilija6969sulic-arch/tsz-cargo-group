@@ -361,5 +361,6 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(port, '0.0.0.0', () => {
-  console.log('Running on', port);
+  console.log('PORT from env:', process.env.PORT);  
+  console.log('Server running on:', port);
 });
