@@ -23,7 +23,11 @@
             -webkit-user-select: none;
             overflow-x: hidden;
             width: 100%;
-            max-width: 100vw;
+            max-width: 100%;
+        }
+        img, video, iframe {
+            max-width: 100%;
+            display: block;
         }
         :root {
             --blue: #1473e6;
@@ -112,6 +116,7 @@
             margin-bottom: 4rem;
         }
         .intro-text p { color: #33466f; line-height: 1.75; margin-bottom: 1rem; font-size: 0.97rem; }
+        .intro-text, .intro-img { min-width: 0; }
         .intro-img {
             border-radius: 1.5rem; overflow: hidden;
             box-shadow: 0 20px 40px rgba(20,115,230,0.18);

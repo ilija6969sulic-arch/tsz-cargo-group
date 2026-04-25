@@ -31,7 +31,11 @@
             user-select: none;
             -webkit-user-select: none;
             overflow-x: hidden;
-            max-width: 100vw;
+            max-width: 100%;
+        }
+        img, video, iframe {
+            max-width: 100%;
+            display: block;
         }
         :root {
             --blue: #1473e6;
@@ -48,6 +52,7 @@
             display: flex; align-items: center; gap: 1rem;
             box-shadow: 0 4px 20px rgba(20,115,230,0.3);
             flex-shrink: 0; z-index: 1001;
+            min-width: 0;
         }
         .topbar .logo-area {
             display: flex;
@@ -85,6 +90,7 @@
             background: white; border-bottom: 1px solid #dbe8ff;
             padding: 0.6rem 1.2rem; display: flex; gap: 0.6rem; align-items: center;
             flex-shrink: 0; box-shadow: var(--shadow);
+            min-width: 0;
         }
         .search-strip input {
             flex: 1; border: 1.5px solid #c5d7fa; border-radius: 999px;
@@ -107,12 +113,14 @@
 
         .app-body {
             display: flex; flex: 1; overflow: hidden;
+            min-width: 0;
         }
 
         .sidebar {
             width: 360px; flex-shrink: 0;
             background: white; border-right: 1px solid #dbe8ff;
             display: flex; flex-direction: column; overflow: hidden;
+            min-width: 0;
         }
         .sidebar-header {
             padding: 1rem 1.2rem 0.6rem;
@@ -160,7 +168,7 @@
             background: white; border-radius: 1rem 0 0 0;
             border-top: 1px solid #dbe8ff; border-left: 1px solid #dbe8ff;
             padding: 1.2rem 1.4rem;
-            min-width: 320px; max-width: 400px;
+            min-width: 320px; max-width: min(400px, 100%);
             box-shadow: -4px -4px 16px rgba(20,115,230,0.1);
             transition: all 0.3s; display: none;
         }
