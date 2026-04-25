@@ -1,17 +1,26 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
-const Database = require('better-sqlite3');
 const port = process.env.PORT || 3000;
 
 const dataDir = path.join(__dirname, 'data');
-const dbPath = path.join(dataDir, 'team.sqlite');
 
 if (!fs.existsSync(dataDir)) {
   fs.mkdirSync(dataDir, { recursive: true });
 }
 
-const db = new Database(dbPath);
+function readJsonFile(filePath, defaultValue) {
+  try {
+    if (fs.existsSync(filePath)) {
+      return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    }
+  } catch (e) { /* fall through */ }
+  return defaultValue;
+}
+
+function writeJsonFile(filePath, data) {
+  fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8');
+}
 
 const defaultTeamMembers = [
   { name: 'Marko Tkalcic', role: 'Voditelj logistike', mediaType: 'image', mediaSrc: 'https://randomuser.me/api/portraits/men/32.jpg' },
@@ -35,57 +44,10 @@ const defaultFactImages = {
   seuljeju: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=800&q=80'
 };
 
-// Init tables
-db.exec(`
-  CREATE TABLE IF NOT EXISTS team_members (
-    id INTEGER PRIMARY KEY,
-    name TEXT NOT NULL,
-    role TEXT NOT NULL DEFAULT '',
-    media_type TEXT NOT NULL,
-    media_src TEXT NOT NULL
-  );
-  CREATE TABLE IF NOT EXISTS transport_visuals (
-    id TEXT PRIMARY KEY,
-    image_src TEXT NOT NULL
-  );
-  CREATE TABLE IF NOT EXISTS fact_images (
-    id TEXT PRIMARY KEY,
-    image_src TEXT NOT NULL
-  );
-`);
-
-// Add role column if missing (migration)
-const columns = db.prepare('PRAGMA table_info(team_members)').all();
-if (!columns.some((col) => col.name === 'role')) {
-  db.exec("ALTER TABLE team_members ADD COLUMN role TEXT NOT NULL DEFAULT ''");
-}
-
-// Seed team_members
-const teamCount = db.prepare('SELECT COUNT(*) AS total FROM team_members').get();
-if (!teamCount || teamCount.total === 0) {
-  const insertMember = db.prepare('INSERT INTO team_members (id, name, role, media_type, media_src) VALUES (?, ?, ?, ?, ?)');
-  defaultTeamMembers.forEach((member, index) => {
-    insertMember.run(index, member.name, member.role, member.mediaType, member.mediaSrc);
-  });
-}
-
-// Seed transport_visuals
-const tvCount = db.prepare('SELECT COUNT(*) AS total FROM transport_visuals').get();
-if (!tvCount || tvCount.total === 0) {
-  const insertTV = db.prepare('INSERT INTO transport_visuals (id, image_src) VALUES (?, ?)');
-  Object.entries(defaultTransportVisuals).forEach(([id, imageSrc]) => {
-    insertTV.run(id, imageSrc);
-  });
-}
-
-// Seed fact_images
-const fiCount = db.prepare('SELECT COUNT(*) AS total FROM fact_images').get();
-if (!fiCount || fiCount.total === 0) {
-  const insertFI = db.prepare('INSERT INTO fact_images (id, image_src) VALUES (?, ?)');
-  Object.entries(defaultFactImages).forEach(([id, imageSrc]) => {
-    insertFI.run(id, imageSrc);
-  });
-}
+// JSON file paths
+const teamFile = path.join(dataDir, 'team_members.json');
+const tvFile = path.join(dataDir, 'transport_visuals.json');
+const fiFile = path.join(dataDir, 'fact_images.json');
 
 const mimeTypes = {
   '.html': 'text/html',
@@ -215,18 +177,11 @@ function normalizeMembers(input) {
 }
 
 function fetchMembers() {
-  return db.prepare('SELECT id, name, role, media_type AS mediaType, media_src AS mediaSrc FROM team_members ORDER BY id ASC').all();
+  return readJsonFile(teamFile, defaultTeamMembers.map((m, i) => ({ id: i, name: m.name, role: m.role, mediaType: m.mediaType, mediaSrc: m.mediaSrc })));
 }
 
 function saveMembers(members) {
-  const deleteAll = db.prepare('DELETE FROM team_members');
-  const insertMember = db.prepare('INSERT INTO team_members (id, name, role, media_type, media_src) VALUES (?, ?, ?, ?, ?)');
-  db.transaction(() => {
-    deleteAll.run();
-    members.forEach((member) => {
-      insertMember.run(member.id, member.name, member.role || '', member.mediaType, member.mediaSrc);
-    });
-  })();
+  writeJsonFile(teamFile, members);
 }
 
 function handleTeamApi(req, res) {
@@ -268,14 +223,7 @@ function handleTeamApi(req, res) {
 }
 
 function fetchTransportVisuals() {
-  const rows = db.prepare('SELECT id, image_src AS imageSrc FROM transport_visuals ORDER BY id ASC').all();
-  const merged = { ...defaultTransportVisuals };
-  (rows || []).forEach((row) => {
-    if (row && row.id && row.imageSrc) {
-      merged[row.id] = row.imageSrc;
-    }
-  });
-  return merged;
+  return readJsonFile(tvFile, { ...defaultTransportVisuals });
 }
 
 function normalizeTransportVisuals(input) {
@@ -298,12 +246,7 @@ function normalizeTransportVisuals(input) {
 }
 
 function saveTransportVisuals(payload) {
-  const upsert = db.prepare('INSERT OR REPLACE INTO transport_visuals (id, image_src) VALUES (?, ?)');
-  db.transaction(() => {
-    Object.entries(payload).forEach(([id, imageSrc]) => {
-      upsert.run(id, imageSrc);
-    });
-  })();
+  writeJsonFile(tvFile, payload);
 }
 
 function handleTransportVisualsApi(req, res) {
@@ -345,21 +288,11 @@ function handleTransportVisualsApi(req, res) {
 }
 
 function fetchFactImages() {
-  const rows = db.prepare('SELECT id, image_src AS imageSrc FROM fact_images ORDER BY id ASC').all();
-  const merged = { ...defaultFactImages };
-  (rows || []).forEach((row) => {
-    if (row && row.id && row.imageSrc) merged[row.id] = row.imageSrc;
-  });
-  return merged;
+  return readJsonFile(fiFile, { ...defaultFactImages });
 }
 
 function saveFactImages(payload) {
-  const upsert = db.prepare('INSERT OR REPLACE INTO fact_images (id, image_src) VALUES (?, ?)');
-  db.transaction(() => {
-    Object.entries(payload).forEach(([id, imageSrc]) => {
-      upsert.run(id, imageSrc);
-    });
-  })();
+  writeJsonFile(fiFile, payload);
 }
 
 function handleFactImagesApi(req, res) {
