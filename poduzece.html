@@ -23,7 +23,6 @@
             --shadow: 0 8px 24px rgba(20,115,230,0.12);
         }
 
-        /* NAV */
         nav {
             position: sticky; top: 0; z-index: 100;
             background: linear-gradient(98deg, #edf4ff 0%, #dbe8ff 100%);
@@ -61,7 +60,6 @@
         }
         .nav-links-row a:hover, .nav-links-row a.active { background: var(--blue); color: white; border-color: var(--blue); }
 
-        /* HERO */
         .hero {
             position: relative; overflow: hidden;
             min-height: 420px;
@@ -92,17 +90,14 @@
             font-weight: 700; font-size: 0.85rem; backdrop-filter: blur(4px);
         }
 
-        /* MAIN */
         .main { max-width: 1200px; margin: 0 auto; padding: 3rem 1.5rem; }
 
-        /* SECTION TITLE */
         .sec-title {
             font-size: 1.9rem; font-weight: 800; color: #0f4fa8;
             margin-bottom: 0.5rem;
         }
         .sec-sub { color: #4f5f84; font-size: 1rem; margin-bottom: 2rem; padding-left: 1rem; border-left: 4px solid #87aef5; }
 
-        /* INTRO SPLIT */
         .intro-split {
             display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; align-items: center;
             margin-bottom: 4rem;
@@ -115,7 +110,6 @@
         }
         .intro-img img { width: 100%; display: block; }
 
-        /* KPI STRIP */
         .kpi-strip {
             display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 1.2rem; margin-bottom: 4rem;
@@ -130,7 +124,6 @@
         .kpi-val { font-size: 2rem; font-weight: 800; color: #0f4fa8; line-height: 1; }
         .kpi-label { font-size: 0.82rem; color: #4a5878; margin-top: 0.35rem; font-weight: 600; }
 
-        /* COMPANY DATA TABLE */
         .data-table {
             width: 100%; border-collapse: collapse; background: white;
             border-radius: 1.2rem; overflow: hidden;
@@ -151,7 +144,6 @@
         .data-key { font-weight: 700; color: #304368; width: 220px; }
         .data-val strong { color: #0f4fa8; }
 
-        /* TIMELINE */
         .timeline-section { margin-bottom: 4rem; }
         .tl-wrap { position: relative; padding-left: 2rem; }
         .tl-wrap::before {
@@ -170,7 +162,6 @@
         .tl-year { font-weight: 800; font-size: 1rem; color: #0f4fa8; margin-bottom: 0.25rem; }
         .tl-text { font-size: 0.9rem; color: #33466f; line-height: 1.6; }
 
-        /* AWARDS */
         .awards-grid {
             display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 1.2rem; margin-bottom: 3rem;
@@ -183,7 +174,6 @@
         .award-card h3 { font-size: 0.95rem; color: #0f4fa8; margin-bottom: 0.3rem; }
         .award-card p { font-size: 0.8rem; color: #4a5878; }
 
-        /* GALLERY */
         .gallery-grid {
             display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;
             margin-bottom: 4rem;
@@ -195,7 +185,6 @@
         }
         .gallery-grid img:hover { transform: scale(1.03); }
 
-        /* CONTACT */
         .contact-strip {
             background: linear-gradient(125deg, #0f4fa8, #1473e6);
             color: white; border-radius: 1.5rem; padding: 2.5rem 2rem;
@@ -207,7 +196,6 @@
         .contact-item h4 { font-size: 0.82rem; opacity: 0.75; margin-bottom: 0.2rem; }
         .contact-item p { font-size: 0.92rem; font-weight: 600; }
 
-        /* FOOTER */
         .page-footer {
             background: #0c3675; color: #dbe8ff;
             text-align: center; padding: 1.5rem;
@@ -227,7 +215,6 @@
 </head>
 <body oncontextmenu="return false" ondragstart="return false" onselectstart="return false">
 
-<!-- NAV -->
 <nav>
     <a class="logo-area" href="/">
         <img src="logo.png" alt="TŠZ" onerror="this.style.display='none'">
@@ -241,7 +228,6 @@
     </div>
 </nav>
 
-<!-- HERO -->
 <div class="hero">
     <img class="hero-img"
          src="https://images.unsplash.com/photo-1586168603372-e9b52e0b4d33?auto=format&fit=crop&w=1600&q=80"
@@ -345,7 +331,6 @@
         </tbody>
     </table>
 
-    <!-- TIMELINE -->
     <div class="timeline-section">
         <h2 class="sec-title">Povijest i razvoj</h2>
         <p class="sec-sub" style="margin-bottom:2rem;">Ključni trenuci u 17 godina rasta TŠZ Cargo Group</p>
@@ -403,7 +388,6 @@
         </div>
     </div>
 
-    <!-- AWARDS -->
     <h2 class="sec-title">Nagrade i certifikati</h2>
     <p class="sec-sub" style="margin-bottom:2rem;">Prepoznatost u industriji i regulatorni okviri poslovanja</p>
     <div class="awards-grid">
@@ -439,7 +423,6 @@
         </div>
     </div>
 
-    <!-- GALLERY -->
     <h2 class="sec-title">Fotogalerija</h2>
     <p class="sec-sub" style="margin-bottom:2rem;">Naši terminali, flota i logistički centri diljem Hrvatske</p>
     <div class="gallery-grid">
@@ -453,7 +436,6 @@
         <img src="https://images.unsplash.com/photo-1553413077-190dd305871c?auto=format&fit=crop&w=600&q=80" alt="Distribucijski centar">
     </div>
 
-    <!-- CONTACT -->
     <h2 class="sec-title">Kontakt i lokacije</h2>
     <p class="sec-sub" style="margin-bottom:1.5rem;">Centralni ured i operativni centri u Zagrebu</p>
     <div class="contact-strip">

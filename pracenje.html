@@ -34,7 +34,6 @@
             --shadow: 0 4px 16px rgba(20,115,230,0.12);
         }
 
-        /* TOP NAV */
         .topbar {
             background: linear-gradient(98deg, #0f4fa8 0%, #1473e6 100%);
             color: white; padding: 0.6rem 1.2rem;
@@ -73,7 +72,6 @@
         .topbar a.nav-link:hover { background: rgba(255,255,255,0.2); }
         .topbar .spacer { flex: 1; }
 
-        /* SEARCH BAR */
         .search-strip {
             background: white; border-bottom: 1px solid #dbe8ff;
             padding: 0.6rem 1.2rem; display: flex; gap: 0.6rem; align-items: center;
@@ -98,12 +96,10 @@
         .legend-item { display: flex; align-items: center; gap: 0.3rem; font-weight: 600; }
         .legend-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
 
-        /* MAIN LAYOUT */
         .app-body {
             display: flex; flex: 1; overflow: hidden;
         }
 
-        /* SIDEBAR */
         .sidebar {
             width: 360px; flex-shrink: 0;
             background: white; border-right: 1px solid #dbe8ff;
@@ -121,7 +117,6 @@
             padding: 0.5rem;
         }
 
-        /* SHIPMENT CARD */
         .shipment-card {
             border: 1.5px solid #dbe8ff; border-radius: 0.8rem;
             padding: 0.8rem 0.9rem; margin-bottom: 0.5rem;
@@ -147,12 +142,10 @@
         .card-footer { display: flex; justify-content: space-between; margin-top: 0.4rem; font-size: 0.75rem; color: #6b7fa8; }
         .transport-icon { font-size: 0.85rem; }
 
-        /* MAP CONTAINER */
         #map {
             flex: 1; z-index: 1;
         }
 
-        /* DETAIL PANEL */
         .detail-panel {
             position: absolute; bottom: 0; right: 0; z-index: 500;
             background: white; border-radius: 1rem 0 0 0;
@@ -188,7 +181,6 @@
         .timeline-item .tl-time { color: #6b7fa8; min-width: 55px; }
         .timeline-item .tl-text { color: #2a3f6f; }
 
-        /* ANIMATED VEHICLE MARKERS */
         .anim-vehicle {
             width: 38px; height: 38px;
             border-radius: 50%;
@@ -209,7 +201,6 @@
             0%, 100% { transform: scale(1) rotate(-35deg); box-shadow: 0 3px 10px rgba(0,0,0,0.3), 0 0 0 0 rgba(20,115,230,0.5); }
             50% { transform: scale(1.1) rotate(-35deg); box-shadow: 0 4px 14px rgba(0,0,0,0.2), 0 0 0 10px rgba(20,115,230,0); }
         }
-        /* MOBILE */
         @media (max-width: 750px) {
             .sidebar { width: 100%; position: absolute; bottom: 0; left: 0; z-index: 600; max-height: 45vh; border-top: 2px solid #dbe8ff; border-right: none; }
             #map { position: absolute; top: 0; left: 0; right: 0; bottom: 45vh; }
@@ -266,9 +257,7 @@
 </div>
 
 <script>
-// ============================================================
-// SHIPMENT DATA – 10 realistic Croatian shipments
-// ============================================================
+
 const shipments = [
     {
         id: 'TŠZ-1001',
@@ -563,9 +552,7 @@ const shipments = [
     }
 ];
 
-// ============================================================
-// MAP SETUP
-// ============================================================
+
 const map = L.map('map', {
     center: [44.7, 16.0],
     zoom: 7,
@@ -578,7 +565,6 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r
     maxZoom: 19
 }).addTo(map);
 
-// Custom icons
 function makeIcon(color, icon) {
     const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='32' height='40' viewBox='0 0 32 40'>
         <path d='M16 0C7.2 0 0 7.2 0 16c0 12 16 24 16 24s16-12 16-24C32 7.2 24.8 0 16 0z' fill='${color}' stroke='white' stroke-width='2'/>
@@ -641,7 +627,6 @@ function getStatusColor(status) {
 }
 
 function renderMap() {
-    // Clear old
     markers.forEach(m => map.removeLayer(m));
     polylines.forEach(p => map.removeLayer(p));
     markers = [];
@@ -651,7 +636,6 @@ function renderMap() {
         const color = getStatusColor(s.status);
         const isActive = s.id === activeShipmentId;
 
-        // Route line: from -> current -> to (dashed for not-yet traveled)
         const traveled = L.polyline([s.fromCoords, s.currentCoords], {
             color: color, weight: isActive ? 4 : 2.5,
             opacity: isActive ? 0.9 : 0.5,
@@ -666,19 +650,16 @@ function renderMap() {
 
         polylines.push(traveled, remaining);
 
-        // From marker (small blue)
         const fromM = L.marker(s.fromCoords, { icon: makeIcon('#1473e6', 'circle') })
             .addTo(map)
             .bindPopup(`<b>Polazište</b><br>${s.from}`);
         markers.push(fromM);
 
-        // To marker (small blue)
         const toM = L.marker(s.toCoords, { icon: makeIcon('#1473e6', 'circle') })
             .addTo(map)
             .bindPopup(`<b>Odredište</b><br>${s.to}`);
         markers.push(toM);
 
-        // Current position marker
         const useTransitIcon = s.status === 'transit';
         const curIcon = useTransitIcon ? makeTransitIcon(s.type, color) : makeCurrentIcon(color);
         const curM = L.marker(s.currentCoords, { icon: curIcon })
@@ -700,9 +681,7 @@ function renderMap() {
     });
 }
 
-// ============================================================
-// SIDEBAR
-// ============================================================
+
 function renderSidebar() {
     const list = document.getElementById('shipmentList');
     list.innerHTML = '';
@@ -739,9 +718,7 @@ function renderSidebar() {
     });
 }
 
-// ============================================================
-// SELECT SHIPMENT
-// ============================================================
+
 function selectShipment(id) {
     activeShipmentId = id;
     renderSidebar();
@@ -750,11 +727,9 @@ function selectShipment(id) {
     const s = shipments.find(x => x.id === id);
     if (!s) return;
 
-    // Zoom map to shipment
     const bounds = L.latLngBounds([s.fromCoords, s.toCoords, s.currentCoords]);
     map.fitBounds(bounds, { padding: [40, 40] });
 
-    // Show detail panel
     const panel = document.getElementById('detailPanel');
     panel.classList.add('visible');
 
@@ -825,9 +800,7 @@ document.getElementById('searchInput').addEventListener('keydown', e => {
     if (e.key === 'Enter') searchShipment();
 });
 
-// ============================================================
-// VEHICLE MOVEMENT ANIMATION
-// ============================================================
+
 function startVehicleAnimation() {
     if (animIntervalId) clearInterval(animIntervalId);
 
@@ -841,7 +814,7 @@ function startVehicleAnimation() {
             dir: 1,
             unitLat: dLat / len,
             unitLng: dLng / len,
-            maxT: len * 0.025   // max 2.5% of remaining route oscillation
+            maxT: len * 0.025   
         };
     });
 
@@ -864,14 +837,11 @@ function startVehicleAnimation() {
     }, 60);
 }
 
-// ============================================================
-// INIT
-// ============================================================
+
 renderSidebar();
 renderMap();
 startVehicleAnimation();
 
-// Select first shipment by default
 selectShipment('TŠZ-1001');
 
 document.addEventListener('contextmenu', e => e.preventDefault());

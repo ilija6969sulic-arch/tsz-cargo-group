@@ -23,7 +23,6 @@
             --shadow: 0 8px 24px rgba(20,115,230,0.12);
         }
 
-        /* NAV */
         nav {
             position: sticky; top: 0; z-index: 100;
             background: linear-gradient(98deg, #edf4ff 0%, #dbe8ff 100%);
@@ -62,7 +61,6 @@
         }
         nav a.back-btn:hover { background: #0f4fa8; }
 
-        /* HERO HEADER */
         .page-header {
             background: linear-gradient(125deg, #0f4fa8 0%, #1473e6 100%);
             color: white;
@@ -80,10 +78,8 @@
             border-radius: 999px; padding: 0.5rem 1.2rem; font-weight: 700; font-size: 0.9rem;
         }
 
-        /* MAIN */
         .main { max-width: 1300px; margin: 0 auto; padding: 2rem 1.5rem; }
 
-        /* FILTER BAR */
         .filter-bar {
             display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center;
             background: white; border-radius: 1rem; padding: 1.2rem 1.5rem;
@@ -114,7 +110,6 @@
         }
         .print-btn:hover { background: #edf4ff; }
 
-        /* TRANSPORT TABS */
         .transport-tabs {
             display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.5rem;
         }
@@ -127,7 +122,6 @@
             background: var(--blue); color: white; border-color: var(--blue);
         }
 
-        /* PRICE CARDS */
         .transport-section { margin-bottom: 3rem; }
         .transport-section-header {
             display: flex; align-items: center; gap: 1rem; margin-bottom: 1.2rem;
@@ -142,7 +136,6 @@
         .transport-section-header h2 { font-size: 1.5rem; color: #0f4fa8; }
         .transport-section-header p { font-size: 0.9rem; color: #4f5f84; margin-top: 0.2rem; }
 
-        /* PRICE TABLE */
         .price-table-wrap {
             background: white; border-radius: 1.2rem;
             box-shadow: var(--shadow); border: 1px solid #dbe8ff;
@@ -174,7 +167,6 @@
         .badge-intl { background: #fdf0e0; color: #a35800; }
         .badge-express { background: #fde8e8; color: #a31b1b; }
 
-        /* SERVICES TABLE */
         .services-grid {
             display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
             gap: 1rem; margin-bottom: 2rem;
@@ -193,7 +185,6 @@
             font-size: 1.05rem;
         }
 
-        /* CALCULATOR */
         .calc-section {
             background: white; border-radius: 1.2rem; padding: 1.8rem;
             box-shadow: var(--shadow); border: 1px solid #dbe8ff;
@@ -220,13 +211,11 @@
             font-size: 1.05rem;
         }
 
-        /* DISCLAIMER */
         .disclaimer {
             background: #fff8e1; border: 1px solid #ffe082; border-radius: 0.8rem;
             padding: 1rem 1.2rem; color: #6d4c00; font-size: 0.85rem; margin-top: 2rem;
         }
 
-        /* FOOTER */
         .page-footer {
             background: #0c3675; color: #dbe8ff;
             text-align: center; padding: 1.5rem;
@@ -318,7 +307,6 @@
         <button class="tab-btn" data-section="cjevovodni" onclick="showSection('cjevovodni', this)"><i class="fas fa-oil-can"></i> Cjevovodni</button>
     </div>
 
-    <!-- ============================== CESTOVNI ============================== -->
     <div class="transport-section" data-section="cestovni">
         <div class="transport-section-header">
             <div class="icon"><i class="fas fa-truck"></i></div>
@@ -509,7 +497,6 @@
         </div>
     </div>
 
-    <!-- ============================== ZRAČNI ============================== -->
     <div class="transport-section" data-section="zracni">
         <div class="transport-section-header">
             <div class="icon"><i class="fas fa-plane"></i></div>
@@ -582,7 +569,6 @@
         </div>
     </div>
 
-    <!-- ============================== POMORSKI ============================== -->
     <div class="transport-section" data-section="pomorski">
         <div class="transport-section-header">
             <div class="icon"><i class="fas fa-ship"></i></div>
@@ -664,7 +650,6 @@
         </div>
     </div>
 
-    <!-- ============================== CJEVOVODNI ============================== -->
     <div class="transport-section" data-section="cjevovodni">
         <div class="transport-section-header">
             <div class="icon"><i class="fas fa-oil-can"></i></div>
@@ -923,7 +908,6 @@ function applyFilters() {
     const zone = document.getElementById('filterZone').value;
     const search = document.getElementById('filterSearch').value.toLowerCase();
 
-    // Show/hide sections
     document.querySelectorAll('.transport-section[data-section]').forEach(sec => {
         const sType = sec.dataset.section;
         if (type !== 'all' && sType !== 'all' && sType !== type) {
@@ -932,7 +916,6 @@ function applyFilters() {
         }
         sec.style.display = 'block';
 
-        // Filter rows
         sec.querySelectorAll('tbody tr').forEach(row => {
             const rowZone = row.dataset.zone || 'all';
             const rowSearch = (row.dataset.search || '') + row.innerText.toLowerCase();

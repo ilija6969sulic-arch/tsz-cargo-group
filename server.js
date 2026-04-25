@@ -44,7 +44,6 @@ const defaultFactImages = {
   seuljeju: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=800&q=80'
 };
 
-// JSON file paths
 const teamFile = path.join(dataDir, 'team_members.json');
 const tvFile = path.join(dataDir, 'transport_visuals.json');
 const fiFile = path.join(dataDir, 'fact_images.json');
@@ -349,6 +348,6 @@ function sendFile(filePath, res) {
   });
 }
 
-server.listen(port, () => {
-  console.log(`Local server is running at http://localhost:${port}`);
+server.listen(port, '0.0.0.0', () => {
+  console.log(`Server running on port ${port}`);
 });
