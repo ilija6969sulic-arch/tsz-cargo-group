@@ -1,9 +1,15 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const { DatabaseSync } = require('node:sqlite');
 const port = process.env.PORT || 3000;
 
 const dataDir = path.join(__dirname, 'data');
+const dbFile = path.join(dataDir, 'team.sqlite');
+const legacyTeamFile = path.join(dataDir, 'team_members.json');
+const legacyTransportVisualsFile = path.join(dataDir, 'transport_visuals.json');
+const legacyFactImagesFile = path.join(dataDir, 'fact_images.json');
+const MAX_JSON_BODY_SIZE = 50 * 1024 * 1024;
 
 if (!fs.existsSync(dataDir)) {
   fs.mkdirSync(dataDir, { recursive: true });
@@ -16,10 +22,6 @@ function readJsonFile(filePath, defaultValue) {
     }
   } catch (e) { /* fall through */ }
   return defaultValue;
-}
-
-function writeJsonFile(filePath, data) {
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8');
 }
 
 const defaultTeamMembers = [
@@ -44,9 +46,26 @@ const defaultFactImages = {
   seuljeju: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=800&q=80'
 };
 
-const teamFile = path.join(dataDir, 'team_members.json');
-const tvFile = path.join(dataDir, 'transport_visuals.json');
-const fiFile = path.join(dataDir, 'fact_images.json');
+const db = new DatabaseSync(dbFile);
+
+db.exec(`
+  PRAGMA journal_mode = WAL;
+  CREATE TABLE IF NOT EXISTS team_members (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    role TEXT NOT NULL DEFAULT '',
+    media_type TEXT NOT NULL,
+    media_src TEXT NOT NULL
+  );
+  CREATE TABLE IF NOT EXISTS transport_visuals (
+    id TEXT PRIMARY KEY,
+    image_src TEXT NOT NULL
+  );
+  CREATE TABLE IF NOT EXISTS fact_images (
+    id TEXT PRIMARY KEY,
+    image_src TEXT NOT NULL
+  );
+`);
 
 const mimeTypes = {
   '.html': 'text/html',
@@ -63,6 +82,87 @@ const mimeTypes = {
   '.ttf': 'font/ttf',
   '.eot': 'application/vnd.ms-fontobject'
 };
+
+function rowCount(tableName) {
+  const statement = db.prepare(`SELECT COUNT(*) AS count FROM ${tableName}`);
+  const row = statement.get();
+  return Number(row.count || 0);
+}
+
+function overwriteTeamMembers(members) {
+  const deleteStatement = db.prepare('DELETE FROM team_members');
+  const insertStatement = db.prepare('INSERT INTO team_members (id, name, role, media_type, media_src) VALUES (?, ?, ?, ?, ?)');
+
+  db.exec('BEGIN');
+  try {
+    deleteStatement.run();
+    for (let i = 0; i < members.length; i += 1) {
+      const member = members[i];
+      insertStatement.run(member.id, member.name, member.role || '', member.mediaType, member.mediaSrc);
+    }
+    db.exec('COMMIT');
+  } catch (error) {
+    db.exec('ROLLBACK');
+    throw error;
+  }
+}
+
+function overwriteKeyValueTable(tableName, payload) {
+  const keys = Object.keys(payload);
+  const deleteStatement = db.prepare(`DELETE FROM ${tableName}`);
+  const insertStatement = db.prepare(`INSERT INTO ${tableName} (id, image_src) VALUES (?, ?)`);
+
+  db.exec('BEGIN');
+  try {
+    deleteStatement.run();
+    for (let i = 0; i < keys.length; i += 1) {
+      const key = keys[i];
+      insertStatement.run(key, payload[key]);
+    }
+    db.exec('COMMIT');
+  } catch (error) {
+    db.exec('ROLLBACK');
+    throw error;
+  }
+}
+
+function seedDatabase() {
+  if (rowCount('team_members') === 0) {
+    const legacyMembers = readJsonFile(legacyTeamFile, null);
+    const seedMembers = normalizeMembers(legacyMembers) || defaultTeamMembers.map((member, index) => ({
+      id: index,
+      name: member.name,
+      role: member.role,
+      mediaType: member.mediaType,
+      mediaSrc: member.mediaSrc
+    }));
+    overwriteTeamMembers(seedMembers);
+  }
+
+  if (rowCount('transport_visuals') === 0) {
+    const legacyTransportVisuals = normalizeTransportVisuals(readJsonFile(legacyTransportVisualsFile, null)) || { ...defaultTransportVisuals };
+    overwriteKeyValueTable('transport_visuals', legacyTransportVisuals);
+  }
+
+  if (rowCount('fact_images') === 0) {
+    const legacyFactImages = readJsonFile(legacyFactImagesFile, null);
+    const normalizedFactImages = {};
+    let hasValidFactImages = true;
+
+    for (const key of Object.keys(defaultFactImages)) {
+      const value = legacyFactImages && typeof legacyFactImages[key] === 'string' ? legacyFactImages[key].trim() : '';
+      if (!value) {
+        hasValidFactImages = false;
+        break;
+      }
+      normalizedFactImages[key] = value;
+    }
+
+    overwriteKeyValueTable('fact_images', hasValidFactImages ? normalizedFactImages : { ...defaultFactImages });
+  }
+}
+
+seedDatabase();
 
 const server = http.createServer((req, res) => {
   if (req.url.startsWith('/api/team-members')) {
@@ -131,24 +231,49 @@ function sendJson(res, statusCode, payload) {
 
 function readJsonBody(req, callback) {
   let body = '';
+  let settled = false;
+
+  function finish(err, payload) {
+    if (settled) {
+      return;
+    }
+    settled = true;
+    callback(err, payload);
+  }
+
   req.on('data', (chunk) => {
+    if (settled) {
+      return;
+    }
+
     body += chunk;
-    if (body.length > 5 * 1024 * 1024) {
-      req.destroy();
+    if (Buffer.byteLength(body, 'utf8') > MAX_JSON_BODY_SIZE) {
+      const error = new Error('Payload too large');
+      error.statusCode = 413;
+      finish(error);
+      req.resume();
     }
   });
 
   req.on('end', () => {
+    if (settled) {
+      return;
+    }
+
     if (!body.trim()) {
-      callback(null, null);
+      finish(null, null);
       return;
     }
 
     try {
-      callback(null, JSON.parse(body));
+      finish(null, JSON.parse(body));
     } catch (err) {
-      callback(err);
+      finish(err);
     }
+  });
+
+  req.on('error', (err) => {
+    finish(err);
   });
 }
 
@@ -176,11 +301,23 @@ function normalizeMembers(input) {
 }
 
 function fetchMembers() {
-  return readJsonFile(teamFile, defaultTeamMembers.map((m, i) => ({ id: i, name: m.name, role: m.role, mediaType: m.mediaType, mediaSrc: m.mediaSrc })));
+  const statement = db.prepare('SELECT id, name, role, media_type AS mediaType, media_src AS mediaSrc FROM team_members ORDER BY id ASC');
+  const members = statement.all();
+  if (Array.isArray(members) && members.length > 0) {
+    return members;
+  }
+
+  return defaultTeamMembers.map((member, index) => ({
+    id: index,
+    name: member.name,
+    role: member.role,
+    mediaType: member.mediaType,
+    mediaSrc: member.mediaSrc
+  }));
 }
 
 function saveMembers(members) {
-  writeJsonFile(teamFile, members);
+  overwriteTeamMembers(members);
 }
 
 function handleTeamApi(req, res) {
@@ -197,7 +334,8 @@ function handleTeamApi(req, res) {
   if (req.method === 'PUT') {
     readJsonBody(req, (parseErr, body) => {
       if (parseErr) {
-        sendJson(res, 400, { error: 'Neispravan JSON payload.' });
+        const statusCode = parseErr.statusCode || 400;
+        sendJson(res, statusCode, { error: statusCode === 413 ? 'Payload je prevelik za spremanje.' : 'Neispravan JSON payload.' });
         return;
       }
 
@@ -222,7 +360,16 @@ function handleTeamApi(req, res) {
 }
 
 function fetchTransportVisuals() {
-  return readJsonFile(tvFile, { ...defaultTransportVisuals });
+  const rows = db.prepare('SELECT id, image_src FROM transport_visuals').all();
+  if (!Array.isArray(rows) || rows.length === 0) {
+    return { ...defaultTransportVisuals };
+  }
+
+  const visuals = { ...defaultTransportVisuals };
+  for (let i = 0; i < rows.length; i += 1) {
+    visuals[rows[i].id] = rows[i].image_src;
+  }
+  return visuals;
 }
 
 function normalizeTransportVisuals(input) {
@@ -245,7 +392,7 @@ function normalizeTransportVisuals(input) {
 }
 
 function saveTransportVisuals(payload) {
-  writeJsonFile(tvFile, payload);
+  overwriteKeyValueTable('transport_visuals', payload);
 }
 
 function handleTransportVisualsApi(req, res) {
@@ -262,7 +409,8 @@ function handleTransportVisualsApi(req, res) {
   if (req.method === 'PUT') {
     readJsonBody(req, (parseErr, body) => {
       if (parseErr) {
-        sendJson(res, 400, { error: 'Neispravan JSON payload.' });
+        const statusCode = parseErr.statusCode || 400;
+        sendJson(res, statusCode, { error: statusCode === 413 ? 'Payload je prevelik za spremanje.' : 'Neispravan JSON payload.' });
         return;
       }
 
@@ -287,11 +435,20 @@ function handleTransportVisualsApi(req, res) {
 }
 
 function fetchFactImages() {
-  return readJsonFile(fiFile, { ...defaultFactImages });
+  const rows = db.prepare('SELECT id, image_src FROM fact_images').all();
+  if (!Array.isArray(rows) || rows.length === 0) {
+    return { ...defaultFactImages };
+  }
+
+  const images = { ...defaultFactImages };
+  for (let i = 0; i < rows.length; i += 1) {
+    images[rows[i].id] = rows[i].image_src;
+  }
+  return images;
 }
 
 function saveFactImages(payload) {
-  writeJsonFile(fiFile, payload);
+  overwriteKeyValueTable('fact_images', payload);
 }
 
 function handleFactImagesApi(req, res) {
@@ -307,7 +464,11 @@ function handleFactImagesApi(req, res) {
 
   if (req.method === 'PUT') {
     readJsonBody(req, (parseErr, body) => {
-      if (parseErr) { sendJson(res, 400, { error: 'Neispravan JSON.' }); return; }
+      if (parseErr) {
+        const statusCode = parseErr.statusCode || 400;
+        sendJson(res, statusCode, { error: statusCode === 413 ? 'Payload je prevelik za spremanje.' : 'Neispravan JSON.' });
+        return;
+      }
       if (!body || typeof body !== 'object' || Array.isArray(body)) {
         sendJson(res, 400, { error: 'Neispravan format podataka.' }); return;
       }
