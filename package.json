@@ -1,0 +1,14 @@
+{
+  "name": "web-stranica-local-server",
+  "version": "1.0.0",
+  "description": "Jednostavni lokalni server za pokretanje web stranice.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "sqlite3": "^6.0.1"
+  }
+}

@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TŠZ Cargo – Praćenje pošiljke</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="preload" href="logo.png" as="image">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="preload" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"></noscript>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { height: 100%; overflow: hidden; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f6f9ff;
+            color: #1f3561;
+            display: flex;
+            flex-direction: column;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        :root {
+            --blue: #1473e6;
+            --dark: #0f4fa8;
+            --green: #16a34a;
+            --orange: #e06c00;
+            --purple: #7c3aed;
+            --shadow: 0 4px 16px rgba(20,115,230,0.12);
+        }
+
+        /* TOP NAV */
+        .topbar {
+            background: linear-gradient(98deg, #0f4fa8 0%, #1473e6 100%);
+            color: white; padding: 0.6rem 1.2rem;
+            display: flex; align-items: center; gap: 1rem;
+            box-shadow: 0 4px 20px rgba(20,115,230,0.3);
+            flex-shrink: 0; z-index: 1001;
+        }
+        .topbar .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            text-decoration: none;
+            color: white;
+            background: rgba(255,255,255,0.16);
+            border: 1px solid rgba(255,255,255,0.35);
+            border-radius: 999px;
+            padding: 0.2rem 0.75rem 0.2rem 0.2rem;
+        }
+        .topbar .logo-area img {
+            width: 36px;
+            height: 36px;
+            object-fit: contain;
+            border-radius: 0;
+            background: transparent;
+            border: none;
+            filter: brightness(0) invert(1);
+        }
+        .topbar .logo-area span { font-weight: 800; font-size: 1rem; }
+        .topbar .page-title { font-size: 0.95rem; opacity: 0.85; }
+        .topbar a.nav-link {
+            color: rgba(255,255,255,0.85); text-decoration: none;
+            font-size: 0.85rem; font-weight: 600; padding: 0.3rem 0.8rem;
+            border-radius: 999px; border: 1px solid rgba(255,255,255,0.3);
+            transition: background 0.2s;
+        }
+        .topbar a.nav-link:hover { background: rgba(255,255,255,0.2); }
+        .topbar .spacer { flex: 1; }
+
+        /* SEARCH BAR */
+        .search-strip {
+            background: white; border-bottom: 1px solid #dbe8ff;
+            padding: 0.6rem 1.2rem; display: flex; gap: 0.6rem; align-items: center;
+            flex-shrink: 0; box-shadow: var(--shadow);
+        }
+        .search-strip input {
+            flex: 1; border: 1.5px solid #c5d7fa; border-radius: 999px;
+            padding: 0.5rem 1rem; font-family: inherit; font-size: 0.9rem;
+            background: #f7faff; max-width: 400px;
+        }
+        .search-strip button {
+            background: var(--blue); color: white; border: none;
+            border-radius: 999px; padding: 0.5rem 1.2rem; font-weight: 700;
+            cursor: pointer; font-size: 0.88rem; transition: 0.2s;
+        }
+        .search-strip button:hover { background: var(--dark); }
+        .search-strip .info-text { font-size: 0.82rem; color: #4a5878; }
+        .legend {
+            display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;
+            margin-left: auto; font-size: 0.8rem;
+        }
+        .legend-item { display: flex; align-items: center; gap: 0.3rem; font-weight: 600; }
+        .legend-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+
+        /* MAIN LAYOUT */
+        .app-body {
+            display: flex; flex: 1; overflow: hidden;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 360px; flex-shrink: 0;
+            background: white; border-right: 1px solid #dbe8ff;
+            display: flex; flex-direction: column; overflow: hidden;
+        }
+        .sidebar-header {
+            padding: 1rem 1.2rem 0.6rem;
+            border-bottom: 1px solid #edf4ff;
+            background: #f7faff;
+        }
+        .sidebar-header h2 { font-size: 1rem; color: #0f4fa8; margin-bottom: 0.2rem; }
+        .sidebar-header p { font-size: 0.78rem; color: #4a5878; }
+        .shipment-list {
+            overflow-y: auto; flex: 1;
+            padding: 0.5rem;
+        }
+
+        /* SHIPMENT CARD */
+        .shipment-card {
+            border: 1.5px solid #dbe8ff; border-radius: 0.8rem;
+            padding: 0.8rem 0.9rem; margin-bottom: 0.5rem;
+            cursor: pointer; transition: all 0.2s;
+            background: white;
+        }
+        .shipment-card:hover { border-color: var(--blue); background: #f7faff; transform: translateX(4px); }
+        .shipment-card.active { border-color: var(--blue); background: #edf4ff; box-shadow: 0 4px 12px rgba(20,115,230,0.15); }
+        .card-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.4rem; }
+        .card-id { font-weight: 800; font-size: 0.95rem; color: #0f4fa8; }
+        .status-badge {
+            margin-left: auto; padding: 0.18rem 0.6rem; border-radius: 999px;
+            font-size: 0.72rem; font-weight: 700;
+        }
+        .status-transit { background: #fef3c7; color: #92400e; }
+        .status-delivered { background: #d1fae5; color: #065f46; }
+        .status-processing { background: #e0e7ff; color: #3730a3; }
+        .status-alert { background: #fee2e2; color: #991b1b; }
+        .card-route { font-size: 0.82rem; color: #33466f; margin-bottom: 0.4rem; }
+        .card-route strong { color: #0f4fa8; }
+        .progress-wrap { height: 5px; background: #e8f0ff; border-radius: 999px; overflow: hidden; }
+        .progress-bar { height: 100%; border-radius: 999px; transition: width 0.5s; }
+        .card-footer { display: flex; justify-content: space-between; margin-top: 0.4rem; font-size: 0.75rem; color: #6b7fa8; }
+        .transport-icon { font-size: 0.85rem; }
+
+        /* MAP CONTAINER */
+        #map {
+            flex: 1; z-index: 1;
+        }
+
+        /* DETAIL PANEL */
+        .detail-panel {
+            position: absolute; bottom: 0; right: 0; z-index: 500;
+            background: white; border-radius: 1rem 0 0 0;
+            border-top: 1px solid #dbe8ff; border-left: 1px solid #dbe8ff;
+            padding: 1.2rem 1.4rem;
+            min-width: 320px; max-width: 400px;
+            box-shadow: -4px -4px 16px rgba(20,115,230,0.1);
+            transition: all 0.3s; display: none;
+        }
+        .detail-panel.visible { display: block; }
+        .detail-close {
+            position: absolute; top: 0.7rem; right: 0.8rem;
+            background: none; border: none; font-size: 1.2rem;
+            cursor: pointer; color: #4a5878;
+        }
+        .detail-title { font-size: 1.1rem; font-weight: 800; color: #0f4fa8; margin-bottom: 0.8rem; }
+        .detail-row { display: flex; gap: 0.5rem; margin-bottom: 0.45rem; font-size: 0.85rem; }
+        .detail-label { font-weight: 700; color: #304368; min-width: 110px; }
+        .detail-val { color: #2a3f6f; }
+        .timeline { margin-top: 0.8rem; }
+        .timeline-item {
+            display: flex; gap: 0.7rem; align-items: flex-start;
+            padding: 0.4rem 0; border-left: 2px solid #dbe8ff; padding-left: 0.7rem;
+            margin-left: 0.4rem; font-size: 0.8rem; position: relative;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute; left: -5px; top: 8px;
+            width: 8px; height: 8px; border-radius: 50%;
+            background: var(--blue);
+        }
+        .timeline-item.done::before { background: var(--green); }
+        .timeline-item .tl-time { color: #6b7fa8; min-width: 55px; }
+        .timeline-item .tl-text { color: #2a3f6f; }
+
+        /* ANIMATED VEHICLE MARKERS */
+        .anim-vehicle {
+            width: 38px; height: 38px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            border: 2.5px solid white;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.35);
+        }
+        .anim-vehicle i { color: white; font-size: 14px; }
+        .anim-vehicle.pulse {
+            animation: vehiclePulse 1.8s ease-in-out infinite;
+        }
+        @keyframes vehiclePulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 3px 10px rgba(0,0,0,0.3), 0 0 0 0 rgba(224,108,0,0.5); }
+            50% { transform: scale(1.12); box-shadow: 0 4px 14px rgba(0,0,0,0.25), 0 0 0 10px rgba(224,108,0,0); }
+        }
+        .anim-vehicle.plane-anim { animation: planePulse 2s ease-in-out infinite; }
+        @keyframes planePulse {
+            0%, 100% { transform: scale(1) rotate(-35deg); box-shadow: 0 3px 10px rgba(0,0,0,0.3), 0 0 0 0 rgba(20,115,230,0.5); }
+            50% { transform: scale(1.1) rotate(-35deg); box-shadow: 0 4px 14px rgba(0,0,0,0.2), 0 0 0 10px rgba(20,115,230,0); }
+        }
+        /* MOBILE */
+        @media (max-width: 750px) {
+            .sidebar { width: 100%; position: absolute; bottom: 0; left: 0; z-index: 600; max-height: 45vh; border-top: 2px solid #dbe8ff; border-right: none; }
+            #map { position: absolute; top: 0; left: 0; right: 0; bottom: 45vh; }
+            .app-body { position: relative; flex-direction: column; }
+            .detail-panel { min-width: 0; width: 100%; max-width: 100%; border-radius: 0; left: 0; }
+            .legend { display: none; }
+        }
+    </style>
+</head>
+<body oncontextmenu="return false" ondragstart="return false" onselectstart="return false">
+
+<div class="topbar">
+    <a class="logo-area" href="/">
+        <img src="logo.png" alt="TŠZ" onerror="this.style.display='none'">
+        <span>TŠZ Cargo Group</span>
+    </a>
+    <span class="page-title"><i class="fas fa-map-marked-alt"></i> Praćenje pošiljki</span>
+    <span class="spacer"></span>
+    <a class="nav-link" href="/o-nama"><i class="fas fa-building"></i> Poduzeće</a>
+    <a class="nav-link" href="/cjenik"><i class="fas fa-file-invoice-dollar"></i> Cjenik</a>
+    <a class="nav-link" href="/"><i class="fas fa-home"></i> Stranica</a>
+</div>
+
+<div class="search-strip">
+    <input type="text" id="searchInput" placeholder="Unesite broj pošiljke (npr. TŠZ-1003)..." autocomplete="off">
+    <button onclick="searchShipment()"><i class="fas fa-search"></i> Pretraži</button>
+    <span class="info-text"><i class="fas fa-info-circle"></i> Kliknite na pošiljku ili marker</span>
+    <span class="info-text"><i class="fas fa-map-marker-alt"></i> Lokacija: Zagreb</span>
+    <span class="info-text"><i class="fas fa-envelope"></i> tszcargogroup@gmail.com | <i class="fas fa-phone-alt"></i> +385 97 652 2231</span>
+    <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#e06c00;"></div> U tranzitu</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#16a34a;"></div> Isporučeno</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#7c3aed;"></div> U obradi</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#1473e6;"></div> Polazište/Odredište</div>
+    </div>
+</div>
+
+<div class="app-body">
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2><i class="fas fa-list"></i> Aktivne pošiljke (10)</h2>
+            <p>Kliknite za detalje i prikaz na karti</p>
+        </div>
+        <div class="shipment-list" id="shipmentList"></div>
+    </div>
+
+    <div id="map"></div>
+
+    <div class="detail-panel" id="detailPanel">
+        <button class="detail-close" onclick="closeDetail()"><i class="fas fa-times"></i></button>
+        <div class="detail-title" id="dpTitle"></div>
+        <div id="dpContent"></div>
+    </div>
+</div>
+
+<script>
+// ============================================================
+// SHIPMENT DATA – 10 realistic Croatian shipments
+// ============================================================
+const shipments = [
+    {
+        id: 'TŠZ-1001',
+        type: 'cestovni',
+        typeIcon: 'fa-truck',
+        typeLabel: 'Cestovni',
+        from: 'Zagreb',
+        to: 'Zadar',
+        fromCoords: [45.8150, 15.9819],
+        toCoords: [44.1194, 15.2314],
+        currentCoords: [44.0533, 16.2075],
+        currentLocation: 'Knin, Šibensko-kninska',
+        status: 'transit',
+        statusLabel: 'U tranzitu',
+        progress: 65,
+        weight: '4.500 kg',
+        eta: '22.04.2026.',
+        departed: '21.04.2026. 06:15',
+        description: 'Industrijska oprema – autodijelovi',
+        vehicle: 'Volvo FH16 – ZG-123-AB',
+        driver: 'Tomislav Reljić',
+        timeline: [
+            { time: '06:15', text: 'Utovareno u Zagreb – TŠZ terminal Jankomir', done: true },
+            { time: '08:40', text: 'Prošao Karlovac – kontrolna točka', done: true },
+            { time: '11:20', text: 'U tranzitu – Knin (trenutačna lokacija)', done: true },
+            { time: '15:00', text: 'Planiran dolazak Zadar – lučki terminal', done: false }
+        ],
+        color: '#e06c00',
+        progressColor: '#e06c00'
+    },
+    {
+        id: 'TŠZ-1002',
+        type: 'zeljeznicki',
+        typeIcon: 'fa-train',
+        typeLabel: 'Željeznički',
+        from: 'Zagreb',
+        to: 'Slavonski Brod',
+        fromCoords: [45.8150, 15.9819],
+        toCoords: [45.1603, 18.0156],
+        currentCoords: [45.1603, 18.0156],
+        currentLocation: 'Slavonski Brod – robni terminal',
+        status: 'delivered',
+        statusLabel: 'Isporučeno',
+        progress: 100,
+        weight: '28.000 kg',
+        eta: '21.04.2026.',
+        departed: '20.04.2026. 22:10',
+        description: 'Metalni profili i čeličnički prijevoz',
+        vehicle: 'HŽ Cargo vagon HRB-2285',
+        driver: 'Strojavođa Goran Filipović',
+        timeline: [
+            { time: '22:10', text: 'Utovaren u Zagrebu – HŽ Cargo terminal', done: true },
+            { time: '01:30', text: 'Zagreb Ranžirni kolodvor – pretovar i spajanje', done: true },
+            { time: '05:50', text: 'Slavonski Brod – provjera vagona', done: true },
+            { time: '09:40', text: 'Isporučeno u Slavonskom Brodu – robni terminal ✅', done: true }
+        ],
+        color: '#16a34a',
+        progressColor: '#16a34a'
+    },
+    {
+        id: 'TŠZ-1003',
+        type: 'cestovni',
+        typeIcon: 'fa-truck',
+        typeLabel: 'Cestovni',
+        from: 'Zagreb',
+        to: 'Dubrovnik',
+        fromCoords: [45.8150, 15.9819],
+        toCoords: [42.6507, 18.0944],
+        currentCoords: [43.0522, 17.4393],
+        currentLocation: 'Ploče, Dubrovačko-neretvanska',
+        status: 'transit',
+        statusLabel: 'U tranzitu',
+        progress: 78,
+        weight: '7.200 kg',
+        eta: '21.04.2026.',
+        departed: '21.04.2026. 04:00',
+        description: 'Turistička oprema za hotele – Dubrovnik Riviera',
+        vehicle: 'MAN TGX – ZG-884-CD',
+        driver: 'Ivan Borozan',
+        timeline: [
+            { time: '04:00', text: 'Polazak Zagreb – Jankomir terminal', done: true },
+            { time: '07:20', text: 'Karlovac – točka provjere', done: true },
+            { time: '10:05', text: 'Gračac – kratak odmor, provjera tereta', done: true },
+            { time: '13:30', text: 'Ploče – granični koridori (trenutačno)', done: true },
+            { time: '16:00', text: 'Planirani dolazak Dubrovnik – luka', done: false }
+        ],
+        color: '#e06c00',
+        progressColor: '#e06c00'
+    },
+    {
+        id: 'TŠZ-1004',
+        type: 'pomorski',
+        typeIcon: 'fa-ship',
+        typeLabel: 'Pomorski',
+        from: 'Zadar (luka)',
+        to: 'Zadar (luka)',
+        fromCoords: [44.1117, 15.2380],
+        toCoords: [44.1117, 15.2380],
+        currentCoords: [44.7152, 14.5821],
+        currentLocation: 'Kvarnerski zaljev – kod Cresa',
+        status: 'transit',
+        statusLabel: 'U tranzitu',
+        progress: 40,
+        weight: '180 tona (2× TEU 20\')',
+        eta: '22.04.2026.',
+        departed: '21.04.2026. 08:30',
+        description: 'Prehrambena roba – hladnjački kontejneri',
+        vehicle: 'M/V Argosy Adriatic – MMSI 238224210',
+        driver: 'Zapovjednik I. Radović',
+        timeline: [
+            { time: '08:30', text: 'Isplovljavanje Zadar – gradska luka, vez 7', done: true },
+            { time: '11:45', text: 'Prolaz Krk – navigacijska točka', done: true },
+            { time: '14:20', text: 'Kvarner – kod otoka Cres (trenutačno)', done: true },
+            { time: '20:00', text: 'Planirani uplov Zadar – vez B3', done: false }
+        ],
+        color: '#e06c00',
+        progressColor: '#e06c00'
+    },
+    {
+        id: 'TŠZ-1005',
+        type: 'cjevovodni',
+        typeIcon: 'fa-oil-can',
+        typeLabel: 'Cjevovodni',
+        from: 'Sisak (rafinerija)',
+        to: 'Slavonski Brod',
+        fromCoords: [45.4673, 16.3759],
+        toCoords: [45.1603, 18.0156],
+        currentCoords: [45.3210, 17.1500],
+        currentLocation: 'Cjevovod – sekcija Kutina',
+        status: 'transit',
+        statusLabel: 'U protoku',
+        progress: 55,
+        weight: '12.000 m³ (nafta)',
+        eta: 'Kontinuirano',
+        departed: '20.04.2026. 00:00',
+        description: 'Sirova nafta – JANAF koridor prema INA Brod',
+        vehicle: 'JANAF cjevovod – segment HR-07',
+        driver: 'Nadzor: Operativni centar Sisak',
+        timeline: [
+            { time: 'pon', text: 'Aktiviran protok – Rafinerija Sisak', done: true },
+            { time: 'uto', text: 'Sekcija Kutina – tlak: 42 bar, protok: nominalni', done: true },
+            { time: 'sri', text: 'Sekcija Kutina (trenutačno) – monitoring aktivan', done: true },
+            { time: 'čet', text: 'Planiran primitak – INA Slavonski Brod', done: false }
+        ],
+        color: '#7c3aed',
+        progressColor: '#7c3aed'
+    },
+    {
+        id: 'TŠZ-1006',
+        type: 'cestovni',
+        typeIcon: 'fa-truck',
+        typeLabel: 'Cestovni',
+        from: 'Zagreb',
+        to: 'Pula',
+        fromCoords: [45.8150, 15.9819],
+        toCoords: [44.8666, 13.8496],
+        currentCoords: [44.8666, 13.8496],
+        currentLocation: 'Pula – Industrijska zona',
+        status: 'delivered',
+        statusLabel: 'Isporučeno',
+        progress: 100,
+        weight: '3.100 kg',
+        eta: '21.04.2026.',
+        departed: '21.04.2026. 05:00',
+        description: 'Elektronička oprema – logistički centar Pula',
+        vehicle: 'Scania R450 – ZG-557-EF',
+        driver: 'Andrej Blažević',
+        timeline: [
+            { time: '05:00', text: 'Polazak Zagreb', done: true },
+            { time: '06:50', text: 'Karlovac – A1/A6 čvor', done: true },
+            { time: '09:15', text: 'Pazin – odmor vozača 45 min', done: true },
+            { time: '11:30', text: 'Isporučeno u Puli – Industrijska zona ✅', done: true }
+        ],
+        color: '#16a34a',
+        progressColor: '#16a34a'
+    },
+    {
+        id: 'TŠZ-1007',
+        type: 'cestovni',
+        typeIcon: 'fa-truck',
+        typeLabel: 'Cestovni',
+        from: 'Zadar',
+        to: 'Varaždin',
+        fromCoords: [44.1194, 15.2314],
+        toCoords: [46.3044, 16.3378],
+        currentCoords: [45.8150, 15.9819],
+        currentLocation: 'Zagreb – Jankomir čvor',
+        status: 'transit',
+        statusLabel: 'U tranzitu',
+        progress: 72,
+        weight: '8.500 kg',
+        eta: '21.04.2026.',
+        departed: '21.04.2026. 03:30',
+        description: 'Građevinski materijal – armirani beton za gradilište',
+        vehicle: 'DAF XF – ZD-204-GH',
+        driver: 'Zoran Marković',
+        timeline: [
+            { time: '03:30', text: 'Polazak Zadar – lučki terminal', done: true },
+            { time: '06:00', text: 'Gospić – Lika', done: true },
+            { time: '09:10', text: 'Zagreb Jankomir – predah, gorivo (trenutačno)', done: true },
+            { time: '11:00', text: 'Planirani dolazak Varaždin – gradilište', done: false }
+        ],
+        color: '#e06c00',
+        progressColor: '#e06c00'
+    },
+    {
+        id: 'TŠZ-1008',
+        type: 'pomorski',
+        typeIcon: 'fa-ship',
+        typeLabel: 'Pomorski',
+        from: 'Zadar (luka)',
+        to: 'Šibenik (luka)',
+        fromCoords: [44.1117, 15.2380],
+        toCoords: [43.7350, 15.8952],
+        currentCoords: [43.7350, 15.8952],
+        currentLocation: 'Šibenik – Obala Franje Tuđmana',
+        status: 'delivered',
+        statusLabel: 'Isporučeno',
+        progress: 100,
+        weight: '24 tone (rasuti teret)',
+        eta: '21.04.2026.',
+        departed: '21.04.2026. 07:00',
+        description: 'Kameni agregat – lokalni obalni prijevoz',
+        vehicle: 'M/B Pelješac II – CRO 1842',
+        driver: 'Kapetan Miro Vukšić',
+        timeline: [
+            { time: '07:00', text: 'Isplovljavanje Zadar – Brodogradilišni vez 4', done: true },
+            { time: '09:30', text: 'Prolaz Trogirski kanal', done: true },
+            { time: '11:15', text: 'Isporučeno u Šibeniku – vez 2 ✅', done: true }
+        ],
+        color: '#16a34a',
+        progressColor: '#16a34a'
+    },
+    {
+        id: 'TŠZ-1009',
+        type: 'zeljeznicki',
+        typeIcon: 'fa-train',
+        typeLabel: 'Željeznički',
+        from: 'Vinkovci',
+        to: 'Zagreb',
+        fromCoords: [45.2882, 18.8054],
+        toCoords: [45.8150, 15.9819],
+        currentCoords: [45.2882, 18.8054],
+        currentLocation: 'Vinkovci – Ranžirni kolodvor',
+        status: 'transit',
+        statusLabel: 'U tranzitu',
+        progress: 15,
+        weight: '42.000 kg (rasuti žitarice)',
+        eta: '22.04.2026.',
+        departed: '21.04.2026. 14:00',
+        description: 'Kukuruz za izvoz – Slavonija Agro',
+        vehicle: 'HŽ Cargo skup vagona – OSIJ-14',
+        driver: 'Strojavođa Dragan Petrov',
+        timeline: [
+            { time: '14:00', text: 'Utovaren u Vinkovcima – Žitni silos 3', done: true },
+            { time: '15:20', text: 'Vinkovci – spajanje vagona (trenutačno)', done: true },
+            { time: '18:00', text: 'Planirani prolaz Slavonski Brod', done: false },
+            { time: '22:30', text: 'Planirani dolazak Zagreb Ranžirni', done: false }
+        ],
+        color: '#e06c00',
+        progressColor: '#e06c00'
+    },
+    {
+        id: 'TŠZ-1010',
+        type: 'zracni',
+        typeIcon: 'fa-plane',
+        typeLabel: 'Zračni',
+        from: 'Zagreb (ZAG)',
+        to: 'Frankfurt (FRA)',
+        fromCoords: [45.7429, 16.0688],
+        toCoords: [50.0333, 8.5706],
+        currentCoords: [46.9480, 15.4380],
+        currentLocation: 'Austrijsko zračno prostranstvo – kod Graza',
+        status: 'transit',
+        statusLabel: 'U letu',
+        progress: 42,
+        weight: '1.450 kg',
+        eta: '21.04.2026. 18:30',
+        departed: '21.04.2026. 15:45',
+        description: 'Farmaceutski preparati – hitna pošiljka',
+        vehicle: 'Croatia Airlines – OU421 (cargo hold)',
+        driver: 'Kpt. Ana Horvat / FO Marko Jurić',
+        timeline: [
+            { time: '14:20', text: 'Check-in cargo teret – ZAG cargo terminal', done: true },
+            { time: '15:45', text: 'Polijetanje Zagreb (ZAG) – pista 23', done: true },
+            { time: '16:55', text: 'Austrijsko zr. prostranstvo – visina FL340 (trenutačno)', done: true },
+            { time: '18:30', text: 'Planirano slijetanje Frankfurt (FRA)', done: false },
+            { time: '20:00', text: 'Cargo isporuka – DHL Frankfurt hub', done: false }
+        ],
+        color: '#e06c00',
+        progressColor: '#e06c00'
+    }
+];
+
+// ============================================================
+// MAP SETUP
+// ============================================================
+const map = L.map('map', {
+    center: [44.7, 16.0],
+    zoom: 7,
+    zoomControl: true
+});
+
+L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>',
+    subdomains: 'abcd',
+    maxZoom: 19
+}).addTo(map);
+
+// Custom icons
+function makeIcon(color, icon) {
+    const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='32' height='40' viewBox='0 0 32 40'>
+        <path d='M16 0C7.2 0 0 7.2 0 16c0 12 16 24 16 24s16-12 16-24C32 7.2 24.8 0 16 0z' fill='${color}' stroke='white' stroke-width='2'/>
+        <circle cx='16' cy='16' r='8' fill='white' opacity='0.9'/>
+    </svg>`;
+    return L.icon({
+        iconUrl: 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg),
+        iconSize: [28, 35],
+        iconAnchor: [14, 35],
+        popupAnchor: [0, -36]
+    });
+}
+
+const faIconMap = {
+    'cestovni':    'fa-truck',
+    'zeljeznicki': 'fa-train',
+    'zracni':      'fa-plane',
+    'pomorski':    'fa-ship',
+    'cjevovodni':  'fa-tint'
+};
+
+function makeTransitIcon(type, color) {
+    const fa = faIconMap[type] || 'fa-box';
+    const isPlane = type === 'zracni';
+    const animClass = isPlane ? 'plane-anim' : 'pulse';
+    return L.divIcon({
+        className: '',
+        html: `<div class="anim-vehicle ${animClass}" style="background:${color};"><i class="fas ${fa}"></i></div>`,
+        iconSize: [38, 38],
+        iconAnchor: [19, 19],
+        popupAnchor: [0, -22]
+    });
+}
+
+function makeCurrentIcon(color) {
+    const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='38' height='38' viewBox='0 0 38 38'>
+        <circle cx='19' cy='19' r='17' fill='${color}' stroke='white' stroke-width='3'/>
+        <circle cx='19' cy='19' r='7' fill='white'/>
+    </svg>`;
+    return L.icon({
+        iconUrl: 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg),
+        iconSize: [32, 32],
+        iconAnchor: [16, 16],
+        popupAnchor: [0, -20]
+    });
+}
+
+let markers = [];
+let polylines = [];
+let activeShipmentId = null;
+const animMarkers = {};
+const animState = {};
+let animIntervalId = null;
+
+function getStatusColor(status) {
+    if (status === 'delivered') return '#16a34a';
+    if (status === 'transit') return '#e06c00';
+    if (status === 'processing') return '#7c3aed';
+    return '#1473e6';
+}
+
+function renderMap() {
+    // Clear old
+    markers.forEach(m => map.removeLayer(m));
+    polylines.forEach(p => map.removeLayer(p));
+    markers = [];
+    polylines = [];
+
+    shipments.forEach(s => {
+        const color = getStatusColor(s.status);
+        const isActive = s.id === activeShipmentId;
+
+        // Route line: from -> current -> to (dashed for not-yet traveled)
+        const traveled = L.polyline([s.fromCoords, s.currentCoords], {
+            color: color, weight: isActive ? 4 : 2.5,
+            opacity: isActive ? 0.9 : 0.5,
+            dashArray: null
+        }).addTo(map);
+
+        const remaining = L.polyline([s.currentCoords, s.toCoords], {
+            color: '#94a3b8', weight: isActive ? 3 : 2,
+            opacity: isActive ? 0.6 : 0.3,
+            dashArray: '6, 6'
+        }).addTo(map);
+
+        polylines.push(traveled, remaining);
+
+        // From marker (small blue)
+        const fromM = L.marker(s.fromCoords, { icon: makeIcon('#1473e6', 'circle') })
+            .addTo(map)
+            .bindPopup(`<b>Polazište</b><br>${s.from}`);
+        markers.push(fromM);
+
+        // To marker (small blue)
+        const toM = L.marker(s.toCoords, { icon: makeIcon('#1473e6', 'circle') })
+            .addTo(map)
+            .bindPopup(`<b>Odredište</b><br>${s.to}`);
+        markers.push(toM);
+
+        // Current position marker
+        const useTransitIcon = s.status === 'transit';
+        const curIcon = useTransitIcon ? makeTransitIcon(s.type, color) : makeCurrentIcon(color);
+        const curM = L.marker(s.currentCoords, { icon: curIcon })
+            .addTo(map)
+            .bindPopup(`
+                <div style="min-width:180px;">
+                    <strong style="color:#0f4fa8;">${s.id}</strong><br>
+                    <span style="color:#4a5878; font-size:0.82rem;">${s.typeLabel} – ${s.from} → ${s.to}</span><br>
+                    <hr style="margin:4px 0; border:0; border-top:1px solid #dbe8ff;">
+                    📍 <strong>${s.currentLocation}</strong><br>
+                    <span style="color:#e06c00; font-size:0.82rem;">${s.statusLabel} – ${s.progress}%</span><br>
+                    <span style="font-size:0.78rem;">⏱ ETA: ${s.eta}</span><br>
+                    <button onclick="selectShipment('${s.id}')" style="margin-top:6px; background:#1473e6; color:white; border:none; border-radius:999px; padding:3px 10px; cursor:pointer; font-size:0.78rem;">Detalji</button>
+                </div>
+            `);
+        curM.on('click', () => selectShipment(s.id));
+        markers.push(curM);
+        if (useTransitIcon) animMarkers[s.id] = curM;
+    });
+}
+
+// ============================================================
+// SIDEBAR
+// ============================================================
+function renderSidebar() {
+    const list = document.getElementById('shipmentList');
+    list.innerHTML = '';
+    shipments.forEach(s => {
+        const div = document.createElement('div');
+        div.className = 'shipment-card' + (s.id === activeShipmentId ? ' active' : '');
+        div.dataset.id = s.id;
+
+        const badgeClass = s.status === 'delivered' ? 'status-delivered' :
+                           s.status === 'transit' ? 'status-transit' : 'status-processing';
+
+        div.innerHTML = `
+            <div class="card-header">
+                <i class="fas ${s.typeIcon} transport-icon" style="color:${getStatusColor(s.status)};"></i>
+                <span class="card-id">${s.id}</span>
+                <span class="status-badge ${badgeClass}">${s.statusLabel}</span>
+            </div>
+            <div class="card-route">
+                <strong>${s.from}</strong> <i class="fas fa-arrow-right" style="font-size:0.7rem; color:#94a3b8;"></i> <strong>${s.to}</strong>
+                <span style="float:right; color:#6b7fa8; font-size:0.76rem;">${s.weight}</span>
+            </div>
+            <div class="card-route" style="color:#6b7fa8; font-size:0.76rem;">📍 ${s.currentLocation}</div>
+            <div class="progress-wrap">
+                <div class="progress-bar" style="width:${s.progress}%; background:${getStatusColor(s.status)};"></div>
+            </div>
+            <div class="card-footer">
+                <span>${s.typeLabel}</span>
+                <span>⏱ ETA: ${s.eta}</span>
+                <span>${s.progress}%</span>
+            </div>
+        `;
+        div.addEventListener('click', () => selectShipment(s.id));
+        list.appendChild(div);
+    });
+}
+
+// ============================================================
+// SELECT SHIPMENT
+// ============================================================
+function selectShipment(id) {
+    activeShipmentId = id;
+    renderSidebar();
+    renderMap();
+
+    const s = shipments.find(x => x.id === id);
+    if (!s) return;
+
+    // Zoom map to shipment
+    const bounds = L.latLngBounds([s.fromCoords, s.toCoords, s.currentCoords]);
+    map.fitBounds(bounds, { padding: [40, 40] });
+
+    // Show detail panel
+    const panel = document.getElementById('detailPanel');
+    panel.classList.add('visible');
+
+    document.getElementById('dpTitle').innerHTML = `
+        <i class="fas ${s.typeIcon}" style="color:${getStatusColor(s.status)};"></i>
+        ${s.id} – ${s.typeLabel}
+    `;
+
+    const badgeClass = s.status === 'delivered' ? 'status-delivered' :
+                       s.status === 'transit' ? 'status-transit' : 'status-processing';
+
+    const timelineHTML = s.timeline.map(t => `
+        <div class="timeline-item ${t.done ? 'done' : ''}">
+            <span class="tl-time">${t.time}</span>
+            <span class="tl-text">${t.text}</span>
+        </div>
+    `).join('');
+
+    document.getElementById('dpContent').innerHTML = `
+        <div class="detail-row"><span class="detail-label">Status:</span> <span class="detail-val"><span class="status-badge ${badgeClass}" style="padding:0.2rem 0.7rem;">${s.statusLabel}</span></span></div>
+        <div class="detail-row"><span class="detail-label">Polazište:</span> <span class="detail-val">${s.from}</span></div>
+        <div class="detail-row"><span class="detail-label">Odredište:</span> <span class="detail-val">${s.to}</span></div>
+        <div class="detail-row"><span class="detail-label">Tren. lokacija:</span> <span class="detail-val">📍 ${s.currentLocation}</span></div>
+        <div class="detail-row"><span class="detail-label">Teret:</span> <span class="detail-val">${s.description}</span></div>
+        <div class="detail-row"><span class="detail-label">Masa:</span> <span class="detail-val">${s.weight}</span></div>
+        <div class="detail-row"><span class="detail-label">Vozilo:</span> <span class="detail-val">${s.vehicle}</span></div>
+        <div class="detail-row"><span class="detail-label">Vozač/Kap.:</span> <span class="detail-val">${s.driver}</span></div>
+        <div class="detail-row"><span class="detail-label">Polazak:</span> <span class="detail-val">${s.departed}</span></div>
+        <div class="detail-row"><span class="detail-label">ETA:</span> <span class="detail-val"><strong>${s.eta}</strong></span></div>
+        <div class="detail-row"><span class="detail-label">Napredak:</span>
+            <span class="detail-val" style="flex:1;">
+                <div class="progress-wrap" style="height:8px; flex:1;">
+                    <div class="progress-bar" style="width:${s.progress}%; background:${getStatusColor(s.status)};"></div>
+                </div>
+                <span style="font-size:0.75rem; color:#6b7fa8;">${s.progress}%</span>
+            </span>
+        </div>
+        <div class="timeline" style="margin-top:0.7rem;">
+            <div style="font-weight:700; font-size:0.82rem; color:#0f4fa8; margin-bottom:0.4rem;">TIMELINE POŠILJKE</div>
+            ${timelineHTML}
+        </div>
+    `;
+}
+
+function closeDetail() {
+    document.getElementById('detailPanel').classList.remove('visible');
+    activeShipmentId = null;
+    renderSidebar();
+    renderMap();
+}
+
+function searchShipment() {
+    const query = document.getElementById('searchInput').value.trim().toUpperCase();
+    const found = shipments.find(s => s.id.toUpperCase() === query ||
+        s.id.toUpperCase().replace('TŠZ', 'TSZ') === query.replace('TŠZ', 'TSZ'));
+    if (found) {
+        selectShipment(found.id);
+        document.getElementById('searchInput').style.border = '1.5px solid #16a34a';
+        setTimeout(() => { document.getElementById('searchInput').style.border = ''; }, 2000);
+    } else {
+        document.getElementById('searchInput').style.border = '1.5px solid #e04a4a';
+        setTimeout(() => { document.getElementById('searchInput').style.border = ''; }, 2000);
+        if (query) alert(`Pošiljka "${query}" nije pronađena.\nDostupni brojevi: TŠZ-1001 do TŠZ-1010`);
+    }
+}
+
+document.getElementById('searchInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') searchShipment();
+});
+
+// ============================================================
+// VEHICLE MOVEMENT ANIMATION
+// ============================================================
+function startVehicleAnimation() {
+    if (animIntervalId) clearInterval(animIntervalId);
+
+    shipments.forEach(s => {
+        if (s.status !== 'transit') return;
+        const dLat = s.toCoords[0] - s.currentCoords[0];
+        const dLng = s.toCoords[1] - s.currentCoords[1];
+        const len = Math.sqrt(dLat * dLat + dLng * dLng) || 1;
+        animState[s.id] = {
+            t: 0,
+            dir: 1,
+            unitLat: dLat / len,
+            unitLng: dLng / len,
+            maxT: len * 0.025   // max 2.5% of remaining route oscillation
+        };
+    });
+
+    animIntervalId = setInterval(() => {
+        shipments.forEach(s => {
+            if (s.status !== 'transit') return;
+            const m = animMarkers[s.id];
+            const st = animState[s.id];
+            if (!m || !st) return;
+
+            st.t += 0.0008 * st.dir;
+            if (st.t >= st.maxT) st.dir = -1;
+            if (st.t <= 0) st.dir = 1;
+
+            m.setLatLng([
+                s.currentCoords[0] + st.unitLat * st.t,
+                s.currentCoords[1] + st.unitLng * st.t
+            ]);
+        });
+    }, 60);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+renderSidebar();
+renderMap();
+startVehicleAnimation();
+
+// Select first shipment by default
+selectShipment('TŠZ-1001');
+
+document.addEventListener('contextmenu', e => e.preventDefault());
+document.addEventListener('copy', e => e.preventDefault());
+document.addEventListener('keydown', e => {
+    if (e.ctrlKey && ['c','x','s','a','u'].includes(e.key.toLowerCase())) e.preventDefault();
+    if (e.key === 'F12') e.preventDefault();
+    if (e.ctrlKey && e.shiftKey && ['i','j','c'].includes(e.key.toLowerCase())) e.preventDefault();
+});
+</script>
+<script>
+(function(){
+    var img = new Image();
+    img.onload = function(){
+        var c = document.createElement('canvas');
+        c.width = 64; c.height = 64;
+        var ctx = c.getContext('2d');
+        ctx.filter = 'brightness(0) saturate(100%) invert(24%) sepia(96%) saturate(1900%) hue-rotate(206deg) brightness(96%) contrast(95%)';
+        ctx.drawImage(img, 0, 0, 64, 64);
+        var link = document.querySelector("link[rel='icon']") || document.createElement('link');
+        link.rel = 'icon'; link.type = 'image/png';
+        link.href = c.toDataURL('image/png');
+        document.head.appendChild(link);
+    };
+    img.src = 'logo.png';
+})();
+</script>
+</body>
+</html>

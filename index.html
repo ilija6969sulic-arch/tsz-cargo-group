@@ -1,0 +1,1826 @@
+﻿<!DOCTYPE html>
+<html lang="hr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>TŠZ Cargo Group</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            user-select: none; 
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            color: #1f3561;
+            background: linear-gradient(160deg, #f6f9ff 0%, #eaf1ff 55%, #f8fbff 100%);
+        }
+        img, i, .logo, .card, .detail-visual, .btn, .section-title, .team-circle, .team-circle * {
+            pointer-events: auto; 
+            -webkit-user-drag: none;
+        }
+        
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        :root {
+            --pink-light: #1473e6;
+            --pink-pastel: #1473e6;
+            --pink-mid: #1473e6;
+            --pink-deep: #1473e6;
+            --pink-dark: #1473e6;
+            --pink-gradient: linear-gradient(135deg, #1473e6 0%, #1473e6 100%);
+            --pink-glow: 0 8px 20px rgba(20, 115, 230, 0.2);
+            --gray-soft: #f4f7ff;
+            --shadow-card: 0 20px 35px -12px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(20, 115, 230, 0.08);
+        }
+
+        h1, h2, h3, h4 {
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(120deg, #0f4fa8, #1473e6);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            display: inline-block;
+        }
+
+        .section-subhead {
+            font-size: 1.2rem;
+            color: #4f5f84;
+            max-width: 700px;
+            margin-bottom: 3rem;
+            border-left: 4px solid #87aef5;
+            padding-left: 1.2rem;
+        }
+
+        nav {
+            position: sticky;
+            top: 0;
+            width: 100%;
+            background: linear-gradient(98deg, #edf4ff 0%, #dbe8ff 100%);
+            backdrop-filter: blur(2px);
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(20, 115, 230, 0.08);
+            border-bottom: 1px solid #c5d7fa;
+            padding: 0.6rem 0;
+            transition: all 0.2s;
+        }
+
+        .nav-container {
+            position: relative;
+            max-width: 1420px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 56px;
+            flex-wrap: nowrap;
+            gap: 1rem;
+        }
+
+        .logo {
+            position: static;
+            transform: none;
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            font-size: 1rem;
+            font-weight: 800;
+            color: #0f4fa8;
+            margin-left: 0;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid #d3e2ff;
+            border-radius: 999px;
+            padding: 0.22rem 0.75rem 0.22rem 0.22rem;
+            box-shadow: 0 8px 18px rgba(20, 115, 230, 0.12);
+        }
+        .nav-links {
+            order: 1;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            margin-left: 0;
+        }
+        .logo-image {
+            width: 42px;
+            height: 42px;
+            object-fit: contain;
+            display: block;
+            border-radius: 10px;
+            background: #ffffff;
+            padding: 0;
+            box-shadow: 0 6px 14px rgba(20, 115, 230, 0.16);
+            border: 1px solid #dbe8ff;
+            transition: transform 0.2s;
+            flex: 0 0 auto;
+        }
+        .logo-image:hover {
+            transform: scale(1.03);
+        }
+        .logo-icon {
+            background: #1473e6;
+            width: 50px;
+            height: 50px;
+            flex: 0 0 auto;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: white;
+            box-shadow: 0 6px 12px rgba(20, 115, 230,0.4);
+            transition: transform 0.2s;
+        }
+        .logo-icon i {
+            font-size: 1.9rem;
+        }
+        .logo-brand {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.05;
+        }
+        .brand-name {
+            font-size: 1.4rem;
+            letter-spacing: -0.02em;
+            color: #0f4fa8;
+        }
+        .brand-sub {
+            font-size: 0.9rem;
+            color: #4a618e;
+        }
+        .logo span {
+            display: block;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.2rem;
+            list-style: none;
+            flex-wrap: nowrap;
+            padding: 0.35rem 1rem;
+            border-radius: 999px;
+            border: 1px solid #c5d7fa;
+            background: rgba(255, 255, 255, 0.75);
+            box-shadow: 0 10px 18px rgba(20, 115, 230, 0.08);
+        }
+        .nav-links a {
+            text-decoration: none;
+            font-weight: 700;
+            color: #4a4f6b;
+            transition: 0.25s;
+            font-size: 0.95rem;
+            padding: 0.35rem 0;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-links a:hover {
+            color: #0f4fa8;
+            border-bottom-color: #0f4fa8;
+            text-shadow: 0 0 4px rgba(20, 115, 230, 0.25);
+        }
+        .nav-links a:focus-visible {
+            outline: 2px solid #87aef5;
+            outline-offset: 2px;
+            border-radius: 4px;
+        }
+        .menu-icon {
+            display: none;
+            font-size: 1.8rem;
+            color: #0f4fa8;
+            cursor: pointer;
+        }
+
+        .hero {
+            min-height: 90vh;
+            background: radial-gradient(ellipse at 70% 30%, #edf4ff, #dbe8ff);
+            display: flex;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(15, 79, 168, 0.22) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(15, 79, 168, 0.22) 1px, transparent 1px);
+            background-size: 38px 38px;
+            mask-image: radial-gradient(circle at center, rgba(0, 0, 0, 1) 20%, rgba(0, 0, 0, 0.28) 72%, transparent 100%);
+            pointer-events: none;
+        }
+        .hero .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 3rem 2rem 4.8rem;
+            z-index: 2;
+            border-radius: 1.8rem;
+            background: rgba(255, 255, 255, 0.55);
+            border: 1px solid rgba(165, 194, 244, 0.7);
+            box-shadow: 0 28px 40px -26px rgba(20, 115, 230, 0.45);
+            backdrop-filter: blur(5px);
+        }
+        .hero-logo-wrap {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1.3rem;
+        }
+        .hero-logo-image {
+            width: min(320px, 72vw);
+            max-height: 160px;
+            object-fit: contain;
+            display: block;
+            filter: brightness(0) saturate(100%) invert(24%) sepia(96%) saturate(1900%) hue-rotate(206deg) brightness(96%) contrast(95%);
+            image-rendering: -webkit-optimize-contrast;
+        }
+        .hero h1 {
+            font-size: 3.5rem;
+            background: linear-gradient(125deg, #0f4fa8, #1473e6);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 1rem;
+        }
+        .hero .slogan {
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: #0f4fa8;
+            margin: 1rem 0;
+            font-style: italic;
+        }
+        .hero p {
+            font-size: 1.2rem;
+            color: #435172;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+        }
+        .hero-illustrations {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 2rem 0 1rem;
+            flex-wrap: wrap;
+            opacity: 0.8;
+        }
+        .hero-illustrations i {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            border: 1px solid #bcd0f8;
+            background: linear-gradient(145deg, #f7fbff, #e8f1ff);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #1d67d1;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05));
+            transition: transform 0.25s, box-shadow 0.25s;
+        }
+        .hero-illustrations i:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 14px 24px rgba(20, 115, 230, 0.2);
+        }
+        /* HERO ICON TOOLTIP LINKS */
+        .hero-icon-link {
+            position: relative;
+            text-decoration: none;
+            display: inline-flex;
+        }
+        .hero-icon-link::after {
+            content: attr(data-tip);
+            position: absolute;
+            bottom: calc(100% + 12px);
+            left: 50%;
+            transform: translateX(-50%) scale(0.92);
+            background: #0f4fa8;
+            color: white;
+            font-size: 0.76rem;
+            font-weight: 600;
+            padding: 0.45rem 0.85rem;
+            border-radius: 0.65rem;
+            width: 210px;
+            text-align: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s, transform 0.2s;
+            z-index: 200;
+            box-shadow: 0 6px 16px rgba(15,79,168,0.35);
+            line-height: 1.45;
+            white-space: normal;
+        }
+        .hero-icon-link::before {
+            content: '';
+            position: absolute;
+            bottom: calc(100% + 6px);
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: #0f4fa8;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+            z-index: 200;
+        }
+        .hero-icon-link:hover::after { opacity: 1; transform: translateX(-50%) scale(1); }
+        .hero-icon-link:hover::before { opacity: 1; }
+        /* CLICKABLE CARDS */
+        .fact-card {
+            cursor: pointer;
+            border-top: 3px solid #1473e6;
+            position: relative;
+        }
+        .fact-card i {
+            font-size: 2.2rem;
+            color: #1473e6;
+            display: block;
+            margin-bottom: 0.55rem;
+        }
+        .fact-card h3 { color: #0f4fa8; }
+        .fact-edit-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(20,115,230,0.85);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 2;
+        }
+        .fact-card:hover .fact-edit-btn { opacity: 1; }
+        .wms-card {
+            cursor: pointer;
+            border-left: 4px solid #1473e6;
+        }
+        .wms-card h3 { color: #0f4fa8; }
+        .wms-card:hover { border-left-color: #0f4fa8; background: #f4f8ff; }
+        /* INFO MODAL */
+        .info-modal-backdrop {
+            display: none;
+            position: fixed; inset: 0;
+            background: rgba(5,20,60,0.72);
+            z-index: 3500;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+        .info-modal-backdrop.open { display: flex; }
+        .info-modal-box {
+            background: white;
+            max-width: 560px; width: 93%;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            box-shadow: 0 32px 60px rgba(0,0,0,0.35);
+            position: relative;
+            animation: modalIn 0.25s ease;
+        }
+        @keyframes modalIn {
+            from { transform: scale(0.92) translateY(10px); opacity: 0; }
+            to   { transform: scale(1)    translateY(0);     opacity: 1; }
+        }
+        .info-modal-img { width: 100%; height: 230px; object-fit: cover; display: block; }
+        .info-modal-body { padding: 1.5rem 1.8rem 2rem; }
+        .info-modal-body h3 { color: #0f4fa8; font-size: 1.25rem; margin-bottom: 0.65rem; }
+        .info-modal-body p { color: #33466f; line-height: 1.68; font-size: 0.95rem; }
+        .info-modal-close {
+            position: absolute; top: 0.75rem; right: 0.85rem;
+            background: rgba(0,0,0,0.45); border: none; color: white;
+            border-radius: 50%; width: 34px; height: 34px;
+            cursor: pointer; font-size: 1.05rem;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.2s;
+        }
+        .info-modal-close:hover { background: rgba(0,0,0,0.72); }
+        .btn-primary {
+            background: #1473e6;
+            color: white;
+            border: none;
+            padding: 14px 38px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: 0.25s;
+            box-shadow: 0 8px 18px rgba(20, 115, 230,0.3);
+            display: inline-block;
+            text-decoration: none;
+        }
+        .btn-primary:hover {
+            background: #0f4fa8;
+            transform: translateY(-4px);
+            box-shadow: 0 18px 28px rgba(20, 115, 230,0.4);
+        }
+
+        .team-section {
+            padding: 5rem 2rem;
+            background: #ffffff;
+            text-align: center;
+        }
+        .team-container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .team-circles-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 3rem;
+            margin-top: 3rem;
+        }
+        .team-card {
+            text-align: center;
+            width: 220px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .team-card:hover {
+            transform: translateY(-8px);
+        }
+        .team-circle {
+            width: 180px;
+            height: 180px;
+            margin: 0 auto 1rem;
+            background: #e4edff;
+            border-radius: 50%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 15px 30px rgba(20, 115, 230,0.2);
+            border: 3px solid #1473e6;
+            transition: all 0.2s;
+            position: relative;
+        }
+        .team-circle .media-content {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            pointer-events: none; 
+        }
+        .team-circle video.media-content {
+            pointer-events: none;
+        }
+        .team-circle iframe.media-content {
+            width: 100%;
+            height: 100%;
+            border: none;
+            pointer-events: none;
+        }
+        .team-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #0f4fa8;
+            background: #edf4ff;
+            display: inline-block;
+            padding: 0.3rem 1rem;
+            border-radius: 40px;
+            margin-top: 0.5rem;
+        }
+        .team-role {
+            margin-top: 0.45rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #4f6086;
+        }
+        .edit-hint {
+            font-size: 0.75rem;
+            color: #5d6f95;
+            margin-top: 6px;
+            opacity: 0.7;
+        }
+
+        .team-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+        .team-modal-content {
+            background: white;
+            max-width: 500px;
+            width: 90%;
+            border-radius: 2rem;
+            padding: 2rem;
+            box-shadow: 0 30px 40px rgba(0,0,0,0.2);
+            text-align: left;
+            position: relative;
+        }
+        .team-modal-content h3 {
+            color: #0f4fa8;
+            margin-bottom: 1rem;
+        }
+        .team-modal-content label {
+            font-weight: 600;
+            margin-top: 1rem;
+            display: block;
+            color: #204a88;
+        }
+        .team-modal-content input, .team-modal-content select {
+            width: 100%;
+            padding: 0.7rem;
+            margin-top: 0.3rem;
+            border-radius: 2rem;
+            border: 1px solid #c5d7fa;
+            background: #f6f9ff;
+        }
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.8rem;
+            justify-content: flex-end;
+        }
+        .modal-buttons button {
+            padding: 0.6rem 1.4rem;
+            border-radius: 2rem;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .save-modal-btn {
+            background: #1473e6;
+            color: white;
+        }
+        .close-modal-btn {
+            background: #ddd;
+            color: #333;
+        }
+        .file-upload-row {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            margin-top: 0.5rem;
+        }
+        .small-note {
+            font-size: 0.7rem;
+            color: gray;
+            margin-top: 0.2rem;
+        }
+
+        .cards-section {
+            padding: 5rem 2rem;
+            background: white;
+        }
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1rem;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+        .cards-grid .card {
+            padding: 1.5rem 1rem;
+        }
+        .cards-grid .card h3 {
+            font-size: 1.1rem;
+        }
+        .card {
+            position: relative;
+            overflow: hidden;
+            background: white;
+            border-radius: 2rem;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            border: 1px solid #dbe8ff;
+            box-shadow: var(--shadow-card);
+            animation: cardBreath 6s ease-in-out infinite;
+        }
+        .card::after {
+            content: "";
+            position: absolute;
+            inset: auto 0 0 0;
+            height: 4px;
+            background: linear-gradient(90deg, #1473e6, #0f4fa8);
+            opacity: 0;
+            transition: opacity 0.25s;
+        }
+        .card i {
+            font-size: 3rem;
+            color: #1473e6;
+            margin-bottom: 1rem;
+        }
+        .card h3 {
+            font-size: 1.6rem;
+            margin: 0.8rem 0;
+            color: #0f4fa8;
+        }
+        .card p {
+            color: #4a5878;
+        }
+        .card:hover {
+            transform: translateY(-10px) scale(1.01);
+            border-color: #b5cdf7;
+            box-shadow: 0 30px 40px -20px rgba(20, 115, 230,0.3);
+            background: #f4f8ff;
+        }
+        .card:hover::after {
+            opacity: 1;
+        }
+
+        .detail-section {
+            padding: 5rem 2rem;
+        }
+        .detail-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 3rem;
+        }
+        .detail-text {
+            flex: 1;
+        }
+        .detail-visual {
+            flex: 1;
+            background: linear-gradient(125deg, #e7f0ff, #d7e6ff);
+            border-radius: 2rem;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: var(--pink-glow);
+            position: relative;
+            overflow: hidden;
+        }
+        .detail-visual img {
+            width: 100%;
+            height: 260px;
+            object-fit: cover;
+            border-radius: 1.2rem;
+            border: 2px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 14px 28px rgba(20, 115, 230, 0.2);
+            transform: translateZ(0);
+        }
+        .transport-edit-btn {
+            margin-top: 0.9rem;
+            border: 1px solid #8cb1ef;
+            color: #0f4fa8;
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 999px;
+            padding: 0.42rem 0.86rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .transport-edit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(20, 115, 230, 0.2);
+        }
+        .footer {
+            background: #0c3675;
+            color: #dbe8ff;
+            padding: 3rem 2rem 1.5rem;
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .footer a {
+            color: #c2d6ff;
+            text-decoration: none;
+        }
+        .social-icons i {
+            font-size: 1.6rem;
+            margin-right: 1rem;
+            color: #87aef5;
+        }
+        @media (max-width: 800px) {
+            .nav-container {
+                justify-content: space-between;
+                align-items: center;
+                min-height: auto;
+                flex-wrap: wrap;
+                padding: 0;
+            }
+            .logo {
+                position: static;
+                transform: none;
+                margin-right: auto;
+                margin-bottom: 0.35rem;
+            }
+            .nav-links {
+                display: none;
+                width: 100%;
+                flex-direction: column;
+                text-align: center;
+                margin-top: 1rem;
+                gap: 1rem;
+                border-radius: 1rem;
+                padding: 0.9rem 0.7rem;
+            }
+            .nav-links.show {
+                display: flex;
+            }
+            .menu-icon {
+                display: block;
+                margin-left: auto;
+            }
+            .hero h1 { font-size: 2.2rem; }
+            .hero-logo-image {
+                width: min(260px, 82vw);
+                max-height: 120px;
+            }
+            .hero .container {
+                padding-bottom: 2.2rem;
+            }
+            .detail-container { flex-direction: column; }
+            .cards-grid { grid-template-columns: 1fr; }
+            .team-circles-wrapper { gap: 1.5rem; }
+            .team-card { width: 160px; }
+            .team-circle { width: 140px; height: 140px; }
+            .detail-visual img { height: 200px; }
+            .route-row { grid-template-columns: 1fr; }
+            .hero-illustrations i {
+                width: 58px;
+                height: 58px;
+                font-size: 1.7rem;
+            }
+            .chart-row {
+                grid-template-columns: 110px 1fr 56px;
+                font-size: 0.85rem;
+            }
+        }
+        @media (max-width: 1180px) {
+            .nav-container {
+                padding: 0 0.8rem;
+            }
+            .nav-links {
+                gap: 0.85rem;
+                padding: 0.32rem 0.75rem;
+            }
+            .nav-links a {
+                font-size: 0.86rem;
+            }
+            .logo-image {
+                max-height: 40px;
+            }
+        }
+        .fade-up {
+            opacity: 0;
+            transform: translateY(35px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+        .fade-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .legal-badge {
+            background: #dbe8ff;
+            border-radius: 30px;
+            padding: 0.3rem 1rem;
+            display: inline-block;
+            font-size: 0.85rem;
+            margin: 0.2rem;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0;
+        }
+        .feature-list li {
+            margin: 0.45rem 0;
+            color: #33466f;
+            font-weight: 500;
+        }
+        .feature-list i {
+            color: #1473e6;
+            margin-right: 0.4rem;
+        }
+        .badge {
+            display: inline-block;
+            margin: 0.35rem 0.35rem 0 0;
+            padding: 0.35rem 0.8rem;
+            border-radius: 999px;
+            border: 1px solid #c5d7fa;
+            background: #edf4ff;
+            color: #1d3f79;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .table-section, .facts-section, .advanced-calc, .extra-functions, .interactive-section {
+            padding: 4.5rem 2rem;
+        }
+        .comparison-table {
+            width: min(1100px, 100%);
+            margin: 1.5rem auto 0;
+            border-collapse: collapse;
+            overflow: hidden;
+            border-radius: 1rem;
+            box-shadow: 0 18px 32px rgba(20, 115, 230, 0.12);
+            background: white;
+        }
+        .comparison-table th,
+        .comparison-table td {
+            border-bottom: 1px solid #e1ebff;
+            padding: 0.85rem 0.95rem;
+            text-align: left;
+            color: #33466f;
+        }
+        .comparison-table thead th {
+            background: #edf4ff;
+            color: #0f4fa8;
+            font-weight: 700;
+        }
+        .facts-grid, .functions-grid {
+            max-width: 1200px;
+            margin: 2rem auto 0;
+            display: grid;
+            gap: 1.2rem;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        }
+        .wms-grid {
+            max-width: 1200px;
+            margin: 2rem auto 0;
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+        .wms-card {
+            background: white;
+            border: 1px solid #dbe8ff;
+            border-radius: 1rem;
+            padding: 1.25rem;
+            box-shadow: 0 12px 22px rgba(20, 115, 230, 0.1);
+        }
+        .wms-card h3 {
+            margin: 0 0 0.35rem;
+            color: #0f4fa8;
+        }
+        .wms-card p {
+            margin: 0;
+            color: #42557d;
+            font-size: 0.92rem;
+            line-height: 1.5;
+        }
+        .wms-highlight {
+            max-width: 1200px;
+            margin: 1.2rem auto 0;
+            background: linear-gradient(125deg, #e8f1ff, #f3f8ff);
+            border: 1px solid #c9dcff;
+            border-radius: 1rem;
+            padding: 1rem 1.2rem;
+            color: #2f456e;
+            font-weight: 600;
+        }
+        .fact-card, .func-card {
+            background: white;
+            border: 1px solid #dbe8ff;
+            border-radius: 1rem;
+            padding: 1.25rem;
+            box-shadow: 0 12px 22px rgba(20, 115, 230, 0.1);
+            transition: transform 0.25s, box-shadow 0.25s;
+        }
+        .fact-card:hover, .func-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 16px 26px rgba(20, 115, 230, 0.18);
+        }
+        .calc-wrapper, .form-survey {
+            max-width: 980px;
+            margin: 1.8rem auto 0;
+            background: white;
+            border: 1px solid #dbe8ff;
+            border-radius: 1rem;
+            padding: 1.4rem;
+            box-shadow: 0 12px 24px rgba(20, 115, 230, 0.1);
+        }
+        .calc-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+        }
+        .form-group {
+            margin-bottom: 0.85rem;
+        }
+        .calc-field label,
+        .form-group label {
+            display: block;
+            margin-bottom: 0.35rem;
+            color: #304368;
+            font-weight: 600;
+        }
+        .calc-field input,
+        .calc-field select,
+        .form-group input,
+        .form-group select,
+        .form-group textarea,
+        .func-card input {
+            width: 100%;
+            border: 1px solid #c5d7fa;
+            border-radius: 0.65rem;
+            padding: 0.65rem 0.75rem;
+            background: #f7faff;
+        }
+        .service-check {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin: 1rem 0;
+            color: #2f456e;
+        }
+        .service-check label {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            line-height: 1.3;
+        }
+        .small-btn, .btn-pink {
+            border: none;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #1473e6, #0f4fa8);
+            color: white;
+            font-weight: 700;
+            padding: 0.62rem 1.15rem;
+            cursor: pointer;
+            box-shadow: 0 8px 14px rgba(20, 115, 230, 0.24);
+        }
+        .func-card input,
+        .func-card button {
+            width: 100%;
+            margin-top: 0.55rem;
+        }
+        .func-card h3 {
+            margin: 0.7rem 0;
+        }
+        .team-modal-content {
+            max-height: min(82vh, 760px);
+            overflow: auto;
+        }
+        .small-btn:hover, .btn-pink:hover {
+            filter: brightness(1.06);
+            transform: translateY(-2px);
+        }
+        .calc-result-full {
+            margin-top: 1rem;
+            background: #edf4ff;
+            border: 1px solid #c5d7fa;
+            border-radius: 0.75rem;
+            padding: 0.8rem;
+            color: #294171;
+        }
+        .calc-title {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.65rem;
+        }
+        .calc-title img {
+            width: 66px;
+            height: auto;
+            filter: brightness(0) saturate(100%) invert(24%) sepia(96%) saturate(1900%) hue-rotate(206deg) brightness(96%) contrast(95%) drop-shadow(0 4px 8px rgba(20,115,230,0.3));
+        }
+        .route-row {
+            margin-top: 1rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 0.8rem;
+        }
+        .price-list {
+            margin-top: 1rem;
+            border: 1px solid #c5d7fa;
+            border-radius: 0.85rem;
+            background: #f7faff;
+            overflow: hidden;
+        }
+        .price-list table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .price-list th,
+        .price-list td {
+            padding: 0.6rem 0.75rem;
+            border-bottom: 1px solid #dbe8ff;
+            text-align: left;
+            font-size: 0.92rem;
+            color: #31466f;
+        }
+        .price-list th {
+            background: #edf4ff;
+            color: #0f4fa8;
+        }
+        .price-list tr:last-child td {
+            border-bottom: none;
+        }
+        .erp-note {
+            margin-top: 1rem;
+            padding: 0.75rem 1rem;
+            border-radius: 0.8rem;
+            background: #eaf2ff;
+            border: 1px solid #bfd5fa;
+            color: #2f436e;
+            font-weight: 600;
+        }
+        @keyframes cardBreath {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
+        }
+        .calc-example-grid {
+            margin-top: 1.2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 0.8rem;
+        }
+        .calc-example {
+            border: 1px solid #c5d7fa;
+            border-radius: 0.75rem;
+            background: #f4f8ff;
+            padding: 0.75rem;
+            text-align: left;
+        }
+        .calc-example strong {
+            display: block;
+            color: #0f4fa8;
+            margin-bottom: 0.25rem;
+        }
+        .calc-example button {
+            margin-top: 0.55rem;
+            width: 100%;
+        }
+        .price-chart {
+            margin-top: 1.2rem;
+            background: #f8fbff;
+            border: 1px solid #c5d7fa;
+            border-radius: 0.85rem;
+            padding: 0.95rem;
+        }
+        .chart-row {
+            display: grid;
+            grid-template-columns: 140px 1fr 70px;
+            align-items: center;
+            gap: 0.65rem;
+            margin-bottom: 0.55rem;
+        }
+        .chart-bar {
+            height: 10px;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #95bcff, #1473e6);
+        }
+    </style>
+</head>
+<body oncontextmenu="return false" ondragstart="return false" onselectstart="return false">
+
+<nav>
+    <div class="nav-container">
+        <div class="menu-icon" id="menuToggle"><i class="fas fa-bars"></i></div>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#hero">Početna</a></li>
+            <li><a href="#team-section">Tim</a></li>
+            <li><a href="#cestovni">Cestovni</a></li>
+            <li><a href="#zeljeznicki">Željeznički</a></li>
+            <li><a href="#zracni">Zračni</a></li>
+            <li><a href="#pomorski">Pomorski</a></li>
+            <li><a href="#cjevovodni">Cjevovodni</a></li>
+            <li><a href="#onama">O nama</a></li>
+            <li><a href="#kontakt">Kontakt</a></li>
+            <li><a href="/o-nama">Poduzeće</a></li>
+            <li><a href="/cjenik">Cijenik</a></li>
+            <li><a href="/pracenje-posiljke">Praćenje</a></li>
+        </ul>
+    </div>
+</nav>
+
+<section id="hero" class="hero">
+    <div class="container">
+        <div class="hero-logo-wrap">
+            <img class="hero-logo-image" src="logo.png" alt="TŠZ Cargo Group logo" onerror="this.closest('.hero-logo-wrap').style.display='none';">
+        </div>
+        <h1>TŠZ Cargo Group</h1>
+        <div class="slogan">„Kad teret krene s nama na put, stiže brže nego što kažeš TŠZ Cargo Group“</div>
+        <p>Integrirana logistika – sve grane prometa na jednom mjestu. Cestovni, željeznički, zračni, pomorski i cjevovodni transport. Vaš teret zaslužuje najbržu rutu.</p>
+        <div class="hero-illustrations">
+            <a href="#cestovni" class="hero-icon-link" data-tip="Cestovni promet – kamioni i dostavna vozila, prijevoz od vrata do vrata po HR i EU"><i class="fas fa-truck"></i></a>
+            <a href="#zeljeznicki" class="hero-icon-link" data-tip="Željeznički promet – masovni teret vlakovima, niska cijena po toni, niska emisija CO₂"><i class="fas fa-train"></i></a>
+            <a href="#zracni" class="hero-icon-link" data-tip="Zračni promet – ekspresna cargo dostava globalno unutar 24–48h"><i class="fas fa-plane"></i></a>
+            <a href="#pomorski" class="hero-icon-link" data-tip="Pomorski promet – kontejnerski brodovi, 80% svjetske trgovine ide morem"><i class="fas fa-ship"></i></a>
+            <a href="#cjevovodni" class="hero-icon-link" data-tip="Cjevovodni promet – siguran 24/7 transport nafte, plina i kemikalija bez prekida"><i class="fas fa-oil-can"></i></a>
+        </div>
+        <a href="#cards-section" class="btn-primary">Istraži sve grane</a>
+    </div>
+</section>
+
+<section id="team-section" class="team-section fade-up">
+    <div class="team-container">
+        <h2 class="section-title">⭐ Upoznajte naš tim</h2>
+        <p style="max-width: 600px; margin: 0 auto 1rem;"></p>
+        <div class="team-circles-wrapper" id="teamCirclesWrapper"></div>
+        
+    </div>
+</section>
+
+<section id="cards-section" class="cards-section">
+    <div class="cards-grid">
+        <div class="card fade-up"><i class="fas fa-truck"></i><h3>Cestovni promet</h3><p>Automobili, autobusi, kamioni – fleksibilnost od vrata do vrata.</p></div>
+        <div class="card fade-up"><i class="fas fa-subway"></i><h3>Željeznički promet</h3><p>Vlakovi, metro, brze pruge – masovni i ekološki prijevoz.</p></div>
+        <div class="card fade-up"><i class="fas fa-plane"></i><h3>Zračni promet</h3><p>Avioni, helikopteri – najbrža globalna povezanost.</p></div>
+        <div class="card fade-up"><i class="fas fa-ship"></i><h3>Pomorski promet</h3><p>Brodovi, trajekti – 80% svjetske trgovine morem.</p></div>
+        <div class="card fade-up"><i class="fas fa-oil-can"></i><h3>Cjevovodni promet</h3><p>Transport nafte, plina – diskretan i kontinuiran.</p></div>
+    </div>
+</section>
+
+<section id="cestovni" class="detail-section"><div class="detail-container fade-up"><div class="detail-text"><h2>Cestovni promet 🚛</h2><p>Cestovni promet čini okosnicu logistike TŠZ Cargo Group. Obuhvaća kamionski prijevoz, dostavna vozila, hladnjače. Prednosti: fleksibilnost, door-to-door usluga, velika mreža.</p><ul class="feature-list"><li><i class="fas fa-check-circle"></i> Brza dostava na kratkim relacijama</li><li><i class="fas fa-chart-line"></i> Nedostaci: gužve, emisije CO₂</li></ul><div><span class="badge">✔ Prednosti: fleksibilnost</span><span class="badge">⚠ Nedostaci: ekološki otisak</span></div></div><div class="detail-visual"><img id="visual-cestovni" src="https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?auto=format&fit=crop&w=1200&q=80" alt="Cestovni transport"><button type="button" class="transport-edit-btn" data-transport="cestovni">Postavi svoju sliku</button><p>Flota TŠZ Cargo – GPS praćenje</p></div></div></section>
+<section id="zeljeznicki" class="detail-section" style="background:#ebf2ff;"><div class="detail-container reverse fade-up"><div class="detail-text"><h2>Željeznički promet 🚆</h2><p>Vlakovi su idealni za masovni teret. TŠZ Cargo surađuje s HŽ Cargom i međunarodnim željeznicama. Niska cijena po toni, visoka sigurnost.</p><ul class="feature-list"><li><i class="fas fa-leaf"></i> Niska emisija</li><li><i class="fas fa-clock"></i> Visoka točnost</li></ul></div><div class="detail-visual"><img id="visual-zeljeznicki" src="https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=1200&q=80" alt="Željeznički transport"><button type="button" class="transport-edit-btn" data-transport="zeljeznicki">Postavi svoju sliku</button><p>Intermodalni terminali</p></div></div></section>
+<section id="zracni" class="detail-section"><div class="detail-container fade-up"><div class="detail-text"><h2>Zračni promet ✈️</h2><p>Ekspresna dostava za hitne pošiljke. TŠZ Cargo Group koristi cargo avione i komercijalne letove za globalni doseg unutar 24-48h.</p><ul class="feature-list"><li><i class="fas fa-globe"></i> Globalni doseg</li><li><i class="fas fa-chart-line"></i> Visoka cijena, ali neusporediva brzina</li></ul></div><div class="detail-visual"><img id="visual-zracni" src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&q=80" alt="Zračni transport"><button type="button" class="transport-edit-btn" data-transport="zracni">Postavi svoju sliku</button><p>Zračna luka Zagreb – cargo centar</p></div></div></section>
+<section id="pomorski" class="detail-section" style="background:#ebf2ff;"><div class="detail-container reverse fade-up"><div class="detail-text"><h2>Pomorski promet 🚢</h2><p>Kontejnerski brodovi, Ro-Ro, tankeri. Idealno za interkontinentalnu trgovinu kroz jadranske i europske terminale pod centralnim upravljanjem iz Zagreba.</p><ul class="feature-list"><li><i class="fas fa-dollar-sign"></i> Najisplativiji</li><li><i class="fas fa-hourglass-half"></i> Sporost, ali veliki kapacitet</li></ul></div><div class="detail-visual"><img id="visual-pomorski" src="https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=1200&q=80" alt="Pomorski transport"><button type="button" class="transport-edit-btn" data-transport="pomorski">Postavi svoju sliku</button><p>Pomorske rute pod nadzorom</p></div></div></section>
+<section id="cjevovodni" class="detail-section"><div class="detail-container fade-up"><div class="detail-text"><h2>Cjevovodni promet 🛢️</h2><p>Transport nafte, plina i kemikalija. TŠZ Cargo Group pruža logističku podršku za energetske projekte – sigurno, kontinuirano, neprimjetno.</p><ul class="feature-list"><li><i class="fas fa-charging-station"></i> 24/7 protok</li><li><i class="fas fa-shield-alt"></i> Niska cijena po jedinici energije</li></ul></div><div class="detail-visual"><img id="visual-cjevovodni" src="https://images.unsplash.com/photo-1513828583688-c52646db42da?auto=format&fit=crop&w=1200&q=80" alt="Cjevovodni transport"><button type="button" class="transport-edit-btn" data-transport="cjevovodni">Postavi svoju sliku</button><p>Cjevovodna infrastruktura</p></div></div></section>
+
+<section class="table-section"><div class="fade-up" style="text-align:center;"><h2 class="section-title">Usporedba prometnih grana</h2><p>Brzina, cijena, dostupnost i ekološki utjecaj</p></div><div class="fade-up"><table class="comparison-table"><thead><tr><th>Grana</th><th>Brzina</th><th>Cijena</th><th>Dostupnost</th><th>Ekološki utjecaj</th></tr></thead><tbody><tr><td>Cestovni</td><td>⭐⭐⭐⭐</td><td>⭐⭐⭐</td><td>⭐⭐⭐⭐⭐</td><td>⭐⭐ (emisije)</td></tr><tr><td>Željeznički</td><td>⭐⭐⭐⭐</td><td>⭐⭐⭐</td><td>⭐⭐⭐⭐</td><td>⭐⭐⭐⭐ (efikasan)</td></tr><tr><td>Zračni</td><td>⭐⭐⭐⭐⭐</td><td>⭐⭐</td><td>⭐⭐⭐⭐</td><td>⭐⭐ (visok CO₂)</td></tr><tr><td>Pomorski</td><td>⭐⭐⭐</td><td>⭐⭐⭐⭐⭐</td><td>⭐⭐⭐⭐</td><td>⭐⭐⭐</td></tr><tr><td>Cjevovodni</td><td>⭐⭐⭐</td><td>⭐⭐⭐⭐⭐</td><td>⭐⭐⭐</td><td>⭐⭐⭐</td></tr></tbody></table></div></section>
+
+<section class="facts-section"><div class="fade-up" style="text-align:center;"><h2 class="section-title">Zanimljivosti o prometu</h2><p>Nevjerojatne činjenice koje oblikuju logistiku</p></div><div class="facts-grid">
+<div class="fact-card fade-up" data-fact-key="maglev" onclick="openInfoModal('Najbrži vlak – Šangajski maglev','Šangajski maglev postigao je rekordnih 431 km/h i jedini je komercijalni magnetski vlak koji prevozi putnike. Radi od 2003. na ruti aerodrom Pudong – centar Šangaja. Magnetska levitacija eliminira trenje i buku, a TŠZ Cargo prati ovakve inovacije pri planiranju željezničkih ruta za budućnost.',factImages.maglev)"><button class="fact-edit-btn" onclick="event.stopPropagation();openFactImageModal('maglev')" title="Promijeni sliku"><i class="fas fa-camera"></i></button><i class="fas fa-tachometer-alt"></i><h3>Najbrži vlak</h3><p>Šangajski maglev: 431 km/h</p></div>
+<div class="fact-card fade-up" data-fact-key="evergiven" onclick="openInfoModal('Najveći brod – Ever Given','Ever Given je kontejnerski brod dug 400 metara. U ožujku 2021. zapriječio je Sueski kanal čak 6 dana, blokiravši 12% globalne pomorske trgovine. Incidenti poput ovog potiču TŠZ Cargo da uvijek planira multimodalne alternative za kritične pošiljke.',factImages.evergiven)"><button class="fact-edit-btn" onclick="event.stopPropagation();openFactImageModal('evergiven')" title="Promijeni sliku"><i class="fas fa-camera"></i></button><i class="fas fa-anchor"></i><h3>Najveći brod</h3><p>Ever Given – 400 metara</p></div>
+<div class="fact-card fade-up" data-fact-key="druzba" onclick="openInfoModal('Najduži cjevovod – Družba','Cjevovod Družba proteže se 4.000 km od Rusije do Srednje i Istočne Europe. Transportira sirovu naftu bez prekida od 1964. i jedan je od ključnih energetskih koridora. TŠZ Cargo Group pruža logističku podršku za energetske projekte duž cijelog ovog koridora.',factImages.druzba)"><button class="fact-edit-btn" onclick="event.stopPropagation();openFactImageModal('druzba')" title="Promijeni sliku"><i class="fas fa-camera"></i></button><i class="fas fa-road"></i><h3>Najduži cjevovod</h3><p>Družba: 4.000 km</p></div>
+<div class="fact-card fade-up" data-fact-key="seuljeju" onclick="openInfoModal('Najprometnija ruta – Seul–Jeju','Ruta Seul–Jeju u Južnoj Koreji broji više od 200 letova dnevno i godišnje preveze 14+ milijuna putnika – najfrekventnija avionska ruta na svijetu. TŠZ Cargo Group prati globalne air-cargo trendove za što bržu optimizaciju hitnih pošiljki na međunarodnim rutama.',factImages.seuljeju)"><button class="fact-edit-btn" onclick="event.stopPropagation();openFactImageModal('seuljeju')" title="Promijeni sliku"><i class="fas fa-camera"></i></button><i class="fas fa-plane"></i><h3>Najprometnija ruta</h3><p>Seul – Jeju, 200+ letova dnevno</p></div>
+</div></section>
+
+<section class="advanced-calc">
+    <div class="fade-up" style="text-align:center;"><h2 class="section-title calc-title"><img src="logo.png" alt="TŠZ logo"> TŠZ Cargo kalkulator cijene</h2><p>Okvirne tržišne cijene za Hrvatsku i regiju, prema grani prometa i dodatnim uslugama</p></div>
+    <div class="calc-wrapper fade-up">
+        <div class="calc-row"><div class="calc-field"><label>Odaberite granu prometa</label><select id="calcTransport"><option value="road">Cestovni promet</option><option value="rail">Željeznički promet</option><option value="air">Zračni promet</option><option value="sea">Pomorski promet</option><option value="pipeline">Cjevovodni promet</option></select></div><div class="calc-field"><label>Udaljenost (km)</label><input type="number" id="calcDistance" value="300" step="10"></div><div class="calc-field"><label>Količina robe (kg / tona *)</label><input type="number" id="calcQuantity" value="1000" step="100"><small style="display:block;">* za cjevovod unesite m³</small></div></div>
+        <div class="route-row">
+            <div class="calc-field"><label>Zemlja polaska</label><input type="text" id="calcCountryFrom" placeholder="npr. Hrvatska"></div>
+            <div class="calc-field"><label>Mjesto polaska</label><input type="text" id="calcCityFrom" placeholder="npr. Zagreb"></div>
+            <div class="calc-field"><label>Zemlja odredišta</label><input type="text" id="calcCountryTo" placeholder="npr. Njemačka"></div>
+            <div class="calc-field"><label>Mjesto odredišta</label><input type="text" id="calcCityTo" placeholder="npr. Frankfurt"></div>
+        </div>
+        <div class="service-check"><label><input type="checkbox" id="serviceExpress"> Ekspresna dostava (+30%)</label><label><input type="checkbox" id="serviceInsurance"> Osiguranje tereta (+5% vrijednosti, baza 500€)</label><label><input type="checkbox" id="servicePackaging"> Posebno pakiranje (+50€)</label></div>
+        <button class="small-btn" id="fullCalcBtn">Izračunaj cijenu</button>
+        <div id="fullCalcResult" class="calc-result-full"><strong>Rezultat:</strong> Popunite podatke i kliknite izračun.</div>
+        <div class="price-list">
+            <table>
+                <thead><tr><th>Cjenik (orijentacijski)</th><th>Raspon</th></tr></thead>
+                <tbody>
+                    <tr><td>Cestovni (HR / EU)</td><td>0.90 € - 1.20 € / km + 0.08 € - 0.14 € / kg</td></tr>
+                    <tr><td>Željeznički</td><td>0.55 € - 0.72 € / km + 0.05 € - 0.09 € / kg</td></tr>
+                    <tr><td>Zračni cargo</td><td>1.10 € - 1.45 € / km + 0.95 € - 1.35 € / kg</td></tr>
+                    <tr><td>Pomorski kontejnerski</td><td>0.35 € - 0.55 € / km + 0.03 € - 0.07 € / kg</td></tr>
+                    <tr><td>Cjevovodni (energetski)</td><td>0.27 € - 0.42 € / km + 0.02 € - 0.05 € / m³</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="calc-example-grid">
+            <div class="calc-example">
+                <strong>Zagreb -> Velika Gorica (cesta)</strong>
+                <p>26 km, 8.000 kg robe, standardna isporuka.</p>
+                <button class="small-btn" type="button" data-example="zg-st-road">Učitaj primjer</button>
+            </div>
+            <div class="calc-example">
+                <strong>Zagreb Zapad -> Zagreb Istok (željeznica)</strong>
+                <p>18 km, 24.000 kg robe za intermodalni terminal.</p>
+                <button class="small-btn" type="button" data-example="ri-os-rail">Učitaj primjer</button>
+            </div>
+            <div class="calc-example">
+                <strong>Zagreb -> Frankfurt (zrak)</strong>
+                <p>900 km, 1.200 kg hitnog tereta s osiguranjem.</p>
+                <button class="small-btn" type="button" data-example="zg-fra-air">Učitaj primjer</button>
+            </div>
+        </div>
+        <div class="price-chart">
+            <div class="chart-row"><span>Cestovni</span><div class="chart-bar" style="width:88%;"></div><strong>0.95 €</strong></div>
+            <div class="chart-row"><span>Željeznički</span><div class="chart-bar" style="width:62%;"></div><strong>0.67 €</strong></div>
+            <div class="chart-row"><span>Zračni</span><div class="chart-bar" style="width:100%;"></div><strong>1.20 €</strong></div>
+            <div class="chart-row"><span>Pomorski</span><div class="chart-bar" style="width:45%;"></div><strong>0.48 €</strong></div>
+            <div class="chart-row"><span>Cjevovodni</span><div class="chart-bar" style="width:34%;"></div><strong>0.36 €</strong></div>
+            <small>Prosjek orijentacijskog troška po toni i kilometru za tržište HR/EU koridora.</small>
+        </div>
+    </div>
+</section>
+
+<section class="interactive-section" style="background:#eef4ff;">
+    <div class="fade-up" style="max-width:1200px; margin:0 auto; text-align:center;"><h2 class="section-title">WMS aplikacija za skladišta</h2><p class="section-subhead" style="margin:0 auto 1rem; text-align:left;">Napredno upravljanje skladištem iz jednog sustava. WMS modul pokriva prijem robe, lokacijsko odlaganje, picking, inventure i praćenje performansi u realnom vremenu za lokaciju Zagreb.</p></div>
+    <div class="wms-grid fade-up">
+        <div class="wms-card" onclick="openInfoModal('Prijem i označavanje robe','Automatsko otvaranje naloga, skeniranje SSCC barkodova i validacija dokumentacije pri ulazu robe u skladište. Svaka paleta dobiva jedinstvenu oznaku i lokaciju u sustavu odmah pri ulasku, što eliminira ručne greške i ubrzava daljnju obradu.','https://images.unsplash.com/photo-1553413077-190dd305871c?auto=format&fit=crop&w=800&q=80')"><h3><i class="fas fa-qrcode"></i> Prijem i označavanje robe</h3><p>Automatsko otvaranje naloga, skeniranje SSCC barkodova i validacija dokumentacije pri ulazu robe u skladište.</p></div>
+        <div class="wms-card" onclick="openInfoModal('Slotting i optimizacija lokacija','Dinamički raspored paletnih mjesta po ABC logici, tipu robe i FIFO/FEFO pravilima za brži komisioning. Algoritam kontinuirano preraspoređuje zalihe prema frekvenciji izlaza kako bi najprometnija roba bila najbliža izlaznoj rampi i smanjila hodanje za 40%.','https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?auto=format&fit=crop&w=800&q=80')"><h3><i class="fas fa-sitemap"></i> Slotting i optimizacija lokacija</h3><p>Dinamički raspored paletnih mjesta po ABC logici, tipu robe i FIFO/FEFO pravilima za brži komisioning.</p></div>
+        <div class="wms-card" onclick="openInfoModal('Picking bez greške','Wave, batch i zone picking uz mobilne terminale, kontrolu skeniranja i automatsko zatvaranje otpremnih jedinica. Svaki artikl se skenira pri odlaganju i uzimanju, a sustav odmah upozorava radnika ako je odabran krivi SKU ili netočna količina.','https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?auto=format&fit=crop&w=800&q=80')"><h3><i class="fas fa-layer-group"></i> Picking bez greške</h3><p>Wave, batch i zone picking uz mobilne terminale, kontrolu skeniranja i automatsko zatvaranje otpremnih jedinica.</p></div>
+        <div class="wms-card" onclick="openInfoModal('KPI nadzor 24/7','Praćenje točnosti inventure, vremena obrade naloga, popunjenosti skladišta i SLA isporuke kroz pregledne dashboarde. Upravljački tim prima dnevne izvještaje s trendovima i alertovima pri odstupanjima, omogućujući pravodobnu reakciju na svaki operativni problem.','https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80')"><h3><i class="fas fa-chart-line"></i> KPI nadzor 24/7</h3><p>Praćenje točnosti inventure, vremena obrade naloga, popunjenosti skladišta i SLA isporuke kroz pregledne dashboarde.</p></div>
+    </div>
+    <div class="wms-highlight fade-up"><i class="fas fa-plug"></i> Integracije: Axon ERP, API prema webshopu i EDI razmjena s partnerima. Svaka promjena zalihe vidljiva je u stvarnom vremenu.</div>
+</section>
+
+<section class="interactive-section">
+    <div class="fade-up" style="max-width:1200px; margin:0 auto; text-align:center;"><h2 class="section-title">Logističko savjetovanje</h2><p class="section-subhead" style="margin:0 auto 1rem; text-align:left;">Savjetodavna usluga za optimizaciju troškova i procesa. Analiziramo cijeli opskrbni lanac i pripremamo izvediv plan poboljšanja za operacije u Zagrebu i EU koridorima.</p></div>
+    <div class="wms-grid fade-up">
+        <div class="wms-card" onclick="openInfoModal('Audit troškova','Analiza rute, voznog reda, skladišnih troškova i ugovornih tarifa s jasnim planom ušteda po kategorijama. Prosječni klijenti TŠZ Cargo savjetovanja ostvare 12–22% smanjenja ukupnih logističkih troškova već u prvoj godini primjene plana.','https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=800&q=80')"><h3><i class="fas fa-search-dollar"></i> Audit troškova</h3><p>Analiza rute, voznog reda, skladišnih troškova i ugovornih tarifa s jasnim planom ušteda po kategorijama.</p></div>
+        <div class="wms-card" onclick="openInfoModal('Redizajn procesa','Mapiranje as-is i to-be procesa, uklanjanje uskih grla i standardizacija operativnih procedura. Vizualiziramo cjelokupni tok robe od dobavljača do krajnjeg kupca, identificiramo gubičke i projektiramo novi model rada koji smanjuje lead time za 30–50%.','https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=800&q=80')"><h3><i class="fas fa-project-diagram"></i> Redizajn procesa</h3><p>Mapiranje as-is i to-be procesa, uklanjanje uskih grla i standardizacija operativnih procedura.</p></div>
+        <div class="wms-card" onclick="openInfoModal('Plan kapaciteta','Dimenzioniranje flote i skladišta prema sezonalnosti, volumenu robe i očekivanim SLA obvezama. Koristimo statističke modele i simulacije za predviđanje vršnih opterećenja te preporuku optimalnog broja vozila, vozača i skladišnih pozicija po kvartalu.','https://images.unsplash.com/photo-1494412574643-ff11b0a5c1c3?auto=format&fit=crop&w=800&q=80')"><h3><i class="fas fa-truck-loading"></i> Plan kapaciteta</h3><p>Dimenzioniranje flote i skladišta prema sezonalnosti, volumenu robe i očekivanim SLA obvezama.</p></div>
+        <div class="wms-card" onclick="openInfoModal('Operativni mentoring','Uvođenje timova kroz KPI model, edukacije voditelja i mjesečni pregled rezultata s konkretnim akcijama. Naši savjetnici rade bok uz bok s vašim timom na terenu – ne samo u uredu – kako bi promjene postale trajna kultura, a ne privremena mjera.','https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80')"><h3><i class="fas fa-user-tie"></i> Operativni mentoring</h3><p>Uvođenje timova kroz KPI model, edukacije voditelja i mjesečni pregled rezultata s konkretnim akcijama.</p></div>
+    </div>
+</section>
+
+<section class="extra-functions"><div class="functions-grid"><div class="func-card"><i class="fas fa-map-marked-alt" style="font-size:2.5rem; color:#1473e6;"></i><h3>Praćenje pošiljke</h3><input type="text" id="trackingId" placeholder="Broj (npr. TŠZ-7845)"><button class="small-btn" id="trackBtn">Prati teret</button><div id="trackResult" style="margin-top:1rem; font-size:0.9rem;"></div></div><div class="func-card"><i class="fas fa-newspaper" style="font-size:2.5rem; color:#1473e6;"></i><h3>Newsletter</h3><input type="email" id="newsEmail" placeholder="Vaš email"><button class="small-btn" id="newsBtn">Pretplati se</button><div id="newsMsg" style="margin-top:1rem;"></div></div></div></section>
+
+<section id="onama" class="interactive-section"><div class="fade-up" style="max-width:1200px; margin:0 auto; text-align:center;"><h2 class="section-title">O nama</h2><p>TŠZ Cargo Group je lider u integriranoj logistici. Sa sjedištem u Palmotićevoj 84, Zagreb, pokrivamo sve grane prometa. Naš slogan nije samo riječ – garancija je da vaš teret stiže brže nego što izgovorite naše ime.</p><div class="erp-note"><i class="fas fa-cubes"></i> Operativni tim koristi <strong>Axon ERP</strong> za planiranje ruta, praćenje pošiljki i obračun troškova u realnom vremenu.</div><div style="margin-top: 1.2rem; display:flex; flex-wrap:wrap; justify-content:center; gap:0.5rem;"><span class="legal-badge"><i class="fas fa-building"></i> Pravni oblik: Dioničko društvo</span> <span class="legal-badge"><i class="fas fa-id-card"></i> OIB: 57412893647</span> <span class="legal-badge" style="background:#e8f5e9; border-color:#a5d6a7; color:#1b5e20; font-size:1rem; font-weight:700;"><i class="fas fa-coins"></i> Temeljni kapital: 2.654.450,00 EUR</span> <span class="legal-badge"><i class="fas fa-calendar-alt"></i> Osnovano: 2009. godine</span> <span class="legal-badge"><i class="fas fa-globe-europe"></i> Sud: Trgovački sud Zagreb</span></div></div></section>
+<section id="kontakt" class="interactive-section" style="background:#e7f0ff;"><div class="form-survey fade-up"><h3 style="color:#0f4fa8;"><i class="fas fa-poll"></i> Koja grana prometa vam najviše odgovara?</h3><form id="surveyForm"><div class="form-group"><input type="text" placeholder="Ime" required id="surveyName"></div><div class="form-group"><input type="email" placeholder="Email" required id="surveyEmail"></div><div class="form-group"><select id="favTransport"><option>Odaberite granu</option><option>Cestovni</option><option>Željeznički</option><option>Zračni</option><option>Pomorski</option><option>Cjevovodni</option></select></div><div class="form-group"><textarea rows="2" placeholder="Komentar"></textarea></div><button type="submit" class="btn-pink">Pošalji odgovor</button><p id="formFeedback" style="margin-top:1rem;"></p></form><hr><div style="text-align:center;"><i class="fas fa-map-marker-alt"></i> Lokacija: Zagreb <br> <i class="fas fa-envelope"></i> tszcargogroup@gmail.com | <i class="fas fa-phone-alt"></i> +385 97 652 2231</div></div></section>
+
+<footer class="footer"><div class="footer-grid"><div><h4>Brzi linkovi</h4><a href="#hero">Početna</a><br><a href="#cestovni">Cestovni</a><br><a href="#zeljeznicki">Željeznički</a><br><a href="#zracni">Zračni</a><br><a href="#pomorski">Pomorski</a><br><a href="#cjevovodni">Cjevovodni</a><br><a href="/cjenik" style="color:#87e6c5; font-weight:700;">📄 Digitalni cjenik</a><br><a href="/pracenje-posiljke" style="color:#87e6c5; font-weight:700;">🗺 Praćenje pošiljke</a></div><div><h4>Kontakt</h4><p>📞 +385 97 652 2231<br>✉️ tszcargogroup@gmail.com<br>📍 Lokacija: Zagreb</p><p><strong>OIB: 57412893647</strong><br>Pravni oblik: Dioničko društvo<br><strong style="color:#87e6c5;">Temeljni kapital: 2.654.450,00 EUR</strong></p></div><div><h4>TŠZ Cargo Group</h4><p>„Kad teret krene s nama na put, stiže brže nego što kažeš TŠZ Cargo Group“ – više od 15 godina iskustva.</p><div class="social-icons"><i class="fab fa-instagram"></i><i class="fab fa-facebook"></i><i class="fab fa-linkedin"></i></div></div></div><div style="text-align:center; margin-top:2rem;">&copy; 2026 TŠZ Cargo Group – Logistika budućnosti. Sva prava pridržana.</div></footer>
+
+<div id="transportEditModal" class="team-modal">
+    <div class="team-modal-content">
+        <h3><i class="fas fa-image"></i> Uredi sliku sekcije</h3>
+        <label>Naziv sekcije:</label>
+        <input type="text" id="transportEditName" readonly>
+        <label>URL slike:</label>
+        <input type="text" id="transportEditUrl" placeholder="https://...">
+        <div class="file-upload-row">
+            <span>ILI upload slike:</span>
+            <input type="file" id="transportUploadInput" accept="image/*">
+        </div>
+        <div class="small-note"><i class="fas fa-info-circle"></i> Slika se sprema u bazu i ostaje trajno vezana uz odabranu granu prometa.</div>
+        <div class="modal-buttons">
+            <button class="close-modal-btn" id="closeTransportModalBtn">Odustani</button>
+            <button class="save-modal-btn" id="saveTransportBtn">Spremi sliku</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal za uređivanje tima -->
+<div id="teamEditModal" class="team-modal">
+    <div class="team-modal-content">
+        <h3><i class="fas fa-user-edit"></i> Uredi člana tima</h3>
+        <label>Ime i prezime:</label>
+        <input type="text" id="editMemberName" placeholder="npr. Ana Knežević">
+        <label>Pozicija / opis:</label>
+        <input type="text" id="editMemberRole" placeholder="npr. Voditeljica cestovnog transporta">
+        <label>Vrsta medija:</label>
+        <select id="editMediaType">
+            <option value="image">Slika (JPG/PNG/GIF)</option>
+            <option value="video">Video (MP4, YouTube, Vimeo)</option>
+        </select>
+        <label>URL medija (poveznica):</label>
+        <input type="text" id="editMediaUrl" placeholder="https://... slika ili video">
+        <div class="file-upload-row">
+            <span>ILI upload slike:</span>
+            <input type="file" id="imageUploadInput" accept="image/*">
+        </div>
+        <div class="small-note"><i class="fas fa-info-circle"></i> Za video: podržani MP4 link ili YouTube/Vimeo URL (iframe će se automatski ugraditi)</div>
+        <div class="modal-buttons">
+            <button class="close-modal-btn" id="closeModalBtn">Odustani</button>
+            <button class="save-modal-btn" id="saveTeamBtn">Spremi promjene</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const TEAM_API_URL = '/api/team-members';
+    const TRANSPORT_VISUALS_API_URL = '/api/transport-visuals';
+    const defaultTransportVisuals = {
+        cestovni: 'https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?auto=format&fit=crop&w=1200&q=80',
+        zeljeznicki: 'https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=1200&q=80',
+        zracni: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&q=80',
+        pomorski: 'https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=1200&q=80',
+        cjevovodni: 'https://images.unsplash.com/photo-1513828583688-c52646db42da?auto=format&fit=crop&w=1200&q=80'
+    };
+    let transportVisuals = { ...defaultTransportVisuals };
+    let currentTransportKey = '';
+
+    let teamMembers = [
+        { name: "Marko Tkalčić", role: "Voditelj logistike", mediaType: "image", mediaSrc: "https://randomuser.me/api/portraits/men/32.jpg" },
+        { name: "Ana Knežević", role: "Planerica transporta", mediaType: "image", mediaSrc: "https://randomuser.me/api/portraits/women/68.jpg" },
+        { name: "Luka Babić", role: "Koordinator voznog reda", mediaType: "image", mediaSrc: "https://randomuser.me/api/portraits/men/45.jpg" },
+        { name: "Iva Pavić", role: "Specijalistica za zračni cargo", mediaType: "video", mediaSrc: "https://www.w3schools.com/html/mov_bbb.mp4" }
+    ];
+    let currentEditIndex = 0;
+
+    async function loadTeamFromDatabase() {
+        try {
+            const response = await fetch(TEAM_API_URL, { cache: 'no-store' });
+            if (!response.ok) {
+                throw new Error('Neuspjelo ucitavanje baze.');
+            }
+
+            const data = await response.json();
+            if (Array.isArray(data) && data.length > 0) {
+                teamMembers = data.map((item) => ({
+                    name: item.name,
+                    role: item.role || '',
+                    mediaType: item.mediaType,
+                    mediaSrc: item.mediaSrc
+                }));
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    async function saveTeamToDatabase() {
+        const response = await fetch(TEAM_API_URL, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(teamMembers)
+        });
+
+        if (!response.ok) {
+            throw new Error('Spremanje u bazu nije uspjelo.');
+        }
+    }
+
+    function applyTransportVisuals() {
+        Object.keys(defaultTransportVisuals).forEach((key) => {
+            const img = document.getElementById(`visual-${key}`);
+            if (!img) return;
+            const src = transportVisuals[key] || defaultTransportVisuals[key];
+            img.src = src;
+            img.onerror = function() {
+                this.src = defaultTransportVisuals[key];
+            };
+        });
+    }
+
+    async function loadTransportVisualsFromDatabase() {
+        try {
+            const response = await fetch(TRANSPORT_VISUALS_API_URL, { cache: 'no-store' });
+            if (!response.ok) throw new Error('Neuspjelo ucitavanje slika sekcija.');
+            const data = await response.json();
+            transportVisuals = { ...defaultTransportVisuals, ...(data || {}) };
+        } catch (error) {
+            console.error(error);
+            transportVisuals = { ...defaultTransportVisuals };
+        }
+        applyTransportVisuals();
+    }
+
+    async function saveTransportVisualsToDatabase() {
+        const response = await fetch(TRANSPORT_VISUALS_API_URL, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(transportVisuals)
+        });
+        if (!response.ok) {
+            throw new Error('Spremanje slika sekcija nije uspjelo.');
+        }
+    }
+
+    function openTransportModal(key) {
+        currentTransportKey = key;
+        document.getElementById('transportEditName').value = key;
+        document.getElementById('transportEditUrl').value = transportVisuals[key] || '';
+        document.getElementById('transportEditModal').style.display = 'flex';
+    }
+
+    function closeTransportModal() {
+        document.getElementById('transportEditModal').style.display = 'none';
+        document.getElementById('transportUploadInput').value = '';
+    }
+
+    async function saveTransportVisual() {
+        if (!currentTransportKey) return;
+        const fileInput = document.getElementById('transportUploadInput');
+        const urlInput = document.getElementById('transportEditUrl');
+        const saveValue = async (value) => {
+            transportVisuals[currentTransportKey] = value;
+            applyTransportVisuals();
+            try {
+                await saveTransportVisualsToDatabase();
+            } catch (error) {
+                alert('Greška pri spremanju slike u bazu.');
+                console.error(error);
+            }
+            closeTransportModal();
+        };
+
+        if (fileInput.files && fileInput.files[0]) {
+            const file = fileInput.files[0];
+            if (!file.type.startsWith('image/')) {
+                alert('Odaberite isključivo sliku.');
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                await saveValue(e.target.result);
+            };
+            reader.readAsDataURL(file);
+            return;
+        }
+
+        const newUrl = urlInput.value.trim();
+        if (!newUrl) {
+            alert('Unesite URL slike ili učitajte datoteku.');
+            return;
+        }
+        await saveValue(newUrl);
+    }
+
+    function getMediaHTML(member) {
+        if(member.mediaType === "image") {
+            return `<img class="media-content" src="${member.mediaSrc}" alt="${member.name}" onerror="this.src='https://placehold.co/400x400?text=Slika'">`;
+        } else { // video
+            let src = member.mediaSrc;
+            if(src.includes("youtube.com/watch") || src.includes("youtu.be")) {
+                let videoId = "";
+                if(src.includes("youtu.be")) videoId = src.split("youtu.be/")[1]?.split("?")[0];
+                else if(src.includes("watch?v=")) videoId = src.split("watch?v=")[1]?.split("&")[0];
+                if(videoId) {
+                    return `<iframe class="media-content" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>`;
+                }
+            } else if(src.includes("vimeo.com")) {
+                let vimeoId = src.split("vimeo.com/")[1]?.split("?")[0];
+                if(vimeoId) return `<iframe class="media-content" src="https://player.vimeo.com/video/${vimeoId}" frameborder="0"></iframe>`;
+            }
+            return `<video class="media-content" src="${src}" muted loop playsinline></video>`;
+        }
+    }
+
+    function renderTeamCircles() {
+        const wrapper = document.getElementById("teamCirclesWrapper");
+        if(!wrapper) return;
+        wrapper.innerHTML = "";
+        teamMembers.forEach((member, idx) => {
+            const card = document.createElement("div");
+            card.className = "team-card";
+            card.setAttribute("data-index", idx);
+            const circleDiv = document.createElement("div");
+            circleDiv.className = "team-circle";
+            circleDiv.innerHTML = getMediaHTML(member);
+            const nameSpan = document.createElement("div");
+            nameSpan.className = "team-name";
+            nameSpan.innerText = member.name || "Ime člana";
+            const roleSpan = document.createElement("div");
+            roleSpan.className = "team-role";
+            roleSpan.innerText = member.role || "Pozicija nije postavljena";
+            card.appendChild(circleDiv);
+            card.appendChild(nameSpan);
+            card.appendChild(roleSpan);
+            card.addEventListener("click", (e) => {
+                e.stopPropagation();
+                currentEditIndex = idx;
+                openEditModal(idx);
+            });
+            wrapper.appendChild(card);
+        });
+    }
+
+    function openEditModal(index) {
+        const member = teamMembers[index];
+        document.getElementById("editMemberName").value = member.name || "";
+        document.getElementById("editMemberRole").value = member.role || "";
+        document.getElementById("editMediaType").value = member.mediaType;
+        document.getElementById("editMediaUrl").value = member.mediaSrc || "";
+        document.getElementById("teamEditModal").style.display = "flex";
+    }
+
+    function closeModal() {
+        document.getElementById("teamEditModal").style.display = "none";
+    }
+
+    function saveCurrentMember() {
+        const newName = document.getElementById("editMemberName").value.trim();
+        const newRole = document.getElementById("editMemberRole").value.trim();
+        if(newName === "") { alert("Molimo unesite ime člana tima."); return; }
+        const newMediaType = document.getElementById("editMediaType").value;
+        let newMediaSrc = document.getElementById("editMediaUrl").value.trim();
+        const fileInput = document.getElementById("imageUploadInput");
+        if(fileInput.files && fileInput.files.length > 0) {
+            const file = fileInput.files[0];
+            if(file.type.startsWith("image/")) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    newMediaSrc = e.target.result;
+                    updateMemberData(newName, newRole, newMediaType, newMediaSrc);
+                    closeModal();
+                    fileInput.value = "";
+                };
+                reader.readAsDataURL(file);
+                return;
+            } else {
+                alert("Molimo odaberite sliku.");
+                return;
+            }
+        }
+        if(newMediaType === "video" && !newMediaSrc) {
+            alert("Unesite URL videozapisa (MP4, YouTube ili Vimeo).");
+            return;
+        }
+        if(newMediaType === "image" && !newMediaSrc) {
+            alert("Unesite URL slike ili uploadajte sliku.");
+            return;
+        }
+        updateMemberData(newName, newRole, newMediaType, newMediaSrc);
+        closeModal();
+        fileInput.value = "";
+    }
+
+    async function updateMemberData(name, role, mediaType, mediaSrc) {
+        teamMembers[currentEditIndex] = { name, role, mediaType, mediaSrc };
+        try {
+            await saveTeamToDatabase();
+        } catch (error) {
+            alert('Greška pri spremanju u bazu. Provjeri server i pokušaj ponovno.');
+            console.error(error);
+        }
+        renderTeamCircles();
+    }
+
+    async function initializeTeam() {
+        await loadTeamFromDatabase();
+        renderTeamCircles();
+    }
+
+    initializeTeam();
+    loadTransportVisualsFromDatabase();
+
+    // Eventi za modal
+    document.getElementById("closeModalBtn").addEventListener("click", closeModal);
+    document.getElementById("saveTeamBtn").addEventListener("click", saveCurrentMember);
+    document.getElementById('closeTransportModalBtn').addEventListener('click', closeTransportModal);
+    document.getElementById('saveTransportBtn').addEventListener('click', saveTransportVisual);
+    document.querySelectorAll('.transport-edit-btn').forEach((button) => {
+        button.addEventListener('click', (e) => {
+            e.stopPropagation();
+            openTransportModal(button.dataset.transport);
+        });
+    });
+    window.addEventListener("click", (e) => {
+        const modal = document.getElementById("teamEditModal");
+        if(e.target === modal) closeModal();
+        const transportModal = document.getElementById('transportEditModal');
+        if (e.target === transportModal) closeTransportModal();
+    });
+
+    const menuToggle = document.getElementById('menuToggle');
+    const navLinksMenu = document.getElementById('navLinks');
+    if(menuToggle) menuToggle.addEventListener('click', () => { navLinksMenu.classList.toggle('show'); });
+    const faders = document.querySelectorAll('.fade-up');
+    const obs = new IntersectionObserver((entries) => { entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); }); }, { threshold: 0.2 });
+    faders.forEach(el => obs.observe(el));
+    document.querySelectorAll('.nav-links a, .btn-primary').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            const hash = this.getAttribute('href');
+            if (hash && hash.startsWith('#')) {
+                e.preventDefault();
+                const target = document.querySelector(hash);
+                if (target) target.scrollIntoView({ behavior: 'smooth' });
+                if (navLinksMenu.classList.contains('show')) navLinksMenu.classList.remove('show');
+            }
+        });
+    });
+    function calculatePrice() {
+        const type = document.getElementById('calcTransport').value;
+        let distance = parseFloat(document.getElementById('calcDistance').value);
+        let quantity = parseFloat(document.getElementById('calcQuantity').value);
+        if (isNaN(distance)) distance = 0;
+        if (isNaN(quantity)) quantity = 0;
+        const rates = {
+            road: { perKm: 1.05, perUnit: 0.11, minFee: 85 },
+            rail: { perKm: 0.62, perUnit: 0.07, minFee: 120 },
+            air: { perKm: 1.3, perUnit: 1.15, minFee: 190 },
+            sea: { perKm: 0.45, perUnit: 0.05, minFee: 150 },
+            pipeline: { perKm: 0.34, perUnit: 0.035, minFee: 130 }
+        };
+        const selectedRate = rates[type] || rates.road;
+        let basePrice = distance * selectedRate.perKm + quantity * selectedRate.perUnit;
+        if (basePrice < selectedRate.minFee) basePrice = selectedRate.minFee;
+        let total = basePrice;
+        if (document.getElementById('serviceExpress').checked) total *= 1.3;
+        if (document.getElementById('serviceInsurance').checked) total += Math.max(total * 0.05, 25);
+        if (document.getElementById('servicePackaging').checked) total += 50;
+        total = total.toFixed(2);
+        let transportName = document.getElementById('calcTransport').options[document.getElementById('calcTransport').selectedIndex].text;
+        const routeFrom = `${document.getElementById('calcCityFrom').value.trim()} (${document.getElementById('calcCountryFrom').value.trim()})`;
+        const routeTo = `${document.getElementById('calcCityTo').value.trim()} (${document.getElementById('calcCountryTo').value.trim()})`;
+        const routeLabel = routeFrom.replace(' ()', '').trim() && routeTo.replace(' ()', '').trim()
+            ? `${routeFrom} → ${routeTo}`
+            : 'Relacija nije potpuno definirana';
+        document.getElementById('fullCalcResult').innerHTML = `<strong>💰 Procijenjena cijena (${transportName}):</strong> ${total} € + PDV<br><small><strong>Relacija:</strong> ${routeLabel}<br>Model uključuje: relaciju, količinu, minimalnu naknadu i odabrane dodatne usluge. Za finalnu cijenu potrebna je ponuda operatera.</small>`;
+    }
+    document.getElementById('fullCalcBtn')?.addEventListener('click', calculatePrice);
+    const calcExamples = {
+        'zg-st-road': { transport: 'road', distance: 26, quantity: 8000, countryFrom: 'Hrvatska', cityFrom: 'Zagreb', countryTo: 'Hrvatska', cityTo: 'Velika Gorica', express: false, insurance: false, packaging: false },
+        'ri-os-rail': { transport: 'rail', distance: 18, quantity: 24000, countryFrom: 'Hrvatska', cityFrom: 'Zagreb Zapad', countryTo: 'Hrvatska', cityTo: 'Zagreb Istok', express: false, insurance: true, packaging: false },
+        'zg-fra-air': { transport: 'air', distance: 900, quantity: 1200, countryFrom: 'Hrvatska', cityFrom: 'Zagreb', countryTo: 'Njemačka', cityTo: 'Frankfurt', express: true, insurance: true, packaging: true }
+    };
+    document.querySelectorAll('[data-example]').forEach((button) => {
+        button.addEventListener('click', () => {
+            const config = calcExamples[button.dataset.example];
+            if (!config) return;
+            document.getElementById('calcTransport').value = config.transport;
+            document.getElementById('calcDistance').value = config.distance;
+            document.getElementById('calcQuantity').value = config.quantity;
+            document.getElementById('calcCountryFrom').value = config.countryFrom;
+            document.getElementById('calcCityFrom').value = config.cityFrom;
+            document.getElementById('calcCountryTo').value = config.countryTo;
+            document.getElementById('calcCityTo').value = config.cityTo;
+            document.getElementById('serviceExpress').checked = config.express;
+            document.getElementById('serviceInsurance').checked = config.insurance;
+            document.getElementById('servicePackaging').checked = config.packaging;
+            calculatePrice();
+        });
+    });
+    document.getElementById('trackBtn')?.addEventListener('click', () => {
+        let trackingNum = document.getElementById('trackingId').value.trim();
+        if (!trackingNum) { document.getElementById('trackResult').innerHTML = "❌ Unesite broj pošiljke"; return; }
+        document.getElementById('trackResult').innerHTML = `🚚 Pošiljka ${trackingNum} je u tranzitu. Očekivana dostava: za 2 dana. 📍 Zadnja lokacija: Zagreb, terminal TŠZ Cargo. ✅ "Kad teret krene s nama na put, stiže brže!"`;
+    });
+    document.getElementById('newsBtn')?.addEventListener('click', () => {
+        let email = document.getElementById('newsEmail').value;
+        if (!email.includes('@')) { document.getElementById('newsMsg').innerHTML = "Unesite ispravnu email adresu."; return; }
+        document.getElementById('newsMsg').innerHTML = "✅ Hvala! Primat ćete logističke novosti.";
+        document.getElementById('newsEmail').value = "";
+    });
+    const surveyForm = document.getElementById('surveyForm');
+    const feedbackSpan = document.getElementById('formFeedback');
+    surveyForm?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = document.getElementById('surveyName').value;
+        const transport = document.getElementById('favTransport').value;
+        if (!name || transport === "Odaberite granu") { feedbackSpan.innerHTML = "Molimo ispunite ime i odaberite granu."; return; }
+        feedbackSpan.innerHTML = `✨ Hvala ${name}! Vaš odabir: ${transport}. TŠZ Cargo tim javlja se u roku 1h.`;
+        surveyForm.reset();
+        setTimeout(() => feedbackSpan.innerHTML = "", 4000);
+    });
+    document.addEventListener('keydown', function(e) {
+        if (e.ctrlKey && (e.key === 'c' || e.key === 'C' || e.key === 'x' || e.key === 'X' || e.key === 'v' || e.key === 'V')) {
+            e.preventDefault();
+            return false;
+        }
+    });
+</script>
+<script>
+(function(){
+    var img = new Image();
+    img.onload = function(){
+        var c = document.createElement('canvas');
+        c.width = 64; c.height = 64;
+        var ctx = c.getContext('2d');
+        ctx.filter = 'brightness(0) saturate(100%) invert(24%) sepia(96%) saturate(1900%) hue-rotate(206deg) brightness(96%) contrast(95%)';
+        ctx.drawImage(img, 0, 0, 64, 64);
+        var link = document.querySelector("link[rel='icon']") || document.createElement('link');
+        link.rel = 'icon'; link.type = 'image/png';
+        link.href = c.toDataURL('image/png');
+        document.head.appendChild(link);
+    };
+    img.src = 'logo.png';
+})();
+</script>
+
+<!-- INFO MODAL -->
+<div id="infoModal" class="info-modal-backdrop" onclick="if(event.target===this)closeInfoModal()">
+    <div class="info-modal-box">
+        <img id="infoModalImg" class="info-modal-img" src="" alt="">
+        <button class="info-modal-close" onclick="closeInfoModal()"><i class="fas fa-times"></i></button>
+        <div class="info-modal-body">
+            <h3 id="infoModalTitle"></h3>
+            <p id="infoModalDesc"></p>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL ZA SLIKU ZANIMLJIVOSTI -->
+<div id="factImageModal" class="team-modal">
+    <div class="team-modal-content">
+        <h3><i class="fas fa-camera"></i> Promijeni sliku zanimljivosti</h3>
+        <label>URL slike:</label>
+        <input type="text" id="factImageUrl" placeholder="https://...">
+        <div class="file-upload-row">
+            <span>ILI upload slike:</span>
+            <input type="file" id="factImageUploadInput" accept="image/*">
+        </div>
+        <div class="small-note"><i class="fas fa-info-circle"></i> Slika se sprema u bazu i trajno je vezana uz ovu zanimljivost.</div>
+        <div class="modal-buttons">
+            <button class="close-modal-btn" id="closeFactImageModalBtn">Odustani</button>
+            <button class="save-modal-btn" id="saveFactImageBtn">Spremi sliku</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL ZA SLIKU ZANIMLJIVOSTI -->
+<div id="factImageModal" class="team-modal">
+    <div class="team-modal-content">
+        <h3><i class="fas fa-camera"></i> Promijeni sliku zanimljivosti</h3>
+        <label>URL slike:</label>
+        <input type="text" id="factImageUrl" placeholder="https://...">
+        <div class="file-upload-row">
+            <span>ILI upload slike:</span>
+            <input type="file" id="factImageUploadInput" accept="image/*">
+        </div>
+        <div class="small-note"><i class="fas fa-info-circle"></i> Slika se sprema u bazu i trajno je vezana uz ovu zanimljivost.</div>
+        <div class="modal-buttons">
+            <button class="close-modal-btn" id="closeFactImageModalBtn">Odustani</button>
+            <button class="save-modal-btn" id="saveFactImageBtn">Spremi sliku</button>
+        </div>
+    </div>
+</div>
+<script>
+const FACT_IMAGES_API_URL = '/api/fact-images';
+const defaultFactImagesClient = {
+    maglev: 'https://images.unsplash.com/photo-1535083783855-aaab7f5afdb8?auto=format&fit=crop&w=800&q=80',
+    evergiven: 'https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=800&q=80',
+    druzba: 'https://images.unsplash.com/photo-1513828583688-c52646db42da?auto=format&fit=crop&w=800&q=80',
+    seuljeju: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=800&q=80'
+};
+let factImages = { ...defaultFactImagesClient };
+let currentFactKey = '';
+
+async function loadFactImagesFromDatabase() {
+    try {
+        const res = await fetch(FACT_IMAGES_API_URL, { cache: 'no-store' });
+        if (!res.ok) throw new Error('Neuspjelo ucitavanje.');
+        const data = await res.json();
+        factImages = { ...defaultFactImagesClient, ...(data || {}) };
+    } catch (e) {
+        console.error(e);
+        factImages = { ...defaultFactImagesClient };
+    }
+}
+
+async function saveFactImagesToDatabase() {
+    const res = await fetch(FACT_IMAGES_API_URL, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(factImages)
+    });
+    if (!res.ok) throw new Error('Spremanje nije uspjelo.');
+}
+
+function openFactImageModal(key) {
+    currentFactKey = key;
+    document.getElementById('factImageUrl').value = factImages[key] || '';
+    document.getElementById('factImageUploadInput').value = '';
+    document.getElementById('factImageModal').style.display = 'flex';
+}
+
+function closeFactImageModal() {
+    document.getElementById('factImageModal').style.display = 'none';
+    document.getElementById('factImageUploadInput').value = '';
+}
+
+async function saveFactImage() {
+    if (!currentFactKey) return;
+    const fileInput = document.getElementById('factImageUploadInput');
+    const urlInput = document.getElementById('factImageUrl');
+
+    const applyAndSave = async (value) => {
+        factImages[currentFactKey] = value;
+        try {
+            await saveFactImagesToDatabase();
+        } catch (e) {
+            alert('Greška pri spremanju slike u bazu.');
+            console.error(e);
+        }
+        closeFactImageModal();
+    };
+
+    if (fileInput.files && fileInput.files[0]) {
+        const file = fileInput.files[0];
+        if (!file.type.startsWith('image/')) { alert('Odaberite isključivo sliku.'); return; }
+        const reader = new FileReader();
+        reader.onload = async (e) => { await applyAndSave(e.target.result); };
+        reader.readAsDataURL(file);
+        return;
+    }
+
+    const newUrl = urlInput.value.trim();
+    if (!newUrl) { alert('Unesite URL slike ili učitajte datoteku.'); return; }
+    await applyAndSave(newUrl);
+}
+
+loadFactImagesFromDatabase();
+
+document.getElementById('closeFactImageModalBtn').addEventListener('click', closeFactImageModal);
+document.getElementById('saveFactImageBtn').addEventListener('click', saveFactImage);
+window.addEventListener('click', (e) => {
+    const fm = document.getElementById('factImageModal');
+    if (e.target === fm) closeFactImageModal();
+});
+</script>
+<script>
+function openInfoModal(title, desc, img) {
+    document.getElementById('infoModalTitle').textContent = title;
+    document.getElementById('infoModalDesc').textContent = desc;
+    document.getElementById('infoModalImg').src = img;
+    document.getElementById('infoModal').classList.add('open');
+}
+function closeInfoModal() {
+    document.getElementById('infoModal').classList.remove('open');
+}
+document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeInfoModal(); });
+</script>
+</body>
+</html>

@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TŠZ Cargo Group – O poduzeću</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(160deg, #f6f9ff 0%, #eaf1ff 55%, #f8fbff 100%);
+            color: #1f3561;
+            min-height: 100vh;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        :root {
+            --blue: #1473e6;
+            --dark: #0f4fa8;
+            --shadow: 0 8px 24px rgba(20,115,230,0.12);
+        }
+
+        /* NAV */
+        nav {
+            position: sticky; top: 0; z-index: 100;
+            background: linear-gradient(98deg, #edf4ff 0%, #dbe8ff 100%);
+            border-bottom: 1px solid #c5d7fa;
+            box-shadow: 0 4px 20px rgba(20,115,230,0.08);
+            padding: 0.6rem 1.5rem;
+            display: flex; align-items: center; gap: 1.2rem; flex-wrap: wrap;
+        }
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            text-decoration: none;
+            background: transparent;
+            border: none;
+            border-radius: 0;
+            padding: 0;
+        }
+        .logo-area img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            border-radius: 0;
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            filter: brightness(0) saturate(100%) invert(24%) sepia(96%) saturate(1900%) hue-rotate(206deg) brightness(96%) contrast(95%);
+        }
+        .logo-area span { font-size: 1.05rem; font-weight: 800; color: #0f4fa8; }
+        .nav-links-row { display: flex; gap: 0.7rem; align-items: center; margin-left: auto; flex-wrap: wrap; }
+        .nav-links-row a {
+            text-decoration: none; font-weight: 700; font-size: 0.85rem; color: #4a5878;
+            padding: 0.35rem 0.85rem; border-radius: 999px; border: 1.5px solid #dbe8ff;
+            background: white; transition: 0.2s;
+        }
+        .nav-links-row a:hover, .nav-links-row a.active { background: var(--blue); color: white; border-color: var(--blue); }
+
+        /* HERO */
+        .hero {
+            position: relative; overflow: hidden;
+            min-height: 420px;
+        }
+        .hero-img {
+            width: 100%; height: 420px; object-fit: cover; object-position: center 35%;
+            display: block; filter: brightness(0.62);
+        }
+        .hero-overlay {
+            position: absolute; inset: 0;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; padding: 2rem;
+        }
+        .hero-overlay h1 {
+            font-size: 2.8rem; color: white; text-shadow: 0 2px 12px rgba(0,0,0,0.5);
+            margin-bottom: 0.6rem;
+        }
+        .hero-overlay p {
+            font-size: 1.15rem; color: rgba(255,255,255,0.88);
+            max-width: 700px; text-shadow: 0 1px 6px rgba(0,0,0,0.4);
+        }
+        .hero-badge-row {
+            display: flex; gap: 1rem; margin-top: 1.2rem; flex-wrap: wrap; justify-content: center;
+        }
+        .hero-badge {
+            background: rgba(255,255,255,0.18); border: 1.5px solid rgba(255,255,255,0.4);
+            border-radius: 999px; padding: 0.4rem 1rem; color: white;
+            font-weight: 700; font-size: 0.85rem; backdrop-filter: blur(4px);
+        }
+
+        /* MAIN */
+        .main { max-width: 1200px; margin: 0 auto; padding: 3rem 1.5rem; }
+
+        /* SECTION TITLE */
+        .sec-title {
+            font-size: 1.9rem; font-weight: 800; color: #0f4fa8;
+            margin-bottom: 0.5rem;
+        }
+        .sec-sub { color: #4f5f84; font-size: 1rem; margin-bottom: 2rem; padding-left: 1rem; border-left: 4px solid #87aef5; }
+
+        /* INTRO SPLIT */
+        .intro-split {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; align-items: center;
+            margin-bottom: 4rem;
+        }
+        .intro-text p { color: #33466f; line-height: 1.75; margin-bottom: 1rem; font-size: 0.97rem; }
+        .intro-img {
+            border-radius: 1.5rem; overflow: hidden;
+            box-shadow: 0 20px 40px rgba(20,115,230,0.18);
+            border: 3px solid #dbe8ff;
+        }
+        .intro-img img { width: 100%; display: block; }
+
+        /* KPI STRIP */
+        .kpi-strip {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1.2rem; margin-bottom: 4rem;
+        }
+        .kpi-card {
+            background: white; border-radius: 1.2rem; padding: 1.5rem 1.2rem; text-align: center;
+            border: 1px solid #dbe8ff; box-shadow: var(--shadow);
+            transition: transform 0.2s;
+        }
+        .kpi-card:hover { transform: translateY(-6px); }
+        .kpi-icon { font-size: 2rem; color: var(--blue); margin-bottom: 0.6rem; }
+        .kpi-val { font-size: 2rem; font-weight: 800; color: #0f4fa8; line-height: 1; }
+        .kpi-label { font-size: 0.82rem; color: #4a5878; margin-top: 0.35rem; font-weight: 600; }
+
+        /* COMPANY DATA TABLE */
+        .data-table {
+            width: 100%; border-collapse: collapse; background: white;
+            border-radius: 1.2rem; overflow: hidden;
+            box-shadow: var(--shadow); border: 1px solid #dbe8ff;
+            margin-bottom: 3rem;
+        }
+        .data-table thead th {
+            background: linear-gradient(135deg, #edf4ff, #d8ecff);
+            color: #0f4fa8; font-weight: 700; padding: 0.85rem 1.2rem;
+            text-align: left; font-size: 0.88rem;
+        }
+        .data-table tbody td {
+            padding: 0.8rem 1.2rem; border-bottom: 1px solid #e8f0ff;
+            font-size: 0.9rem; color: #2a3f6f;
+        }
+        .data-table tbody tr:last-child td { border-bottom: none; }
+        .data-table tbody tr:hover { background: #f7faff; }
+        .data-key { font-weight: 700; color: #304368; width: 220px; }
+        .data-val strong { color: #0f4fa8; }
+
+        /* TIMELINE */
+        .timeline-section { margin-bottom: 4rem; }
+        .tl-wrap { position: relative; padding-left: 2rem; }
+        .tl-wrap::before {
+            content: ''; position: absolute; left: 7px; top: 0; bottom: 0;
+            width: 2px; background: #dbe8ff;
+        }
+        .tl-item {
+            position: relative; margin-bottom: 1.8rem;
+        }
+        .tl-dot {
+            position: absolute; left: -1.82rem; top: 4px;
+            width: 16px; height: 16px; border-radius: 50%;
+            background: var(--blue); border: 3px solid white;
+            box-shadow: 0 0 0 3px var(--blue);
+        }
+        .tl-year { font-weight: 800; font-size: 1rem; color: #0f4fa8; margin-bottom: 0.25rem; }
+        .tl-text { font-size: 0.9rem; color: #33466f; line-height: 1.6; }
+
+        /* AWARDS */
+        .awards-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.2rem; margin-bottom: 3rem;
+        }
+        .award-card {
+            background: white; border-radius: 1rem; padding: 1.2rem; text-align: center;
+            border: 1px solid #dbe8ff; box-shadow: var(--shadow);
+        }
+        .award-card .aw-icon { font-size: 2.2rem; margin-bottom: 0.5rem; }
+        .award-card h3 { font-size: 0.95rem; color: #0f4fa8; margin-bottom: 0.3rem; }
+        .award-card p { font-size: 0.8rem; color: #4a5878; }
+
+        /* GALLERY */
+        .gallery-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;
+            margin-bottom: 4rem;
+        }
+        .gallery-grid img {
+            width: 100%; height: 200px; object-fit: cover;
+            border-radius: 1rem; border: 2px solid #dbe8ff;
+            box-shadow: var(--shadow); transition: transform 0.2s;
+        }
+        .gallery-grid img:hover { transform: scale(1.03); }
+
+        /* CONTACT */
+        .contact-strip {
+            background: linear-gradient(125deg, #0f4fa8, #1473e6);
+            color: white; border-radius: 1.5rem; padding: 2.5rem 2rem;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem; margin-bottom: 3rem;
+        }
+        .contact-item { display: flex; gap: 0.8rem; align-items: flex-start; }
+        .contact-item i { font-size: 1.5rem; margin-top: 0.1rem; opacity: 0.85; }
+        .contact-item h4 { font-size: 0.82rem; opacity: 0.75; margin-bottom: 0.2rem; }
+        .contact-item p { font-size: 0.92rem; font-weight: 600; }
+
+        /* FOOTER */
+        .page-footer {
+            background: #0c3675; color: #dbe8ff;
+            text-align: center; padding: 1.5rem;
+            font-size: 0.9rem;
+        }
+        .page-footer a { color: #87aef5; }
+
+        @media (max-width: 800px) {
+            .intro-split { grid-template-columns: 1fr; }
+            .hero-overlay h1 { font-size: 1.8rem; }
+            .gallery-grid { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 500px) {
+            .gallery-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body oncontextmenu="return false" ondragstart="return false" onselectstart="return false">
+
+<!-- NAV -->
+<nav>
+    <a class="logo-area" href="/">
+        <img src="logo.png" alt="TŠZ" onerror="this.style.display='none'">
+        <span>TŠZ Cargo Group</span>
+    </a>
+    <div class="nav-links-row">
+        <a href="/"><i class="fas fa-home"></i> Početna</a>
+        <a href="/o-nama" class="active"><i class="fas fa-building"></i> Poduzeće</a>
+        <a href="/cjenik"><i class="fas fa-file-invoice-dollar"></i> Cjenik</a>
+        <a href="/pracenje-posiljke"><i class="fas fa-map-marked-alt"></i> Praćenje</a>
+    </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+    <img class="hero-img"
+         src="https://images.unsplash.com/photo-1586168603372-e9b52e0b4d33?auto=format&fit=crop&w=1600&q=80"
+         alt="TŠZ Cargo Group – Logistički centar Zagreb"
+         onerror="this.src='https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?auto=format&fit=crop&w=1600&q=80'">
+    <div class="hero-overlay">
+        <h1><i class="fas fa-building" style="font-size:2rem;"></i><br>TŠZ Cargo Group d.d.</h1>
+        <p>Lider integrirane logistike u Republici Hrvatskoj – 17 godina izvrsnosti, 5 grana prometa, 1 vizija.</p>
+        <div class="hero-badge-row">
+            <span class="hero-badge">🏛 Osnovan 2009.</span>
+            <span class="hero-badge">📍 Zagreb, Hrvatska</span>
+            <span class="hero-badge">💶 Kapital: 2.654.450 EUR</span>
+            <span class="hero-badge">👥 280+ zaposlenika</span>
+            <span class="hero-badge">🌍 15 zemalja pokrivenosti</span>
+        </div>
+    </div>
+</div>
+
+<div class="main">
+
+    <!-- INTRO -->
+    <div class="intro-split">
+        <div class="intro-text">
+            <h2 class="sec-title">O TŠZ Cargo Group d.d.</h2>
+            <p class="sec-sub">Hrvatska kompanija globalnog dosega – od Jadrana do Podunavlja</p>
+            <p>TŠZ Cargo Group dioničko je društvo sa sjedištem u Zagrebu, osnovano 2009. godine s misijom pružanja sveobuhvatnih logističkih rješenja na domaćem i europskom tržištu. U proteklih 17 godina izgradili smo mrežu koja pokriva sve ključne modove prijevoza: cestovni, željeznički, zračni, pomorski i cjevovodni transport.</p>
+            <p>Naša flota broji više od 85 kamiona, surađujemo s HŽ Cargom i međunarodnim željezničkim operaterima, a pomorski kapaciteti pokrivaju ključne jadranske i europske terminale. Sjedište tvrtke nalazi se na Palmotićevoj 84 u Zagrebu, a sve operacije centralno se vode iz Zagreba.</p>
+            <p>Tvrtka posluje prema standardima ISO 9001:2015 (upravljanje kvalitetom) i ISO 14001:2015 (okolišni menadžment). Od 2021. godine uvrstili smo se u Top 50 logističkih kompanija u jugoistočnoj Europi prema istraživanju logistics-europa.com.</p>
+        </div>
+        <div class="intro-img">
+            <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=900&q=80"
+                 alt="TŠZ Cargo Group – terminal"
+                 onerror="this.src='https://images.unsplash.com/photo-1553413077-190dd305871c?auto=format&fit=crop&w=900&q=80'">
+        </div>
+    </div>
+
+    <!-- KPI -->
+    <div class="kpi-strip">
+        <div class="kpi-card">
+            <div class="kpi-icon"><i class="fas fa-calendar-alt"></i></div>
+            <div class="kpi-val">2009.</div>
+            <div class="kpi-label">Godina osnivanja</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon"><i class="fas fa-users"></i></div>
+            <div class="kpi-val">283</div>
+            <div class="kpi-label">Zaposlenika (2026.)</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon"><i class="fas fa-truck"></i></div>
+            <div class="kpi-val">87</div>
+            <div class="kpi-label">Vozila u floti</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon"><i class="fas fa-globe-europe"></i></div>
+            <div class="kpi-val">15</div>
+            <div class="kpi-label">Zemalja pokrivenosti</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon"><i class="fas fa-coins"></i></div>
+            <div class="kpi-val">42,1M</div>
+            <div class="kpi-label">Prihod 2025. (EUR)</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon"><i class="fas fa-box"></i></div>
+            <div class="kpi-val">180K+</div>
+            <div class="kpi-label">Pošiljki godišnje</div>
+        </div>
+    </div>
+
+    <!-- COMPANY DATA -->
+    <h2 class="sec-title">Matični podaci poduzeća</h2>
+    <p class="sec-sub">Službeni registarski i financijski podaci TŠZ Cargo Group d.d.</p>
+    <table class="data-table">
+        <thead><tr><th>Podatak</th><th>Vrijednost</th></tr></thead>
+        <tbody>
+            <tr><td class="data-key">Tvrtka (pun naziv)</td><td class="data-val"><strong>TŠZ Cargo Group d.d.</strong></td></tr>
+            <tr><td class="data-key">Kratica</td><td class="data-val">TŠZ CG d.d.</td></tr>
+            <tr><td class="data-key">Pravni oblik</td><td class="data-val">Dioničko društvo (d.d.)</td></tr>
+            <tr><td class="data-key">OIB</td><td class="data-val">57412893647</td></tr>
+            <tr><td class="data-key">MBS (matični broj subjekta)</td><td class="data-val">081127543</td></tr>
+            <tr><td class="data-key">NKD (djelatnost)</td><td class="data-val">52.29 – Ostale prateće djelatnosti u prijevozu</td></tr>
+            <tr><td class="data-key">Datum osnivanja</td><td class="data-val">14. rujna 2009. godine</td></tr>
+            <tr><td class="data-key">Sjedište</td><td class="data-val">Palmotićeva 84, 10 000 Zagreb, Republika Hrvatska</td></tr>
+            <tr><td class="data-key">Registracijski sud</td><td class="data-val">Trgovački sud u Zagrebu</td></tr>
+            <tr><td class="data-key">Temeljni kapital</td><td class="data-val"><strong>2.654.450,00 EUR</strong> – u cijelosti uplaćen</td></tr>
+            <tr><td class="data-key">Broj dionica</td><td class="data-val">26.544 redovnih dionica, nominalna vrijednost 100,00 EUR / dionici</td></tr>
+            <tr><td class="data-key">Predsjednik Uprave (CEO)</td><td class="data-val">Stjepan Tkalčić, mag. oec.</td></tr>
+            <tr><td class="data-key">Prokurist</td><td class="data-val">Marina Šimunić, dipl. iur.</td></tr>
+            <tr><td class="data-key">Predsjednik Nadzornog odbora</td><td class="data-val">Zdravko Horvat</td></tr>
+            <tr><td class="data-key">Revizor (2025/2026)</td><td class="data-val">Deloitte d.o.o., Zagreb</td></tr>
+            <tr><td class="data-key">IBAN</td><td class="data-val">HR1223600001102938744 (Zagrebačka banka d.d.)</td></tr>
+            <tr><td class="data-key">PDV broj</td><td class="data-val">HR57412893647</td></tr>
+            <tr><td class="data-key">E-pošta</td><td class="data-val">tszcargogroup@gmail.com</td></tr>
+            <tr><td class="data-key">Telefon</td><td class="data-val">+385 97 652 2231</td></tr>
+            <tr><td class="data-key">Web stranica</td><td class="data-val">www.tsz-group.hr</td></tr>
+            <tr><td class="data-key">ISO certifikati</td><td class="data-val">ISO 9001:2015 &nbsp;|&nbsp; ISO 14001:2015 &nbsp;|&nbsp; ISO 45001:2018</td></tr>
+            <tr><td class="data-key">Ukupan prihod 2025.</td><td class="data-val"><strong>42.148.620,00 EUR</strong></td></tr>
+            <tr><td class="data-key">Neto dobit 2025.</td><td class="data-val">3.887.450,00 EUR</td></tr>
+            <tr><td class="data-key">Broj zaposlenika (04/2026)</td><td class="data-val">283 (stalno zaposlenih)</td></tr>
+        </tbody>
+    </table>
+
+    <!-- TIMELINE -->
+    <div class="timeline-section">
+        <h2 class="sec-title">Povijest i razvoj</h2>
+        <p class="sec-sub" style="margin-bottom:2rem;">Ključni trenuci u 17 godina rasta TŠZ Cargo Group</p>
+        <div class="tl-wrap">
+            <div class="tl-item">
+                <div class="tl-dot"></div>
+                <div class="tl-year">2009. – Osnivanje</div>
+                <div class="tl-text">TŠZ Cargo Group d.d. osnovan je 14. rujna 2009. u Zagrebu s temeljnim kapitalom od 800.000 HRK. Inicijalna djelatnost: cestovni prijevoz robe po Republici Hrvatskoj s 4 kamiona i 12 zaposlenika.</div>
+            </div>
+            <div class="tl-item">
+                <div class="tl-dot"></div>
+                <div class="tl-year">2011. – Proširenje na EU tržište</div>
+                <div class="tl-text">Otvorena je prva međunarodna ruta Zagreb–Frankfurt–Wien. Flota proširena na 18 kamiona. Potpisani okvirni ugovori s partnerima u Austriji, Njemačkoj i Sloveniji.</div>
+            </div>
+            <div class="tl-item">
+                <div class="tl-dot"></div>
+                <div class="tl-year">2013. – Ugovor s HŽ Cargom</div>
+                <div class="tl-text">Potpisan strateški sporazum o suradnji s HŽ Cargo d.o.o. Pokrenuta intermodalna linija Zagreb zapad–Zagreb istok za prijevoz kontejnera. TŠZ ulazi u segment željezničke logistike.</div>
+            </div>
+            <div class="tl-item">
+                <div class="tl-dot"></div>
+                <div class="tl-year">2015. – Otvaranje podružnica</div>
+                <div class="tl-text">Operativni kapaciteti objedinjeni su u Zagrebu kroz jedinstveni logistički centar i tim za jadransko-mediteranske koridore. Ukupno 95 zaposlenika, prihodi premašuju 12 milijuna EUR godišnje.</div>
+            </div>
+            <div class="tl-item">
+                <div class="tl-dot"></div>
+                <div class="tl-year">2017. – Pomorski i cjevovodni segment</div>
+                <div class="tl-text">Pokrenuta usluga pratnje kontejnerskog prometa prema mediteranskim destinacijama. Potpisana suradnja s JANAF-om za logističku podršku cjevovodnog sustava u RH.</div>
+            </div>
+            <div class="tl-item">
+                <div class="tl-dot"></div>
+                <div class="tl-year">2019. – ISO certifikacija i digitalizacija</div>
+                <div class="tl-text">Stečeni certifikati ISO 9001, ISO 14001 i ISO 45001. Uveden ERP sustav Axon za praćenje pošiljki u realnom vremenu. Flota proširena na 55 kamiona.</div>
+            </div>
+            <div class="tl-item">
+                <div class="tl-dot"></div>
+                <div class="tl-year">2021. – Konverzija u dioničko društvo</div>
+                <div class="tl-text">TŠZ Cargo Group mijenja pravni oblik iz d.o.o. u d.d. Temeljni kapital povećan na 2.654.450 EUR. Uvrstili se u Top 50 logističkih kompanija jugoistočne Europe.</div>
+            </div>
+            <div class="tl-item">
+                <div class="tl-dot"></div>
+                <div class="tl-year">2023. – Ekspanzija i zelena flota</div>
+                <div class="tl-text">Kupljeno 12 novih kamiona na LNG pogon (ukapljeni prirodni plin) u sklopu programa dekarbonizacije. Proširen centralni logistički centar u Zagrebu. Ukupna flota: 80 vozila.</div>
+            </div>
+            <div class="tl-item">
+                <div class="tl-dot"></div>
+                <div class="tl-year">2025. – Rekordna godina</div>
+                <div class="tl-text">Ukupan prihod dosegnuo 42,1 milijuna EUR – rast od 18% u odnosu na prethodnu godinu. Broj zaposlenika premašio 280. Lansiran digitalni cjenik i sustav praćenja pošiljki u realnom vremenu.</div>
+            </div>
+            <div class="tl-item">
+                <div class="tl-dot" style="background:#16a34a;"></div>
+                <div class="tl-year" style="color:#16a34a;">2026. – Danas</div>
+                <div class="tl-text">TŠZ Cargo Group nastavlja s planom prelaska na 25% električne i LNG flote do 2028. U tijeku su pregovori o partnerstvima na tržištu Rumunjske i Mađarske. Priprema se pokretanje vlastite booking platforme.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AWARDS -->
+    <h2 class="sec-title">Nagrade i certifikati</h2>
+    <p class="sec-sub" style="margin-bottom:2rem;">Prepoznatost u industriji i regulatorni okviri poslovanja</p>
+    <div class="awards-grid">
+        <div class="award-card">
+            <div class="aw-icon">🏆</div>
+            <h3>Zlatna logistika 2024.</h3>
+            <p>Hrvatska logistička komora – nagrada za inovaciju u prijevoznoj mreži</p>
+        </div>
+        <div class="award-card">
+            <div class="aw-icon">🌿</div>
+            <h3>Zelena tvrtka 2023.</h3>
+            <p>Ministarstvo okoliša RH – LNG flota i CO₂ offset program</p>
+        </div>
+        <div class="award-card">
+            <div class="aw-icon">📋</div>
+            <h3>ISO 9001:2015</h3>
+            <p>Bureau Veritas – upravljanje kvalitetom, recertifikacija 2024.</p>
+        </div>
+        <div class="award-card">
+            <div class="aw-icon">🌍</div>
+            <h3>ISO 14001:2015</h3>
+            <p>Bureau Veritas – okolišni menadžment i sustav upravljanja otpadom</p>
+        </div>
+        <div class="award-card">
+            <div class="aw-icon">🦺</div>
+            <h3>ISO 45001:2018</h3>
+            <p>Upravljanje zdravljem i sigurnošću na radu – nulta stopa ozljeda 2025.</p>
+        </div>
+        <div class="award-card">
+            <div class="aw-icon">⭐</div>
+            <h3>Top 50 SEE Logistics</h3>
+            <p>Logistics-Europa – jugoistočna Europa, rang 31. u kategoriji integratora</p>
+        </div>
+    </div>
+
+    <!-- GALLERY -->
+    <h2 class="sec-title">Fotogalerija</h2>
+    <p class="sec-sub" style="margin-bottom:2rem;">Naši terminali, flota i logistički centri diljem Hrvatske</p>
+    <div class="gallery-grid">
+        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=600&q=80" alt="TŠZ terminal Zagreb"
+             onerror="this.src='https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=600&q=80'">
+        <img src="https://images.unsplash.com/photo-1494412574643-ff11b0a5c1c3?auto=format&fit=crop&w=600&q=80" alt="Flota kamiona"
+             onerror="this.src='https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?auto=format&fit=crop&w=600&q=80'">
+        <img src="https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=600&q=80" alt="Pomorski terminal">
+        <img src="https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=600&q=80" alt="Željeznički terminal">
+        <img src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=600&q=80" alt="Zračni cargo">
+        <img src="https://images.unsplash.com/photo-1553413077-190dd305871c?auto=format&fit=crop&w=600&q=80" alt="Distribucijski centar">
+    </div>
+
+    <!-- CONTACT -->
+    <h2 class="sec-title">Kontakt i lokacije</h2>
+    <p class="sec-sub" style="margin-bottom:1.5rem;">Centralni ured i operativni centri u Zagrebu</p>
+    <div class="contact-strip">
+        <div class="contact-item">
+            <i class="fas fa-map-marker-alt"></i>
+            <div>
+                <h4>Centralni ured – Zagreb</h4>
+                <p>Palmotićeva 84, 10 000 Zagreb</p>
+            </div>
+        </div>
+        <div class="contact-item">
+            <i class="fas fa-map-marker-alt"></i>
+            <div>
+                <h4>Logistički kampus – Zagreb</h4>
+                <p>Jankomir 12, 10 090 Zagreb</p>
+            </div>
+        </div>
+        <div class="contact-item">
+            <i class="fas fa-map-marker-alt"></i>
+            <div>
+                <h4>Distribucijski centar – Zagreb istok</h4>
+                <p>Slavonska avenija 24, 10 000 Zagreb</p>
+            </div>
+        </div>
+        <div class="contact-item">
+            <i class="fas fa-phone-alt"></i>
+            <div>
+                <h4>Centrala</h4>
+                <p>+385 97 652 2231</p>
+            </div>
+        </div>
+        <div class="contact-item">
+            <i class="fas fa-envelope"></i>
+            <div>
+                <h4>E-pošta</h4>
+                <p>tszcargogroup@gmail.com</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="page-footer">
+    &copy; 2026 TŠZ Cargo Group d.d. &nbsp;|&nbsp; OIB: 57412893647 &nbsp;|&nbsp; Lokacija: Zagreb &nbsp;|&nbsp; tszcargogroup@gmail.com &nbsp;|&nbsp; +385 97 652 2231 &nbsp;|&nbsp;
+    <a href="/">Početna</a> &nbsp;|&nbsp;
+    <a href="/cjenik">Cjenik</a> &nbsp;|&nbsp;
+    <a href="/pracenje-posiljke">Praćenje</a>
+</div>
+
+<script>
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('copy', e => e.preventDefault());
+    document.addEventListener('keydown', e => {
+        if (e.ctrlKey && ['c','x','v','s','a','u'].includes(e.key.toLowerCase())) e.preventDefault();
+        if (e.key === 'F12') e.preventDefault();
+        if (e.ctrlKey && e.shiftKey && ['i','j','c'].includes(e.key.toLowerCase())) e.preventDefault();
+    });
+</script>
+<script>
+(function(){
+    var img = new Image();
+    img.onload = function(){
+        var c = document.createElement('canvas');
+        c.width = 64; c.height = 64;
+        var ctx = c.getContext('2d');
+        ctx.filter = 'brightness(0) saturate(100%) invert(24%) sepia(96%) saturate(1900%) hue-rotate(206deg) brightness(96%) contrast(95%)';
+        ctx.drawImage(img, 0, 0, 64, 64);
+        var link = document.querySelector("link[rel='icon']") || document.createElement('link');
+        link.rel = 'icon'; link.type = 'image/png';
+        link.href = c.toDataURL('image/png');
+        document.head.appendChild(link);
+    };
+    img.src = 'logo.png';
+})();
+</script>
+</body>
+</html>

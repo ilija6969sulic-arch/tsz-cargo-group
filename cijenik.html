@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TŠZ Cargo Group – Digitalni Cjenik 2026</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(160deg, #f6f9ff 0%, #eaf1ff 55%, #f8fbff 100%);
+            color: #1f3561;
+            min-height: 100vh;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        :root {
+            --blue: #1473e6;
+            --dark-blue: #0f4fa8;
+            --shadow: 0 8px 24px rgba(20,115,230,0.12);
+        }
+
+        /* NAV */
+        nav {
+            position: sticky; top: 0; z-index: 100;
+            background: linear-gradient(98deg, #edf4ff 0%, #dbe8ff 100%);
+            border-bottom: 1px solid #c5d7fa;
+            box-shadow: 0 4px 20px rgba(20,115,230,0.08);
+            padding: 0.6rem 1.5rem;
+            display: flex; align-items: center; gap: 1.5rem;
+        }
+        nav .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            text-decoration: none;
+            background: rgba(255,255,255,0.88);
+            border: 1px solid #c5d7fa;
+            border-radius: 999px;
+            padding: 0.2rem 0.75rem 0.2rem 0.2rem;
+        }
+        nav .logo-area img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            border-radius: 0;
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            filter: brightness(0) saturate(100%) invert(24%) sepia(96%) saturate(1900%) hue-rotate(206deg) brightness(96%) contrast(95%);
+        }
+        nav .logo-area span { font-size: 1.05rem; font-weight: 800; color: #0f4fa8; }
+        nav a.back-btn {
+            margin-left: auto;
+            background: #1473e6; color: white;
+            padding: 0.5rem 1.2rem; border-radius: 999px;
+            text-decoration: none; font-weight: 600; font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+        nav a.back-btn:hover { background: #0f4fa8; }
+
+        /* HERO HEADER */
+        .page-header {
+            background: linear-gradient(125deg, #0f4fa8 0%, #1473e6 100%);
+            color: white;
+            padding: 3rem 2rem 2rem;
+            text-align: center;
+        }
+        .page-header h1 { font-size: 2.4rem; margin-bottom: 0.5rem; }
+        .page-header p { font-size: 1.1rem; opacity: 0.88; max-width: 700px; margin: 0 auto 1.5rem; }
+        .header-stats {
+            display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap;
+            margin-top: 1.5rem;
+        }
+        .stat-pill {
+            background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.35);
+            border-radius: 999px; padding: 0.5rem 1.2rem; font-weight: 700; font-size: 0.9rem;
+        }
+
+        /* MAIN */
+        .main { max-width: 1300px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+        /* FILTER BAR */
+        .filter-bar {
+            display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center;
+            background: white; border-radius: 1rem; padding: 1.2rem 1.5rem;
+            box-shadow: var(--shadow); margin-bottom: 2rem;
+            border: 1px solid #dbe8ff;
+        }
+        .filter-bar label { font-weight: 700; color: #0f4fa8; font-size: 0.9rem; }
+        .filter-bar select, .filter-bar input {
+            border: 1.5px solid #c5d7fa; border-radius: 0.5rem;
+            padding: 0.5rem 0.8rem; background: #f7faff; color: #1f3561;
+            font-family: inherit; font-size: 0.9rem;
+        }
+        .filter-bar button {
+            background: var(--blue); color: white; border: none;
+            border-radius: 999px; padding: 0.55rem 1.2rem;
+            font-weight: 700; cursor: pointer; font-size: 0.9rem;
+            transition: 0.2s;
+        }
+        .filter-bar button:hover { background: var(--dark-blue); }
+        .filter-bar .reset-btn { background: #ddd; color: #333; }
+        .filter-bar .reset-btn:hover { background: #bbb; }
+        .print-btn {
+            margin-left: auto;
+            background: white; color: var(--dark-blue);
+            border: 1.5px solid var(--blue); border-radius: 999px;
+            padding: 0.55rem 1.2rem; font-weight: 700; cursor: pointer;
+            font-size: 0.9rem; transition: 0.2s;
+        }
+        .print-btn:hover { background: #edf4ff; }
+
+        /* TRANSPORT TABS */
+        .transport-tabs {
+            display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.5rem;
+        }
+        .tab-btn {
+            padding: 0.55rem 1.2rem; border-radius: 999px; border: 2px solid #dbe8ff;
+            background: white; color: #4a5878; font-weight: 700; cursor: pointer;
+            font-size: 0.9rem; transition: 0.2s; display: flex; align-items: center; gap: 0.45rem;
+        }
+        .tab-btn.active, .tab-btn:hover {
+            background: var(--blue); color: white; border-color: var(--blue);
+        }
+
+        /* PRICE CARDS */
+        .transport-section { margin-bottom: 3rem; }
+        .transport-section-header {
+            display: flex; align-items: center; gap: 1rem; margin-bottom: 1.2rem;
+            padding-bottom: 0.75rem; border-bottom: 2px solid #dbe8ff;
+        }
+        .transport-section-header .icon {
+            width: 52px; height: 52px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--blue), var(--dark-blue));
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 1.4rem; flex-shrink: 0;
+        }
+        .transport-section-header h2 { font-size: 1.5rem; color: #0f4fa8; }
+        .transport-section-header p { font-size: 0.9rem; color: #4f5f84; margin-top: 0.2rem; }
+
+        /* PRICE TABLE */
+        .price-table-wrap {
+            background: white; border-radius: 1.2rem;
+            box-shadow: var(--shadow); border: 1px solid #dbe8ff;
+            overflow: hidden; margin-bottom: 1rem;
+        }
+        .price-table { width: 100%; border-collapse: collapse; }
+        .price-table thead th {
+            background: linear-gradient(135deg, #edf4ff, #d8ecff);
+            color: #0f4fa8; font-weight: 700; padding: 0.85rem 1rem;
+            text-align: left; font-size: 0.9rem;
+            border-bottom: 2px solid #c5d7fa;
+        }
+        .price-table tbody tr { transition: background 0.15s; }
+        .price-table tbody tr:hover { background: #f4f8ff; }
+        .price-table tbody td {
+            padding: 0.8rem 1rem; border-bottom: 1px solid #e8f0ff;
+            font-size: 0.9rem; color: #2a3f6f;
+        }
+        .price-table tbody tr:last-child td { border-bottom: none; }
+        .price-tag {
+            font-weight: 700; color: #0f4fa8; font-size: 1rem;
+        }
+        .badge-zone {
+            display: inline-block; padding: 0.2rem 0.6rem;
+            border-radius: 999px; font-size: 0.78rem; font-weight: 700;
+        }
+        .badge-hr { background: #dbeefe; color: #0a5ca8; }
+        .badge-eu { background: #e0f4e8; color: #1a6e35; }
+        .badge-intl { background: #fdf0e0; color: #a35800; }
+        .badge-express { background: #fde8e8; color: #a31b1b; }
+
+        /* SERVICES TABLE */
+        .services-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1rem; margin-bottom: 2rem;
+        }
+        .service-card {
+            background: white; border-radius: 1rem; padding: 1.2rem;
+            border: 1px solid #dbe8ff; box-shadow: var(--shadow);
+            transition: transform 0.2s;
+        }
+        .service-card:hover { transform: translateY(-4px); }
+        .service-card .svc-icon { font-size: 2rem; color: var(--blue); margin-bottom: 0.6rem; }
+        .service-card h3 { font-size: 1rem; color: #0f4fa8; margin-bottom: 0.4rem; }
+        .service-card p { font-size: 0.85rem; color: #4a5878; }
+        .service-card .svc-price {
+            margin-top: 0.8rem; font-weight: 800; color: #0f4fa8;
+            font-size: 1.05rem;
+        }
+
+        /* CALCULATOR */
+        .calc-section {
+            background: white; border-radius: 1.2rem; padding: 1.8rem;
+            box-shadow: var(--shadow); border: 1px solid #dbe8ff;
+            margin-bottom: 2rem;
+        }
+        .calc-section h2 { color: #0f4fa8; margin-bottom: 1rem; font-size: 1.3rem; }
+        .calc-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+        .calc-field label { display: block; font-weight: 700; margin-bottom: 0.4rem; font-size: 0.88rem; color: #304368; }
+        .calc-field input, .calc-field select {
+            width: 100%; padding: 0.6rem 0.8rem;
+            border: 1.5px solid #c5d7fa; border-radius: 0.6rem;
+            background: #f7faff; font-family: inherit; font-size: 0.9rem;
+        }
+        .calc-btn {
+            margin-top: 1rem; background: var(--blue); color: white;
+            border: none; border-radius: 999px; padding: 0.75rem 2rem;
+            font-weight: 700; cursor: pointer; font-size: 1rem;
+            transition: 0.2s;
+        }
+        .calc-btn:hover { background: var(--dark-blue); transform: translateY(-2px); }
+        .calc-result {
+            margin-top: 1rem; background: #edf4ff; border: 1px solid #c5d7fa;
+            border-radius: 0.75rem; padding: 1rem 1.2rem; color: #0f4fa8;
+            font-size: 1.05rem;
+        }
+
+        /* DISCLAIMER */
+        .disclaimer {
+            background: #fff8e1; border: 1px solid #ffe082; border-radius: 0.8rem;
+            padding: 1rem 1.2rem; color: #6d4c00; font-size: 0.85rem; margin-top: 2rem;
+        }
+
+        /* FOOTER */
+        .page-footer {
+            background: #0c3675; color: #dbe8ff;
+            text-align: center; padding: 1.5rem;
+            font-size: 0.9rem; margin-top: 2rem;
+        }
+        .page-footer a { color: #87aef5; }
+
+        @media (max-width: 700px) {
+            .page-header h1 { font-size: 1.7rem; }
+            .filter-bar { flex-direction: column; align-items: stretch; }
+            .print-btn { margin-left: 0; }
+            .price-table thead th, .price-table tbody td { padding: 0.6rem 0.5rem; font-size: 0.8rem; }
+        }
+
+        @media print {
+            nav, .filter-bar, .print-btn, .calc-btn, .back-btn, .transport-tabs { display: none !important; }
+            body { background: white !important; }
+            .price-table-wrap { box-shadow: none !important; border: 1px solid #ccc !important; }
+        }
+    </style>
+</head>
+<body oncontextmenu="return false" ondragstart="return false" onselectstart="return false">
+
+<nav>
+    <a class="logo-area" href="/">
+        <img src="logo.png" alt="TŠZ logo" onerror="this.style.display='none'">
+        <span>TŠZ Cargo Group</span>
+    </a>
+    <a href="/o-nama" style="text-decoration:none; color:#0f4fa8; font-weight:700; font-size:0.9rem;">
+        <i class="fas fa-building"></i> Poduzeće
+    </a>
+    <a href="/pracenje-posiljke" style="text-decoration:none; color:#0f4fa8; font-weight:700; font-size:0.9rem;">
+        <i class="fas fa-map-marked-alt"></i> Praćenje
+    </a>
+    <a class="back-btn" href="/"><i class="fas fa-arrow-left"></i> Natrag na stranicu</a>
+</nav>
+
+<div class="page-header">
+    <h1><i class="fas fa-file-invoice-dollar"></i> Digitalni Cjenik 2026</h1>
+    <p>Službeni orijentacijski cjenik usluga TŠZ Cargo Group d.d. – sve grane prijevoza, transparentno i jasno.</p>
+    <div class="header-stats">
+        <span class="stat-pill">📅 Vrijedi od 01.01.2026.</span>
+        <span class="stat-pill">🇭🇷 Hrvatska i EU koridori</span>
+        <span class="stat-pill">💶 Cijene u EUR + PDV</span>
+        <span class="stat-pill">📞 Ponuda: +385 97 652 2231</span>
+    </div>
+</div>
+
+<div class="main">
+
+    <!-- FILTER BAR -->
+    <div class="filter-bar" id="filterBar">
+        <div>
+            <label>Grana prometa</label><br>
+            <select id="filterType">
+                <option value="all">Sve grane</option>
+                <option value="cestovni">Cestovni</option>
+                <option value="zeljeznicki">Željeznički</option>
+                <option value="zracni">Zračni</option>
+                <option value="pomorski">Pomorski</option>
+                <option value="cjevovodni">Cjevovodni</option>
+            </select>
+        </div>
+        <div>
+            <label>Zona</label><br>
+            <select id="filterZone">
+                <option value="all">Sve zone</option>
+                <option value="hr">Hrvatska</option>
+                <option value="eu">EU / Europa</option>
+                <option value="intl">Međunarodno</option>
+            </select>
+        </div>
+        <div>
+            <label>Pretraži uslugu</label><br>
+            <input type="text" id="filterSearch" placeholder="">
+        </div>
+        <button onclick="applyFilters()"><i class="fas fa-search"></i> Filtrira</button>
+        <button class="reset-btn" onclick="resetFilters()"><i class="fas fa-undo"></i> Reset</button>
+        <button class="print-btn" onclick="window.print()"><i class="fas fa-print"></i> Ispiši / PDF</button>
+    </div>
+
+    <!-- TRANSPORT TABS -->
+    <div class="transport-tabs">
+        <button class="tab-btn active" data-section="all" onclick="showSection('all', this)"><i class="fas fa-th-large"></i> Sve</button>
+        <button class="tab-btn" data-section="cestovni" onclick="showSection('cestovni', this)"><i class="fas fa-truck"></i> Cestovni</button>
+        <button class="tab-btn" data-section="zeljeznicki" onclick="showSection('zeljeznicki', this)"><i class="fas fa-train"></i> Željeznički</button>
+        <button class="tab-btn" data-section="zracni" onclick="showSection('zracni', this)"><i class="fas fa-plane"></i> Zračni</button>
+        <button class="tab-btn" data-section="pomorski" onclick="showSection('pomorski', this)"><i class="fas fa-ship"></i> Pomorski</button>
+        <button class="tab-btn" data-section="cjevovodni" onclick="showSection('cjevovodni', this)"><i class="fas fa-oil-can"></i> Cjevovodni</button>
+    </div>
+
+    <!-- ============================== CESTOVNI ============================== -->
+    <div class="transport-section" data-section="cestovni">
+        <div class="transport-section-header">
+            <div class="icon"><i class="fas fa-truck"></i></div>
+            <div>
+                <h2>Cestovni prijevoz</h2>
+                <p>FTL, LTL, hladnjače, skupni ukrcaj – Hrvatska i EU koridori</p>
+            </div>
+        </div>
+        <div class="price-table-wrap">
+            <table class="price-table" id="table-cestovni">
+                <thead>
+                    <tr>
+                        <th>Usluga</th>
+                        <th>Zona</th>
+                        <th>Težinska kategorija</th>
+                        <th>Osnovna cijena</th>
+                        <th>Cijena / km</th>
+                        <th>Cijena / kg</th>
+                        <th>Min. naknada</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr data-zone="hr" data-search="ftl kamion puni ukrcaj hrvatska">
+                        <td>FTL – puni kamion (do 24t)</td>
+                        <td><span class="badge-zone badge-hr">HR</span></td>
+                        <td>do 24.000 kg</td>
+                        <td class="price-tag">–</td>
+                        <td class="price-tag">0,92 € / km</td>
+                        <td class="price-tag">0,09 € / kg</td>
+                        <td>85 €</td>
+                    </tr>
+                    <tr data-zone="eu" data-search="ftl kamion puni ukrcaj eu europa međunarodno">
+                        <td>FTL – puni kamion (do 24t)</td>
+                        <td><span class="badge-zone badge-eu">EU</span></td>
+                        <td>do 24.000 kg</td>
+                        <td class="price-tag">–</td>
+                        <td class="price-tag">1,05 € / km</td>
+                        <td class="price-tag">0,12 € / kg</td>
+                        <td>140 €</td>
+                    </tr>
+                    <tr data-zone="hr" data-search="ltl djelomični ukrcaj grupni zbirni">
+                        <td>LTL – djelomični ukrcaj</td>
+                        <td><span class="badge-zone badge-hr">HR</span></td>
+                        <td>100 – 5.000 kg</td>
+                        <td class="price-tag">35 €</td>
+                        <td class="price-tag">0,75 € / km</td>
+                        <td class="price-tag">0,14 € / kg</td>
+                        <td>50 €</td>
+                    </tr>
+                    <tr data-zone="eu" data-search="ltl djelomični ukrcaj eu grupni zbirni">
+                        <td>LTL – djelomični ukrcaj</td>
+                        <td><span class="badge-zone badge-eu">EU</span></td>
+                        <td>100 – 5.000 kg</td>
+                        <td class="price-tag">55 €</td>
+                        <td class="price-tag">0,88 € / km</td>
+                        <td class="price-tag">0,18 € / kg</td>
+                        <td>75 €</td>
+                    </tr>
+                    <tr data-zone="hr" data-search="hladnjača hlađenje rashladni transport svježe namirnice">
+                        <td>Hladnjača (0°C – 8°C)</td>
+                        <td><span class="badge-zone badge-hr">HR</span></td>
+                        <td>do 18.000 kg</td>
+                        <td class="price-tag">45 €</td>
+                        <td class="price-tag">1,20 € / km</td>
+                        <td class="price-tag">0,15 € / kg</td>
+                        <td>100 €</td>
+                    </tr>
+                    <tr data-zone="eu" data-search="hladnjača hlađenje rashladni transport eu europa">
+                        <td>Hladnjača (0°C – 8°C)</td>
+                        <td><span class="badge-zone badge-eu">EU</span></td>
+                        <td>do 18.000 kg</td>
+                        <td class="price-tag">65 €</td>
+                        <td class="price-tag">1,45 € / km</td>
+                        <td class="price-tag">0,19 € / kg</td>
+                        <td>160 €</td>
+                    </tr>
+                    <tr data-zone="hr" data-search="ekspresna dostava hitno kurirska">
+                        <td>Ekspresna dostava (24h)</td>
+                        <td><span class="badge-zone badge-express">EXPRESS</span></td>
+                        <td>do 1.500 kg</td>
+                        <td class="price-tag">75 €</td>
+                        <td class="price-tag">1,55 € / km</td>
+                        <td class="price-tag">0,25 € / kg</td>
+                        <td>120 €</td>
+                    </tr>
+                    <tr data-zone="hr" data-search="opasna roba adr specijalni prijevoz">
+                        <td>ADR – opasna roba</td>
+                        <td><span class="badge-zone badge-hr">HR</span></td>
+                        <td>do 20.000 kg</td>
+                        <td class="price-tag">100 €</td>
+                        <td class="price-tag">1,35 € / km</td>
+                        <td class="price-tag">0,20 € / kg</td>
+                        <td>200 €</td>
+                    </tr>
+                    <tr data-zone="hr" data-search="jumbo mega trailer 13.6m">
+                        <td>Jumbo trailer (13.6m, do 27t)</td>
+                        <td><span class="badge-zone badge-eu">EU</span></td>
+                        <td>do 27.000 kg</td>
+                        <td class="price-tag">–</td>
+                        <td class="price-tag">1,18 € / km</td>
+                        <td class="price-tag">0,10 € / kg</td>
+                        <td>180 €</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ============================== ŽELJEZNIČKI ============================== -->
+    <div class="transport-section" data-section="zeljeznicki">
+        <div class="transport-section-header">
+            <div class="icon"><i class="fas fa-train"></i></div>
+            <div>
+                <h2>Željeznički prijevoz</h2>
+                <p>Intermodalni, vagonski, kontejnerski prijevoz – suradnja s HŽ Cargo i europskim željeznicama</p>
+            </div>
+        </div>
+        <div class="price-table-wrap">
+            <table class="price-table" id="table-zeljeznicki">
+                <thead>
+                    <tr>
+                        <th>Usluga</th>
+                        <th>Zona</th>
+                        <th>Kapacitet</th>
+                        <th>Cijena / km</th>
+                        <th>Cijena / tona</th>
+                        <th>Min. naknada</th>
+                        <th>Napomena</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr data-zone="hr" data-search="vagon celovagonska pošiljka hž cargo">
+                        <td>Celovagonska pošiljka</td>
+                        <td><span class="badge-zone badge-hr">HR</span></td>
+                        <td>do 60t</td>
+                        <td class="price-tag">0,55 € / km</td>
+                        <td class="price-tag">4,20 € / t</td>
+                        <td>120 €</td>
+                        <td>HŽ Cargo suradnja</td>
+                    </tr>
+                    <tr data-zone="eu" data-search="vagon eu željeznica međunarodni prijevoz">
+                        <td>Celovagonska pošiljka</td>
+                        <td><span class="badge-zone badge-eu">EU</span></td>
+                        <td>do 60t</td>
+                        <td class="price-tag">0,68 € / km</td>
+                        <td class="price-tag">5,50 € / t</td>
+                        <td>190 €</td>
+                        <td>Rail Cargo suradnja</td>
+                    </tr>
+                    <tr data-zone="hr" data-search="intermodalni kontejner terminal kombi">
+                        <td>Intermodalni kontejner (20')</td>
+                        <td><span class="badge-zone badge-hr">HR</span></td>
+                        <td>do 21t</td>
+                        <td class="price-tag">0,60 € / km</td>
+                        <td class="price-tag">5,00 € / t</td>
+                        <td>150 €</td>
+                        <td>Terminal Zagreb</td>
+                    </tr>
+                    <tr data-zone="eu" data-search="intermodalni kontejner eu terminal 40">
+                        <td>Intermodalni kontejner (40')</td>
+                        <td><span class="badge-zone badge-eu">EU</span></td>
+                        <td>do 27t</td>
+                        <td class="price-tag">0,72 € / km</td>
+                        <td class="price-tag">5,80 € / t</td>
+                        <td>240 €</td>
+                        <td>+pretovar terminal</td>
+                    </tr>
+                    <tr data-zone="hr" data-search="komadne pošiljke mali teret mješovito">
+                        <td>Komadne pošiljke (LCL)</td>
+                        <td><span class="badge-zone badge-hr">HR</span></td>
+                        <td>100 – 5.000 kg</td>
+                        <td class="price-tag">0,48 € / km</td>
+                        <td class="price-tag">6,50 € / t</td>
+                        <td>95 €</td>
+                        <td>Grupni ukrcaj</td>
+                    </tr>
+                    <tr data-zone="intl" data-search="silosi rasuti teret zrno žito industrija">
+                        <td>Rasuti teret (silosi)</td>
+                        <td><span class="badge-zone badge-intl">Intl.</span></td>
+                        <td>do 70t</td>
+                        <td class="price-tag">0,52 € / km</td>
+                        <td class="price-tag">3,80 € / t</td>
+                        <td>220 €</td>
+                        <td>Žito, ugljen, minerali</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ============================== ZRAČNI ============================== -->
+    <div class="transport-section" data-section="zracni">
+        <div class="transport-section-header">
+            <div class="icon"><i class="fas fa-plane"></i></div>
+            <div>
+                <h2>Zračni cargo prijevoz</h2>
+                <p>Ekspresna globalna dostava – 24–72h, cargo letovi i komercijalni prijevoz</p>
+            </div>
+        </div>
+        <div class="price-table-wrap">
+            <table class="price-table" id="table-zracni">
+                <thead>
+                    <tr>
+                        <th>Usluga</th>
+                        <th>Zona</th>
+                        <th>Težinska kategorija</th>
+                        <th>Cijena / kg</th>
+                        <th>Rok isporuke</th>
+                        <th>Min. naknada</th>
+                        <th>Napomena</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr data-zone="eu" data-search="cargo avion eu europa ekspres">
+                        <td>Air Cargo – EU koridori</td>
+                        <td><span class="badge-zone badge-eu">EU</span></td>
+                        <td>10 – 500 kg</td>
+                        <td class="price-tag">3,80 € / kg</td>
+                        <td>24 – 48h</td>
+                        <td>190 €</td>
+                        <td>Iz ZG, SPU, ZAD</td>
+                    </tr>
+                    <tr data-zone="intl" data-search="cargo avion međunarodni prekooceanski azija">
+                        <td>Air Cargo – međunarodni</td>
+                        <td><span class="badge-zone badge-intl">Intl.</span></td>
+                        <td>10 – 1.000 kg</td>
+                        <td class="price-tag">5,50 € / kg</td>
+                        <td>48 – 72h</td>
+                        <td>280 €</td>
+                        <td>Azija, Amerika</td>
+                    </tr>
+                    <tr data-zone="eu" data-search="cargo express hitno 24h same day overnight">
+                        <td>Express Overnight (EU)</td>
+                        <td><span class="badge-zone badge-express">EXPRESS</span></td>
+                        <td>do 200 kg</td>
+                        <td class="price-tag">7,20 € / kg</td>
+                        <td>do 24h</td>
+                        <td>320 €</td>
+                        <td>Garantirana dostava</td>
+                    </tr>
+                    <tr data-zone="eu" data-search="charter čarter avion cjelokupni kapacitet">
+                        <td>Charter – cijeli zrakoplov</td>
+                        <td><span class="badge-zone badge-eu">EU</span></td>
+                        <td>do 50.000 kg</td>
+                        <td class="price-tag">na upit</td>
+                        <td>po dogovoru</td>
+                        <td>na upit</td>
+                        <td>Tel: +385 97 652 2231</td>
+                    </tr>
+                    <tr data-zone="intl" data-search="farmaceutski lijekovi temperatura kontrola hlađenje">
+                        <td>Pharma / osjetljivi teret</td>
+                        <td><span class="badge-zone badge-intl">Intl.</span></td>
+                        <td>1 – 500 kg</td>
+                        <td class="price-tag">9,80 € / kg</td>
+                        <td>24 – 72h</td>
+                        <td>350 €</td>
+                        <td>Temperatura 2–8°C</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ============================== POMORSKI ============================== -->
+    <div class="transport-section" data-section="pomorski">
+        <div class="transport-section-header">
+            <div class="icon"><i class="fas fa-ship"></i></div>
+            <div>
+                <h2>Pomorski prijevoz</h2>
+                <p>Kontejnerski brodovi, Ro-Ro, rasuti teret – jadranski i europski terminali uz centralu Zagreb</p>
+            </div>
+        </div>
+        <div class="price-table-wrap">
+            <table class="price-table" id="table-pomorski">
+                <thead>
+                    <tr>
+                        <th>Usluga</th>
+                        <th>Zona</th>
+                        <th>Kontejner / kapacitet</th>
+                        <th>Cijena baze</th>
+                        <th>Rok</th>
+                        <th>Min. naknada</th>
+                        <th>Luka polaska</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr data-zone="eu" data-search="fcl kontejner 20 teu punji ukrcaj brod">
+                        <td>FCL – kontejner 20' (TEU)</td>
+                        <td><span class="badge-zone badge-eu">EU</span></td>
+                        <td>do 22t</td>
+                        <td class="price-tag">380 € / TEU</td>
+                        <td>5–12 dana</td>
+                        <td>380 €</td>
+                        <td>Partner terminal (Zagreb booking)</td>
+                    </tr>
+                    <tr data-zone="eu" data-search="fcl kontejner 40 feu brod eu">
+                        <td>FCL – kontejner 40' (FEU)</td>
+                        <td><span class="badge-zone badge-eu">EU</span></td>
+                        <td>do 27t</td>
+                        <td class="price-tag">620 € / FEU</td>
+                        <td>5–12 dana</td>
+                        <td>620 €</td>
+                        <td>Partner terminal (Zagreb booking)</td>
+                    </tr>
+                    <tr data-zone="intl" data-search="fcl kontejner međunarodni prekooceanski kina azija">
+                        <td>FCL – kontejner 40' (međunarodni)</td>
+                        <td><span class="badge-zone badge-intl">Intl.</span></td>
+                        <td>do 27t</td>
+                        <td class="price-tag">1.850 € / FEU</td>
+                        <td>28–45 dana</td>
+                        <td>1.850 €</td>
+                        <td>Partner terminal (Zagreb booking)</td>
+                    </tr>
+                    <tr data-zone="eu" data-search="lcl grupni ukrcaj komadne pošiljke brod">
+                        <td>LCL – grupni ukrcaj</td>
+                        <td><span class="badge-zone badge-eu">EU</span></td>
+                        <td>100 – 8.000 kg</td>
+                        <td class="price-tag">28 € / m³</td>
+                        <td>7–14 dana</td>
+                        <td>150 €</td>
+                        <td>Partner terminal (Zagreb booking)</td>
+                    </tr>
+                    <tr data-zone="eu" data-search="ro-ro vozila auto transport trajekt">
+                        <td>Ro-Ro – vozila i strojevi</td>
+                        <td><span class="badge-zone badge-eu">EU</span></td>
+                        <td>do 3.500 kg / voz.</td>
+                        <td class="price-tag">185 € / vozilo</td>
+                        <td>3–7 dana</td>
+                        <td>185 €</td>
+                        <td>Partner terminal (Zagreb booking)</td>
+                    </tr>
+                    <tr data-zone="intl" data-search="rasuti teret brod minerali ugljen žito teretnjak">
+                        <td>Rasuti teret (bulk carrier)</td>
+                        <td><span class="badge-zone badge-intl">Intl.</span></td>
+                        <td>5.000 – 60.000 t</td>
+                        <td class="price-tag">na upit</td>
+                        <td>po ruti</td>
+                        <td>na upit</td>
+                        <td>Partner terminal (Zagreb booking)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ============================== CJEVOVODNI ============================== -->
+    <div class="transport-section" data-section="cjevovodni">
+        <div class="transport-section-header">
+            <div class="icon"><i class="fas fa-oil-can"></i></div>
+            <div>
+                <h2>Cjevovodni prijevoz</h2>
+                <p>Transport nafte, plina, kemikalija – 24/7 kontinuirani protok</p>
+            </div>
+        </div>
+        <div class="price-table-wrap">
+            <table class="price-table" id="table-cjevovodni">
+                <thead>
+                    <tr>
+                        <th>Supstanca / tip</th>
+                        <th>Zona</th>
+                        <th>Kapacitet protoka</th>
+                        <th>Cijena / km / m³</th>
+                        <th>Fiksna naknada</th>
+                        <th>Min. naknada</th>
+                        <th>Infrastruktura</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr data-zone="hr" data-search="nafta sirova naftovod cjevovod jadranski">
+                        <td>Sirova nafta (crude oil)</td>
+                        <td><span class="badge-zone badge-hr">HR</span></td>
+                        <td>do 500 m³/h</td>
+                        <td class="price-tag">0,032 € / km·m³</td>
+                        <td>850 € / dan</td>
+                        <td>2.500 €</td>
+                        <td>JANAF cjevovod</td>
+                    </tr>
+                    <tr data-zone="eu" data-search="nafta naftovod eu europa intermed">
+                        <td>Sirova nafta (EU tranzit)</td>
+                        <td><span class="badge-zone badge-eu">EU</span></td>
+                        <td>do 500 m³/h</td>
+                        <td class="price-tag">0,038 € / km·m³</td>
+                        <td>1.100 € / dan</td>
+                        <td>4.000 €</td>
+                        <td>Intl. koridor</td>
+                    </tr>
+                    <tr data-zone="hr" data-search="prirodni plin plinovod distribucija">
+                        <td>Prirodni plin</td>
+                        <td><span class="badge-zone badge-hr">HR</span></td>
+                        <td>do 250.000 m³/h</td>
+                        <td class="price-tag">0,018 € / km·m³</td>
+                        <td>620 € / dan</td>
+                        <td>1.800 €</td>
+                        <td>Plavski plinovod</td>
+                    </tr>
+                    <tr data-zone="hr" data-search="kemikalije industrijske cjevovod logistika">
+                        <td>Industrijske kemikalije</td>
+                        <td><span class="badge-zone badge-hr">HR</span></td>
+                        <td>do 80 m³/h</td>
+                        <td class="price-tag">0,055 € / km·m³</td>
+                        <td>1.200 € / dan</td>
+                        <td>3.000 €</td>
+                        <td>Specijalizirana mreža</td>
+                    </tr>
+                    <tr data-zone="hr" data-search="voda vodoopskrba industrijska logistika">
+                        <td>Industrijska voda</td>
+                        <td><span class="badge-zone badge-hr">HR</span></td>
+                        <td>do 1.000 m³/h</td>
+                        <td class="price-tag">0,008 € / km·m³</td>
+                        <td>380 € / dan</td>
+                        <td>800 €</td>
+                        <td>Industrijski park</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ============================== DODATNE USLUGE ============================== -->
+    <div class="transport-section" data-section="all">
+        <div class="transport-section-header">
+            <div class="icon"><i class="fas fa-plus-circle"></i></div>
+            <div>
+                <h2>Dodatne usluge</h2>
+                <p>Dodaci uz svaku vrstu prijevoza – osiguranje, pakiranje, carinjenje, pratnja</p>
+            </div>
+        </div>
+        <div class="services-grid">
+            <div class="service-card">
+                <div class="svc-icon"><i class="fas fa-shield-alt"></i></div>
+                <h3>Osiguranje tereta</h3>
+                <p>Sveobuhvatno osiguranje za sve vrste tereta – HR i EU koridori.</p>
+                <div class="svc-price">0,35% – 1,20% vrijednosti tereta<br><small style="font-weight:400; color:#4a5878;">min. 45 € po pošiljci</small></div>
+            </div>
+            <div class="service-card">
+                <div class="svc-icon"><i class="fas fa-box-open"></i></div>
+                <h3>Profesionalno pakiranje</h3>
+                <p>Kartonske kutije, palete, specijalisti za osjetljivi i krhki teret.</p>
+                <div class="svc-price">od 35 € – 280 € / pošiljka</div>
+            </div>
+            <div class="service-card">
+                <div class="svc-icon"><i class="fas fa-stamp"></i></div>
+                <h3>Carinjenje i dokumentacija</h3>
+                <p>Kompletno carinjenje, CMR, T1/T2 dokumenti, EUR1 certifikat.</p>
+                <div class="svc-price">od 85 € / dokument</div>
+            </div>
+            <div class="service-card">
+                <div class="svc-icon"><i class="fas fa-user-shield"></i></div>
+                <h3>Pratnja i zaštita tereta</h3>
+                <p>Sigurnosna pratnja za visokovrijedni teret – nakit, elektronika, numizmatika.</p>
+                <div class="svc-price">od 350 € / pratnja</div>
+            </div>
+            <div class="service-card">
+                <div class="svc-icon"><i class="fas fa-warehouse"></i></div>
+                <h3>Privremeno skladištenje</h3>
+                <p>Skladišni prostori i cross-dock zona u Zagrebu.</p>
+                <div class="svc-price">od 2,20 € / paletno mjesto / dan</div>
+            </div>
+            <div class="service-card">
+                <div class="svc-icon"><i class="fas fa-boxes"></i></div>
+                <h3>WMS aplikacija (SaaS)</h3>
+                <p>Digitalno upravljanje zalihama, lokacijama, pickingom i inventurama za skladište u Zagrebu.</p>
+                <div class="svc-price">od 190 € / korisnik mjesečno</div>
+            </div>
+            <div class="service-card">
+                <div class="svc-icon"><i class="fas fa-user-tie"></i></div>
+                <h3>Logističko savjetovanje</h3>
+                <p>Audit procesa, optimizacija rute i plan smanjenja logističkih troškova s mjesečnim KPI izvještajem.</p>
+                <div class="svc-price">od 650 € / projektni dan</div>
+            </div>
+            <div class="service-card">
+                <div class="svc-icon"><i class="fas fa-satellite-dish"></i></div>
+                <h3>GPS praćenje pošiljke</h3>
+                <p>Real-time praćenje svakog tereta online i mobilnom aplikacijom.</p>
+                <div class="svc-price">Uključeno u sve pakete</div>
+            </div>
+            <div class="service-card">
+                <div class="svc-icon"><i class="fas fa-thermometer-half"></i></div>
+                <h3>Temperaturna kontrola</h3>
+                <p>Kontinuirani nadzor temperature za farmaceutske i prehrambene pošiljke.</p>
+                <div class="svc-price">od 55 € / pošiljka</div>
+            </div>
+            <div class="service-card">
+                <div class="svc-icon"><i class="fas fa-recycle"></i></div>
+                <h3>Zelena logistika (CO₂ offset)</h3>
+                <p>Kompenzacija ugljičnog otiska za ekološki svjesne klijente.</p>
+                <div class="svc-price">od 12 € / tona CO₂</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================== CALCULATOR ============================== -->
+    <div class="calc-section">
+        <h2><i class="fas fa-calculator"></i> Brzi kalkulator ponude</h2>
+        <div class="calc-fields">
+            <div class="calc-field">
+                <label>Vrsta prijevoza</label>
+                <select id="cCalcType">
+                    <option value="road">Cestovni (FTL HR)</option>
+                    <option value="road_eu">Cestovni (FTL EU)</option>
+                    <option value="road_ltl">Cestovni (LTL HR)</option>
+                    <option value="road_cold">Hladnjača HR</option>
+                    <option value="rail">Željeznički HR</option>
+                    <option value="rail_eu">Željeznički EU</option>
+                    <option value="air_eu">Zračni EU</option>
+                    <option value="air_intl">Zračni međunarodni</option>
+                    <option value="sea_20">Pomorski FCL 20'</option>
+                    <option value="sea_40">Pomorski FCL 40'</option>
+                    <option value="sea_lcl">Pomorski LCL</option>
+                </select>
+            </div>
+            <div class="calc-field">
+                <label>Udaljenost (km)</label>
+                <input type="number" id="cCalcDist" value="300" min="1">
+            </div>
+            <div class="calc-field">
+                <label>Količina (kg ili m³ za LCL)</label>
+                <input type="number" id="cCalcQty" value="2000" min="1">
+            </div>
+        </div>
+        <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-top:1rem; align-items:center;">
+            <label style="font-weight:600; font-size:0.88rem;"><input type="checkbox" id="cInsurance"> Osiguranje (+0,5% vrijednosti, baza 1.000 €)</label>
+            <label style="font-weight:600; font-size:0.88rem;"><input type="checkbox" id="cPack"> Pakiranje (+50 €)</label>
+            <label style="font-weight:600; font-size:0.88rem;"><input type="checkbox" id="cCustoms"> Carinjenje (+85 €)</label>
+        </div>
+        <button class="calc-btn" onclick="calcQuote()"><i class="fas fa-calculator"></i> Izračunaj okvirnu ponudu</button>
+        <div class="calc-result" id="cCalcResult"><strong>Ispunite podatke i kliknite izračunaj.</strong></div>
+    </div>
+
+    <div class="disclaimer">
+        <i class="fas fa-exclamation-triangle"></i>
+        <strong>Napomena:</strong> Prikazane cijene su orijentacijske tržišne procjene i ne predstavljaju obvezujuću ponudu. Konačna cijena utvrđuje se individualnom ponudom prema specifičnostima tereta, rute i rokova. PDV (25%) se naplaćuje na sve cijene.
+        Za službenu ponudu kontaktirajte: <a href="mailto:tszcargogroup@gmail.com" style="color:#0f4fa8;"><strong>tszcargogroup@gmail.com</strong></a> ili <strong>+385 97 652 2231</strong>.
+    </div>
+
+</div>
+
+<div class="page-footer">
+    &copy; 2026 TŠZ Cargo Group d.d. &nbsp;|&nbsp; OIB: 57412893647 &nbsp;|&nbsp; Lokacija: Zagreb &nbsp;|&nbsp; tszcargogroup@gmail.com &nbsp;|&nbsp; +385 97 652 2231 &nbsp;|&nbsp;
+    <a href="index.html">Natrag na stranicu</a> &nbsp;|&nbsp;
+    <a href="pracenje.html">Praćenje pošiljke</a>
+</div>
+
+<script>
+const priceConfig = {
+    road:     { perKm: 0.92, perUnit: 0.09, min: 85,  unit: 'kg', base: 0 },
+    road_eu:  { perKm: 1.05, perUnit: 0.12, min: 140, unit: 'kg', base: 0 },
+    road_ltl: { perKm: 0.75, perUnit: 0.14, min: 50,  unit: 'kg', base: 35 },
+    road_cold:{ perKm: 1.20, perUnit: 0.15, min: 100, unit: 'kg', base: 45 },
+    rail:     { perKm: 0.55, perUnit: 4.20/1000, min: 120, unit: 'kg', base: 0 },
+    rail_eu:  { perKm: 0.68, perUnit: 5.50/1000, min: 190, unit: 'kg', base: 0 },
+    air_eu:   { perKm: 0.00, perUnit: 3.80, min: 190, unit: 'kg', base: 0 },
+    air_intl: { perKm: 0.00, perUnit: 5.50, min: 280, unit: 'kg', base: 0 },
+    sea_20:   { perKm: 0.00, perUnit: 0.00, min: 380, unit: 'm³', base: 380, fixed: true },
+    sea_40:   { perKm: 0.00, perUnit: 0.00, min: 620, unit: 'm³', base: 620, fixed: true },
+    sea_lcl:  { perKm: 0.00, perUnit: 28.00, min: 150, unit: 'm³', base: 0 }
+};
+
+function calcQuote() {
+    const type = document.getElementById('cCalcType').value;
+    const dist = parseFloat(document.getElementById('cCalcDist').value) || 0;
+    const qty = parseFloat(document.getElementById('cCalcQty').value) || 0;
+    const cfg = priceConfig[type];
+    if (!cfg) return;
+
+    let price = cfg.base + dist * cfg.perKm + qty * cfg.perUnit;
+    if (price < cfg.min) price = cfg.min;
+    if (cfg.fixed) price = cfg.base;
+
+    if (document.getElementById('cInsurance').checked) price += Math.max(price * 0.005, 45);
+    if (document.getElementById('cPack').checked) price += 50;
+    if (document.getElementById('cCustoms').checked) price += 85;
+
+    const netto = price.toFixed(2);
+    const pdv = (price * 0.25).toFixed(2);
+    const brutto = (price * 1.25).toFixed(2);
+
+    const typeLabel = document.getElementById('cCalcType').options[document.getElementById('cCalcType').selectedIndex].text;
+    document.getElementById('cCalcResult').innerHTML = `
+        <strong>💰 Okvirna ponuda – ${typeLabel}:</strong><br>
+        Neto: <strong>${netto} €</strong> &nbsp;|&nbsp;
+        PDV (25%): <strong>${pdv} €</strong> &nbsp;|&nbsp;
+        Bruto: <strong style="color:#0f4fa8; font-size:1.2rem;">${brutto} €</strong><br>
+        <small>Udaljenost: ${dist} km &nbsp;|&nbsp; Količina: ${qty} ${cfg.unit} &nbsp;|&nbsp; Model je informativan – za obvezujuću ponudu kontaktirajte operatera.</small>
+    `;
+}
+
+function showSection(section, btn) {
+    document.querySelectorAll('.transport-section').forEach(el => {
+        if (section === 'all') {
+            el.style.display = 'block';
+        } else {
+            el.style.display = (el.dataset.section === section || el.dataset.section === 'all') ? 'block' : 'none';
+        }
+    });
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+}
+
+function applyFilters() {
+    const type = document.getElementById('filterType').value;
+    const zone = document.getElementById('filterZone').value;
+    const search = document.getElementById('filterSearch').value.toLowerCase();
+
+    // Show/hide sections
+    document.querySelectorAll('.transport-section[data-section]').forEach(sec => {
+        const sType = sec.dataset.section;
+        if (type !== 'all' && sType !== 'all' && sType !== type) {
+            sec.style.display = 'none';
+            return;
+        }
+        sec.style.display = 'block';
+
+        // Filter rows
+        sec.querySelectorAll('tbody tr').forEach(row => {
+            const rowZone = row.dataset.zone || 'all';
+            const rowSearch = (row.dataset.search || '') + row.innerText.toLowerCase();
+            const zoneMatch = zone === 'all' || rowZone === zone;
+            const searchMatch = !search || rowSearch.includes(search);
+            row.style.display = (zoneMatch && searchMatch) ? '' : 'none';
+        });
+    });
+}
+
+function resetFilters() {
+    document.getElementById('filterType').value = 'all';
+    document.getElementById('filterZone').value = 'all';
+    document.getElementById('filterSearch').value = '';
+    document.querySelectorAll('.transport-section').forEach(el => el.style.display = 'block');
+    document.querySelectorAll('tbody tr').forEach(r => r.style.display = '');
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector('.tab-btn[data-section="all"]').classList.add('active');
+}
+
+document.addEventListener('contextmenu', e => e.preventDefault());
+document.addEventListener('copy', e => e.preventDefault());
+document.addEventListener('keydown', e => {
+    if (e.ctrlKey && ['c','x','s','a','u'].includes(e.key.toLowerCase())) e.preventDefault();
+    if (e.key === 'F12') e.preventDefault();
+    if (e.ctrlKey && e.shiftKey && ['i','j','c'].includes(e.key.toLowerCase())) e.preventDefault();
+});
+</script>
+<script>
+(function(){
+    var img = new Image();
+    img.onload = function(){
+        var c = document.createElement('canvas');
+        c.width = 64; c.height = 64;
+        var ctx = c.getContext('2d');
+        ctx.filter = 'brightness(0) saturate(100%) invert(24%) sepia(96%) saturate(1900%) hue-rotate(206deg) brightness(96%) contrast(95%)';
+        ctx.drawImage(img, 0, 0, 64, 64);
+        var link = document.querySelector("link[rel='icon']") || document.createElement('link');
+        link.rel = 'icon'; link.type = 'image/png';
+        link.href = c.toDataURL('image/png');
+        document.head.appendChild(link);
+    };
+    img.src = 'logo.png';
+})();
+</script>
+</body>
+</html>
