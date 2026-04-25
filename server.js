@@ -1,7 +1,7 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
-const sqlite3 = require('sqlite3').verbose();
+const Database = require('better-sqlite3');
 const port = process.env.PORT || 3000;
 
 const dataDir = path.join(__dirname, 'data');
@@ -11,7 +11,7 @@ if (!fs.existsSync(dataDir)) {
   fs.mkdirSync(dataDir, { recursive: true });
 }
 
-const db = new sqlite3.Database(dbPath);
+const db = new Database(dbPath);
 
 const defaultTeamMembers = [
   { name: 'Marko Tkalcic', role: 'Voditelj logistike', mediaType: 'image', mediaSrc: 'https://randomuser.me/api/portraits/men/32.jpg' },
@@ -35,87 +35,57 @@ const defaultFactImages = {
   seuljeju: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=800&q=80'
 };
 
-db.serialize(() => {
-  db.run(
-    `CREATE TABLE IF NOT EXISTS team_members (
-      id INTEGER PRIMARY KEY,
-      name TEXT NOT NULL,
-      role TEXT NOT NULL DEFAULT '',
-      media_type TEXT NOT NULL,
-      media_src TEXT NOT NULL
-    )`
+// Init tables
+db.exec(`
+  CREATE TABLE IF NOT EXISTS team_members (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    role TEXT NOT NULL DEFAULT '',
+    media_type TEXT NOT NULL,
+    media_src TEXT NOT NULL
   );
-
-  db.run(
-    `CREATE TABLE IF NOT EXISTS transport_visuals (
-      id TEXT PRIMARY KEY,
-      image_src TEXT NOT NULL
-    )`
+  CREATE TABLE IF NOT EXISTS transport_visuals (
+    id TEXT PRIMARY KEY,
+    image_src TEXT NOT NULL
   );
-
-  db.all('PRAGMA table_info(team_members)', (pragmaErr, columns) => {
-    if (pragmaErr) {
-      console.error('DB pragma error:', pragmaErr.message);
-      return;
-    }
-
-    const hasRole = Array.isArray(columns) && columns.some((col) => col.name === 'role');
-    if (!hasRole) {
-      db.run("ALTER TABLE team_members ADD COLUMN role TEXT NOT NULL DEFAULT ''");
-    }
-  });
-
-  db.get('SELECT COUNT(*) AS total FROM team_members', (err, row) => {
-    if (err) {
-      console.error('DB init error:', err.message);
-      return;
-    }
-
-    if (!row || row.total === 0) {
-      const stmt = db.prepare('INSERT INTO team_members (id, name, role, media_type, media_src) VALUES (?, ?, ?, ?, ?)');
-      defaultTeamMembers.forEach((member, index) => {
-        stmt.run(index, member.name, member.role, member.mediaType, member.mediaSrc);
-      });
-      stmt.finalize();
-    }
-  });
-
-  db.get('SELECT COUNT(*) AS total FROM transport_visuals', (err, row) => {
-    if (err) {
-      console.error('Transport visuals init error:', err.message);
-      return;
-    }
-
-    if (!row || row.total === 0) {
-      const stmt = db.prepare('INSERT INTO transport_visuals (id, image_src) VALUES (?, ?)');
-      Object.entries(defaultTransportVisuals).forEach(([id, imageSrc]) => {
-        stmt.run(id, imageSrc);
-      });
-      stmt.finalize();
-    }
-  });
-
-  db.run(
-    `CREATE TABLE IF NOT EXISTS fact_images (
-      id TEXT PRIMARY KEY,
-      image_src TEXT NOT NULL
-    )`
+  CREATE TABLE IF NOT EXISTS fact_images (
+    id TEXT PRIMARY KEY,
+    image_src TEXT NOT NULL
   );
+`);
 
-  db.get('SELECT COUNT(*) AS total FROM fact_images', (err, row) => {
-    if (err) {
-      console.error('Fact images init error:', err.message);
-      return;
-    }
-    if (!row || row.total === 0) {
-      const stmt = db.prepare('INSERT INTO fact_images (id, image_src) VALUES (?, ?)');
-      Object.entries(defaultFactImages).forEach(([id, imageSrc]) => {
-        stmt.run(id, imageSrc);
-      });
-      stmt.finalize();
-    }
+// Add role column if missing (migration)
+const columns = db.prepare('PRAGMA table_info(team_members)').all();
+if (!columns.some((col) => col.name === 'role')) {
+  db.exec("ALTER TABLE team_members ADD COLUMN role TEXT NOT NULL DEFAULT ''");
+}
+
+// Seed team_members
+const teamCount = db.prepare('SELECT COUNT(*) AS total FROM team_members').get();
+if (!teamCount || teamCount.total === 0) {
+  const insertMember = db.prepare('INSERT INTO team_members (id, name, role, media_type, media_src) VALUES (?, ?, ?, ?, ?)');
+  defaultTeamMembers.forEach((member, index) => {
+    insertMember.run(index, member.name, member.role, member.mediaType, member.mediaSrc);
   });
-});
+}
+
+// Seed transport_visuals
+const tvCount = db.prepare('SELECT COUNT(*) AS total FROM transport_visuals').get();
+if (!tvCount || tvCount.total === 0) {
+  const insertTV = db.prepare('INSERT INTO transport_visuals (id, image_src) VALUES (?, ?)');
+  Object.entries(defaultTransportVisuals).forEach(([id, imageSrc]) => {
+    insertTV.run(id, imageSrc);
+  });
+}
+
+// Seed fact_images
+const fiCount = db.prepare('SELECT COUNT(*) AS total FROM fact_images').get();
+if (!fiCount || fiCount.total === 0) {
+  const insertFI = db.prepare('INSERT INTO fact_images (id, image_src) VALUES (?, ?)');
+  Object.entries(defaultFactImages).forEach(([id, imageSrc]) => {
+    insertFI.run(id, imageSrc);
+  });
+}
 
 const mimeTypes = {
   '.html': 'text/html',
@@ -244,52 +214,29 @@ function normalizeMembers(input) {
   return normalized;
 }
 
-function fetchMembers(callback) {
-  db.all(
-    'SELECT id, name, role, media_type AS mediaType, media_src AS mediaSrc FROM team_members ORDER BY id ASC',
-    (err, rows) => {
-      if (err) {
-        callback(err);
-        return;
-      }
-
-      callback(null, rows || []);
-    }
-  );
+function fetchMembers() {
+  return db.prepare('SELECT id, name, role, media_type AS mediaType, media_src AS mediaSrc FROM team_members ORDER BY id ASC').all();
 }
 
-function saveMembers(members, callback) {
-  db.serialize(() => {
-    db.run('BEGIN TRANSACTION');
-    db.run('DELETE FROM team_members');
-
-    const stmt = db.prepare('INSERT INTO team_members (id, name, role, media_type, media_src) VALUES (?, ?, ?, ?, ?)');
+function saveMembers(members) {
+  const deleteAll = db.prepare('DELETE FROM team_members');
+  const insertMember = db.prepare('INSERT INTO team_members (id, name, role, media_type, media_src) VALUES (?, ?, ?, ?, ?)');
+  db.transaction(() => {
+    deleteAll.run();
     members.forEach((member) => {
-      stmt.run(member.id, member.name, member.role || '', member.mediaType, member.mediaSrc);
+      insertMember.run(member.id, member.name, member.role || '', member.mediaType, member.mediaSrc);
     });
-
-    stmt.finalize((finalizeErr) => {
-      if (finalizeErr) {
-        db.run('ROLLBACK');
-        callback(finalizeErr);
-        return;
-      }
-
-      db.run('COMMIT', callback);
-    });
-  });
+  })();
 }
 
 function handleTeamApi(req, res) {
   if (req.method === 'GET') {
-    fetchMembers((err, members) => {
-      if (err) {
-        sendJson(res, 500, { error: 'Ne mogu ucitati podatke iz baze.' });
-        return;
-      }
-
+    try {
+      const members = fetchMembers();
       sendJson(res, 200, members);
-    });
+    } catch (err) {
+      sendJson(res, 500, { error: 'Ne mogu ucitati podatke iz baze.' });
+    }
     return;
   }
 
@@ -306,14 +253,12 @@ function handleTeamApi(req, res) {
         return;
       }
 
-      saveMembers(members, (saveErr) => {
-        if (saveErr) {
-          sendJson(res, 500, { error: 'Ne mogu spremiti podatke u bazu.' });
-          return;
-        }
-
+      try {
+        saveMembers(members);
         sendJson(res, 200, { ok: true });
-      });
+      } catch (saveErr) {
+        sendJson(res, 500, { error: 'Ne mogu spremiti podatke u bazu.' });
+      }
     });
     return;
   }
@@ -322,21 +267,15 @@ function handleTeamApi(req, res) {
   res.end('Method Not Allowed');
 }
 
-function fetchTransportVisuals(callback) {
-  db.all('SELECT id, image_src AS imageSrc FROM transport_visuals ORDER BY id ASC', (err, rows) => {
-    if (err) {
-      callback(err);
-      return;
+function fetchTransportVisuals() {
+  const rows = db.prepare('SELECT id, image_src AS imageSrc FROM transport_visuals ORDER BY id ASC').all();
+  const merged = { ...defaultTransportVisuals };
+  (rows || []).forEach((row) => {
+    if (row && row.id && row.imageSrc) {
+      merged[row.id] = row.imageSrc;
     }
-
-    const merged = { ...defaultTransportVisuals };
-    (rows || []).forEach((row) => {
-      if (row && row.id && row.imageSrc) {
-        merged[row.id] = row.imageSrc;
-      }
-    });
-    callback(null, merged);
   });
+  return merged;
 }
 
 function normalizeTransportVisuals(input) {
@@ -358,34 +297,23 @@ function normalizeTransportVisuals(input) {
   return normalized;
 }
 
-function saveTransportVisuals(payload, callback) {
-  db.serialize(() => {
-    db.run('BEGIN TRANSACTION');
-    const stmt = db.prepare('INSERT OR REPLACE INTO transport_visuals (id, image_src) VALUES (?, ?)');
+function saveTransportVisuals(payload) {
+  const upsert = db.prepare('INSERT OR REPLACE INTO transport_visuals (id, image_src) VALUES (?, ?)');
+  db.transaction(() => {
     Object.entries(payload).forEach(([id, imageSrc]) => {
-      stmt.run(id, imageSrc);
+      upsert.run(id, imageSrc);
     });
-
-    stmt.finalize((finalizeErr) => {
-      if (finalizeErr) {
-        db.run('ROLLBACK');
-        callback(finalizeErr);
-        return;
-      }
-      db.run('COMMIT', callback);
-    });
-  });
+  })();
 }
 
 function handleTransportVisualsApi(req, res) {
   if (req.method === 'GET') {
-    fetchTransportVisuals((err, visuals) => {
-      if (err) {
-        sendJson(res, 500, { error: 'Ne mogu ucitati slike sekcija.' });
-        return;
-      }
+    try {
+      const visuals = fetchTransportVisuals();
       sendJson(res, 200, visuals);
-    });
+    } catch (err) {
+      sendJson(res, 500, { error: 'Ne mogu ucitati slike sekcija.' });
+    }
     return;
   }
 
@@ -402,13 +330,12 @@ function handleTransportVisualsApi(req, res) {
         return;
       }
 
-      saveTransportVisuals(visuals, (saveErr) => {
-        if (saveErr) {
-          sendJson(res, 500, { error: 'Ne mogu spremiti slike u bazu.' });
-          return;
-        }
+      try {
+        saveTransportVisuals(visuals);
         sendJson(res, 200, { ok: true });
-      });
+      } catch (saveErr) {
+        sendJson(res, 500, { error: 'Ne mogu spremiti slike u bazu.' });
+      }
     });
     return;
   }
@@ -417,58 +344,59 @@ function handleTransportVisualsApi(req, res) {
   res.end('Method Not Allowed');
 }
 
-function fetchFactImages(callback) {
-  db.all('SELECT id, image_src AS imageSrc FROM fact_images ORDER BY id ASC', (err, rows) => {
-    if (err) { callback(err); return; }
-    const merged = { ...defaultFactImages };
-    (rows || []).forEach((row) => {
-      if (row && row.id && row.imageSrc) merged[row.id] = row.imageSrc;
-    });
-    callback(null, merged);
+function fetchFactImages() {
+  const rows = db.prepare('SELECT id, image_src AS imageSrc FROM fact_images ORDER BY id ASC').all();
+  const merged = { ...defaultFactImages };
+  (rows || []).forEach((row) => {
+    if (row && row.id && row.imageSrc) merged[row.id] = row.imageSrc;
   });
+  return merged;
 }
 
-function saveFactImages(payload, callback) {
-  db.serialize(() => {
-    db.run('BEGIN TRANSACTION');
-    const stmt = db.prepare('INSERT OR REPLACE INTO fact_images (id, image_src) VALUES (?, ?)');
+function saveFactImages(payload) {
+  const upsert = db.prepare('INSERT OR REPLACE INTO fact_images (id, image_src) VALUES (?, ?)');
+  db.transaction(() => {
     Object.entries(payload).forEach(([id, imageSrc]) => {
-      stmt.run(id, imageSrc);
+      upsert.run(id, imageSrc);
     });
-    stmt.finalize((finalizeErr) => {
-      if (finalizeErr) { db.run('ROLLBACK'); callback(finalizeErr); return; }
-      db.run('COMMIT', callback);
-    });
-  });
+  })();
 }
 
 function handleFactImagesApi(req, res) {
   if (req.method === 'GET') {
-    fetchFactImages((err, images) => {
-      if (err) { sendJson(res, 500, { error: 'Ne mogu ucitati slike zanimljivosti.' }); return; }
+    try {
+      const images = fetchFactImages();
       sendJson(res, 200, images);
-    });
+    } catch (err) {
+      sendJson(res, 500, { error: 'Ne mogu ucitati slike zanimljivosti.' });
+    }
     return;
   }
+
   if (req.method === 'PUT') {
     readJsonBody(req, (parseErr, body) => {
       if (parseErr) { sendJson(res, 400, { error: 'Neispravan JSON.' }); return; }
       if (!body || typeof body !== 'object' || Array.isArray(body)) {
         sendJson(res, 400, { error: 'Neispravan format podataka.' }); return;
       }
+
       const normalized = {};
       for (const key of Object.keys(defaultFactImages)) {
         const val = typeof body[key] === 'string' ? body[key].trim() : '';
         if (!val) { sendJson(res, 400, { error: 'Nedostaje vrijednost za: ' + key }); return; }
         normalized[key] = val;
       }
-      saveFactImages(normalized, (saveErr) => {
-        if (saveErr) { sendJson(res, 500, { error: 'Ne mogu spremiti slike zanimljivosti.' }); return; }
+
+      try {
+        saveFactImages(normalized);
         sendJson(res, 200, { ok: true });
-      });
+      } catch (saveErr) {
+        sendJson(res, 500, { error: 'Ne mogu spremiti slike zanimljivosti.' });
+      }
     });
     return;
   }
+
   res.writeHead(405, { Allow: 'GET, PUT' });
   res.end('Method Not Allowed');
 }
