@@ -1487,11 +1487,11 @@
         }
     }
 
-    async function saveTeamToDatabase() {
+    async function saveTeamToDatabase(membersPayload = teamMembers) {
         const response = await fetch(TEAM_API_URL, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(teamMembers)
+            body: JSON.stringify(membersPayload)
         });
 
         if (!response.ok) {
@@ -1647,6 +1647,16 @@
         document.getElementById("teamEditModal").style.display = "none";
     }
 
+    function getUpdatedTeamMembers(name, role, mediaType, mediaSrc) {
+        return teamMembers.map((member, index) => {
+            if (index !== currentEditIndex) {
+                return member;
+            }
+
+            return { ...member, name, role, mediaType, mediaSrc };
+        });
+    }
+
     function saveCurrentMember() {
         const newName = document.getElementById("editMemberName").value.trim();
         const newRole = document.getElementById("editMemberRole").value.trim();
@@ -1658,11 +1668,9 @@
             const file = fileInput.files[0];
             if(file.type.startsWith("image/")) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = async function(e) {
                     newMediaSrc = e.target.result;
-                    updateMemberData(newName, newRole, newMediaType, newMediaSrc);
-                    closeModal();
-                    fileInput.value = "";
+                    await updateMemberData(newName, newRole, newMediaType, newMediaSrc);
                 };
                 reader.readAsDataURL(file);
                 return;
@@ -1680,19 +1688,23 @@
             return;
         }
         updateMemberData(newName, newRole, newMediaType, newMediaSrc);
-        closeModal();
-        fileInput.value = "";
     }
 
     async function updateMemberData(name, role, mediaType, mediaSrc) {
-        teamMembers[currentEditIndex] = { name, role, mediaType, mediaSrc };
+        const updatedMembers = getUpdatedTeamMembers(name, role, mediaType, mediaSrc);
+        const fileInput = document.getElementById("imageUploadInput");
         try {
-            await saveTeamToDatabase();
+            await saveTeamToDatabase(updatedMembers);
+            await loadTeamFromDatabase();
+            renderTeamCircles();
+            closeModal();
+            fileInput.value = "";
         } catch (error) {
+            await loadTeamFromDatabase();
+            renderTeamCircles();
             alert('Greška pri spremanju u bazu. Provjeri server i pokušaj ponovno.');
             console.error(error);
         }
-        renderTeamCircles();
     }
 
     async function initializeTeam() {
