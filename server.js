@@ -11,6 +11,17 @@ const legacyTransportVisualsFile = path.join(dataDir, 'transport_visuals.json');
 const legacyFactImagesFile = path.join(dataDir, 'fact_images.json');
 const MAX_JSON_BODY_SIZE = 50 * 1024 * 1024;
 
+function createSvgPlaceholder(label, background, foreground) {
+  const safeLabel = String(label)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800"><rect width="1200" height="800" rx="48" fill="${background}"/><text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="56" fill="${foreground}">${safeLabel}</text></svg>`;
+  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+}
+
 if (!fs.existsSync(dataDir)) {
   fs.mkdirSync(dataDir, { recursive: true });
 }
@@ -25,13 +36,35 @@ function readJsonFile(filePath, defaultValue) {
 }
 
 const defaultTeamMembers = [
+  { name: 'Clan tima 1', role: 'Dodajte poziciju', mediaType: 'image', mediaSrc: createSvgPlaceholder('Clan tima 1', '#e8f1ff', '#0f4fa8') },
+  { name: 'Clan tima 2', role: 'Dodajte poziciju', mediaType: 'image', mediaSrc: createSvgPlaceholder('Clan tima 2', '#e8f1ff', '#0f4fa8') },
+  { name: 'Clan tima 3', role: 'Dodajte poziciju', mediaType: 'image', mediaSrc: createSvgPlaceholder('Clan tima 3', '#e8f1ff', '#0f4fa8') },
+  { name: 'Clan tima 4', role: 'Dodajte poziciju', mediaType: 'image', mediaSrc: createSvgPlaceholder('Clan tima 4', '#e8f1ff', '#0f4fa8') }
+];
+
+const defaultTransportVisuals = {
+  cestovni: createSvgPlaceholder('Dodajte sliku za cestovni promet', '#eef4ff', '#0f4fa8'),
+  zeljeznicki: createSvgPlaceholder('Dodajte sliku za zeljeznicki promet', '#eef4ff', '#0f4fa8'),
+  zracni: createSvgPlaceholder('Dodajte sliku za zracni promet', '#eef4ff', '#0f4fa8'),
+  pomorski: createSvgPlaceholder('Dodajte sliku za pomorski promet', '#eef4ff', '#0f4fa8'),
+  cjevovodni: createSvgPlaceholder('Dodajte sliku za cjevovodni promet', '#eef4ff', '#0f4fa8')
+};
+
+const defaultFactImages = {
+  maglev: createSvgPlaceholder('Dodajte sliku za najbrzi vlak', '#eef4ff', '#0f4fa8'),
+  evergiven: createSvgPlaceholder('Dodajte sliku za najveci brod', '#eef4ff', '#0f4fa8'),
+  druzba: createSvgPlaceholder('Dodajte sliku za najduzi cjevovod', '#eef4ff', '#0f4fa8'),
+  seuljeju: createSvgPlaceholder('Dodajte sliku za najprometniju rutu', '#eef4ff', '#0f4fa8')
+};
+
+const legacyDemoTeamMembers = [
   { name: 'Marko Tkalcic', role: 'Voditelj logistike', mediaType: 'image', mediaSrc: 'https://randomuser.me/api/portraits/men/32.jpg' },
   { name: 'Ana Knezevic', role: 'Planerica transporta', mediaType: 'image', mediaSrc: 'https://randomuser.me/api/portraits/women/68.jpg' },
   { name: 'Luka Babic', role: 'Koordinator voznog reda', mediaType: 'image', mediaSrc: 'https://randomuser.me/api/portraits/men/45.jpg' },
   { name: 'Iva Pavic', role: 'Specijalistica za zracni cargo', mediaType: 'video', mediaSrc: 'https://www.w3schools.com/html/mov_bbb.mp4' }
 ];
 
-const defaultTransportVisuals = {
+const legacyDemoTransportVisuals = {
   cestovni: 'https://images.unsplash.com/photo-1556388158-158ea5ccacbd?auto=format&fit=crop&w=1200&q=80',
   zeljeznicki: 'https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=1200&q=80',
   zracni: 'https://images.unsplash.com/photo-1464037866556-6812c9d1c72e?auto=format&fit=crop&w=1200&q=80',
@@ -39,7 +72,7 @@ const defaultTransportVisuals = {
   cjevovodni: 'https://images.unsplash.com/photo-1489515217757-5fd1be406fef?auto=format&fit=crop&w=1200&q=80'
 };
 
-const defaultFactImages = {
+const legacyDemoFactImages = {
   maglev: 'https://images.unsplash.com/photo-1535083783855-aaab7f5afdb8?auto=format&fit=crop&w=800&q=80',
   evergiven: 'https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=800&q=80',
   druzba: 'https://images.unsplash.com/photo-1513828583688-c52646db42da?auto=format&fit=crop&w=800&q=80',
@@ -87,6 +120,39 @@ function rowCount(tableName) {
   const statement = db.prepare(`SELECT COUNT(*) AS count FROM ${tableName}`);
   const row = statement.get();
   return Number(row.count || 0);
+}
+
+function matchesTeamMembers(currentMembers, referenceMembers) {
+  if (!Array.isArray(currentMembers) || currentMembers.length !== referenceMembers.length) {
+    return false;
+  }
+
+  for (let i = 0; i < referenceMembers.length; i += 1) {
+    const current = currentMembers[i] || {};
+    const reference = referenceMembers[i];
+    if (
+      current.name !== reference.name ||
+      current.role !== reference.role ||
+      current.mediaType !== reference.mediaType ||
+      current.mediaSrc !== reference.mediaSrc
+    ) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+function matchesKeyValuePayload(currentPayload, referencePayload) {
+  const keys = Object.keys(referencePayload);
+  for (let i = 0; i < keys.length; i += 1) {
+    const key = keys[i];
+    if (currentPayload[key] !== referencePayload[key]) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 function overwriteTeamMembers(members) {
@@ -159,6 +225,27 @@ function seedDatabase() {
     }
 
     overwriteKeyValueTable('fact_images', hasValidFactImages ? normalizedFactImages : { ...defaultFactImages });
+  }
+
+  const currentTeamMembers = fetchMembers();
+  if (matchesTeamMembers(currentTeamMembers, legacyDemoTeamMembers)) {
+    overwriteTeamMembers(defaultTeamMembers.map((member, index) => ({
+      id: index,
+      name: member.name,
+      role: member.role,
+      mediaType: member.mediaType,
+      mediaSrc: member.mediaSrc
+    })));
+  }
+
+  const currentTransportVisuals = fetchTransportVisuals();
+  if (matchesKeyValuePayload(currentTransportVisuals, legacyDemoTransportVisuals)) {
+    overwriteKeyValueTable('transport_visuals', { ...defaultTransportVisuals });
+  }
+
+  const currentFactImages = fetchFactImages();
+  if (matchesKeyValuePayload(currentFactImages, legacyDemoFactImages)) {
+    overwriteKeyValueTable('fact_images', { ...defaultFactImages });
   }
 }
 
