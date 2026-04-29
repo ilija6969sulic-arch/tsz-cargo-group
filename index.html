@@ -627,6 +627,7 @@
             display: grid;
             grid-template-columns: minmax(520px, 680px) minmax(280px, 1fr);
             min-height: 520px;
+            max-height: inherit;
         }
         .profile-viewer-stage {
             position: relative;
@@ -634,6 +635,7 @@
             align-items: center;
             justify-content: center;
             padding: 2.4rem 2rem;
+            overflow: hidden;
             background:
                 radial-gradient(circle at top, rgba(255,255,255,0.9), rgba(255,255,255,0) 56%),
                 linear-gradient(160deg, #102f5d 0%, #1660bd 55%, #d9e8ff 100%);
@@ -730,6 +732,7 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
+            min-width: 0;
         }
         .profile-viewer-copy h3 {
             margin: 0;
@@ -756,6 +759,8 @@
             flex-wrap: wrap;
             gap: 0.8rem;
             margin-top: 1.7rem;
+            position: relative;
+            z-index: 1;
         }
         .profile-viewer-btn {
             border: none;
@@ -795,6 +800,15 @@
             cursor: pointer;
             font-size: 1rem;
             z-index: 3;
+        }
+
+        #teamProfileModal {
+            overscroll-behavior: contain;
+            touch-action: none;
+        }
+        #teamProfileModal .team-modal-content {
+            overscroll-behavior: contain;
+            touch-action: none;
         }
 
         .cards-section {
@@ -983,10 +997,30 @@
             .team-circles-wrapper { gap: 1.5rem; }
             .team-card { width: 160px; }
             .team-circle { width: 140px; height: 140px; }
-            .profile-viewer-grid { grid-template-columns: 1fr; }
-            .profile-viewer-stage { min-height: 320px; padding: 1.4rem 1rem 0.8rem; }
-            .profile-viewer-copy { padding: 1.35rem 1.15rem 1.6rem; }
+            .profile-viewer-grid {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto minmax(0, 1fr);
+                min-height: auto;
+            }
+            .profile-viewer-stage {
+                min-height: 320px;
+                padding: 1.4rem 1rem 0.8rem;
+            }
+            .profile-viewer-copy {
+                padding: 1.35rem 1.15rem 1rem;
+                justify-content: flex-start;
+                overflow: auto;
+                overscroll-behavior: contain;
+            }
             .profile-card-scene { width: min(84vw, 520px); }
+            .profile-viewer-actions {
+                position: sticky;
+                bottom: 0;
+                margin-top: 1.25rem;
+                padding-top: 0.9rem;
+                padding-bottom: 0.2rem;
+                background: linear-gradient(180deg, rgba(248,251,255,0) 0%, rgba(248,251,255,0.94) 24%, #f8fbff 100%);
+            }
             .detail-visual img { height: 200px; }
             .route-row { grid-template-columns: 1fr; }
             .hero-illustrations i {
@@ -1965,6 +1999,9 @@
         backImage.src = cardElement.dataset.backSrc;
         backImage.alt = cardElement.dataset.backAlt;
         resetTeamProfileRotation();
+        document.body.style.overflow = 'hidden';
+        document.body.style.touchAction = 'none';
+        document.documentElement.style.overflow = 'hidden';
         modal.style.display = 'flex';
         modal.setAttribute('aria-hidden', 'false');
     }
@@ -1973,6 +2010,9 @@
         const modal = document.getElementById('teamProfileModal');
         if (!modal) return;
         endTeamProfileDrag();
+        document.body.style.overflow = '';
+        document.body.style.touchAction = '';
+        document.documentElement.style.overflow = '';
         modal.style.display = 'none';
         modal.setAttribute('aria-hidden', 'true');
         resetTeamProfileRotation();
@@ -2008,6 +2048,16 @@
     });
     document.getElementById('teamProfileCard3d').addEventListener('pointercancel', () => {
         endTeamProfileDrag();
+    });
+    document.getElementById('teamProfileModal').addEventListener('wheel', (event) => {
+        if (event.ctrlKey) {
+            event.preventDefault();
+        }
+    }, { passive: false });
+    ['gesturestart', 'gesturechange', 'gestureend'].forEach((eventName) => {
+        document.getElementById('teamProfileModal').addEventListener(eventName, (event) => {
+            event.preventDefault();
+        }, { passive: false });
     });
     document.getElementById('teamProfileCard3d').addEventListener('keydown', (event) => {
         if (event.key === 'Enter') {
