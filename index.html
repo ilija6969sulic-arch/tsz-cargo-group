@@ -476,11 +476,7 @@
             text-align: center;
             width: 220px;
             max-width: 100%;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        .team-card:hover {
-            transform: translateY(-8px);
+            cursor: default;
         }
         .team-circle {
             width: 180px;
@@ -1408,33 +1404,6 @@
     </div>
 </div>
 
-<!-- Modal za uređivanje tima -->
-<div id="teamEditModal" class="team-modal">
-    <div class="team-modal-content">
-        <h3><i class="fas fa-user-edit"></i> Uredi člana tima</h3>
-        <label>Ime i prezime:</label>
-        <input type="text" id="editMemberName" placeholder="npr. Ana Knežević">
-        <label>Pozicija / opis:</label>
-        <input type="text" id="editMemberRole" placeholder="npr. Voditeljica cestovnog transporta">
-        <label>Vrsta medija:</label>
-        <select id="editMediaType">
-            <option value="image">Slika (JPG/PNG/GIF)</option>
-            <option value="video">Video (MP4, YouTube, Vimeo)</option>
-        </select>
-        <label>URL medija (poveznica):</label>
-        <input type="text" id="editMediaUrl" placeholder="https://... slika ili video">
-        <div class="file-upload-row">
-            <span>ILI upload slike:</span>
-            <input type="file" id="imageUploadInput" accept="image/*">
-        </div>
-        <div class="small-note"><i class="fas fa-info-circle"></i> Za video: podržani MP4 link ili YouTube/Vimeo URL (iframe će se automatski ugraditi)</div>
-        <div class="modal-buttons">
-            <button class="close-modal-btn" id="closeModalBtn">Odustani</button>
-            <button class="save-modal-btn" id="saveTeamBtn">Spremi promjene</button>
-        </div>
-    </div>
-</div>
-
 <script>
     const TEAM_API_URL = '/api/team-members';
     const TRANSPORT_VISUALS_API_URL = '/api/transport-visuals';
@@ -1458,13 +1427,13 @@
     let transportVisuals = { ...defaultTransportVisuals };
     let currentTransportKey = '';
 
-    let teamMembers = [
-        { name: "Clan tima 1", role: "Dodajte poziciju", mediaType: "image", mediaSrc: createSvgPlaceholder('Clan tima 1', '#e8f1ff', '#0f4fa8') },
-        { name: "Clan tima 2", role: "Dodajte poziciju", mediaType: "image", mediaSrc: createSvgPlaceholder('Clan tima 2', '#e8f1ff', '#0f4fa8') },
-        { name: "Clan tima 3", role: "Dodajte poziciju", mediaType: "image", mediaSrc: createSvgPlaceholder('Clan tima 3', '#e8f1ff', '#0f4fa8') },
-        { name: "Clan tima 4", role: "Dodajte poziciju", mediaType: "image", mediaSrc: createSvgPlaceholder('Clan tima 4', '#e8f1ff', '#0f4fa8') }
+    const fallbackTeamMembers = [
+        { name: "Leo Škrobo", role: "Direktor", mediaType: "image", mediaSrc: "slike/leo.png" },
+        { name: "Ivana Stojčević", role: "Financijska direktorica", mediaType: "image", mediaSrc: "slike/ivana.jpg" },
+        { name: "Ena Stupar", role: "Direktorica logistike", mediaType: "image", mediaSrc: "slike/ena.jpg" }
     ];
-    let currentEditIndex = 0;
+
+    let teamMembers = fallbackTeamMembers.map((member) => ({ ...member }));
 
     async function loadTeamFromDatabase() {
         try {
@@ -1474,29 +1443,20 @@
             }
 
             const data = await response.json();
-            if (Array.isArray(data) && data.length > 0) {
+            if (Array.isArray(data) && data.length === fallbackTeamMembers.length) {
                 teamMembers = data.map((item) => ({
                     name: item.name,
                     role: item.role || '',
                     mediaType: item.mediaType,
                     mediaSrc: item.mediaSrc
                 }));
+                return;
             }
         } catch (error) {
             console.error(error);
         }
-    }
 
-    async function saveTeamToDatabase(membersPayload = teamMembers) {
-        const response = await fetch(TEAM_API_URL, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(membersPayload)
-        });
-
-        if (!response.ok) {
-            throw new Error('Spremanje u bazu nije uspjelo.');
-        }
+        teamMembers = fallbackTeamMembers.map((member) => ({ ...member }));
     }
 
     function applyTransportVisuals() {
@@ -1625,86 +1585,8 @@
             card.appendChild(circleDiv);
             card.appendChild(nameSpan);
             card.appendChild(roleSpan);
-            card.addEventListener("click", (e) => {
-                e.stopPropagation();
-                currentEditIndex = idx;
-                openEditModal(idx);
-            });
             wrapper.appendChild(card);
         });
-    }
-
-    function openEditModal(index) {
-        const member = teamMembers[index];
-        document.getElementById("editMemberName").value = member.name || "";
-        document.getElementById("editMemberRole").value = member.role || "";
-        document.getElementById("editMediaType").value = member.mediaType;
-        document.getElementById("editMediaUrl").value = member.mediaSrc || "";
-        document.getElementById("teamEditModal").style.display = "flex";
-    }
-
-    function closeModal() {
-        document.getElementById("teamEditModal").style.display = "none";
-    }
-
-    function getUpdatedTeamMembers(name, role, mediaType, mediaSrc) {
-        return teamMembers.map((member, index) => {
-            if (index !== currentEditIndex) {
-                return member;
-            }
-
-            return { ...member, name, role, mediaType, mediaSrc };
-        });
-    }
-
-    function saveCurrentMember() {
-        const newName = document.getElementById("editMemberName").value.trim();
-        const newRole = document.getElementById("editMemberRole").value.trim();
-        if(newName === "") { alert("Molimo unesite ime člana tima."); return; }
-        const newMediaType = document.getElementById("editMediaType").value;
-        let newMediaSrc = document.getElementById("editMediaUrl").value.trim();
-        const fileInput = document.getElementById("imageUploadInput");
-        if(fileInput.files && fileInput.files.length > 0) {
-            const file = fileInput.files[0];
-            if(file.type.startsWith("image/")) {
-                const reader = new FileReader();
-                reader.onload = async function(e) {
-                    newMediaSrc = e.target.result;
-                    await updateMemberData(newName, newRole, newMediaType, newMediaSrc);
-                };
-                reader.readAsDataURL(file);
-                return;
-            } else {
-                alert("Molimo odaberite sliku.");
-                return;
-            }
-        }
-        if(newMediaType === "video" && !newMediaSrc) {
-            alert("Unesite URL videozapisa (MP4, YouTube ili Vimeo).");
-            return;
-        }
-        if(newMediaType === "image" && !newMediaSrc) {
-            alert("Unesite URL slike ili uploadajte sliku.");
-            return;
-        }
-        updateMemberData(newName, newRole, newMediaType, newMediaSrc);
-    }
-
-    async function updateMemberData(name, role, mediaType, mediaSrc) {
-        const updatedMembers = getUpdatedTeamMembers(name, role, mediaType, mediaSrc);
-        const fileInput = document.getElementById("imageUploadInput");
-        try {
-            await saveTeamToDatabase(updatedMembers);
-            await loadTeamFromDatabase();
-            renderTeamCircles();
-            closeModal();
-            fileInput.value = "";
-        } catch (error) {
-            await loadTeamFromDatabase();
-            renderTeamCircles();
-            alert('Greška pri spremanju u bazu. Provjeri server i pokušaj ponovno.');
-            console.error(error);
-        }
     }
 
     async function initializeTeam() {
@@ -1716,8 +1598,6 @@
     loadTransportVisualsFromDatabase();
 
     // Eventi za modal
-    document.getElementById("closeModalBtn").addEventListener("click", closeModal);
-    document.getElementById("saveTeamBtn").addEventListener("click", saveCurrentMember);
     document.getElementById('closeTransportModalBtn').addEventListener('click', closeTransportModal);
     document.getElementById('saveTransportBtn').addEventListener('click', saveTransportVisual);
     document.querySelectorAll('.transport-edit-btn').forEach((button) => {
@@ -1727,8 +1607,6 @@
         });
     });
     window.addEventListener("click", (e) => {
-        const modal = document.getElementById("teamEditModal");
-        if(e.target === modal) closeModal();
         const transportModal = document.getElementById('transportEditModal');
         if (e.target === transportModal) closeTransportModal();
     });

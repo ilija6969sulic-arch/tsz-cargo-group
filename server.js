@@ -36,10 +36,9 @@ function readJsonFile(filePath, defaultValue) {
 }
 
 const defaultTeamMembers = [
-  { name: 'Clan tima 1', role: 'Dodajte poziciju', mediaType: 'image', mediaSrc: createSvgPlaceholder('Clan tima 1', '#e8f1ff', '#0f4fa8') },
-  { name: 'Clan tima 2', role: 'Dodajte poziciju', mediaType: 'image', mediaSrc: createSvgPlaceholder('Clan tima 2', '#e8f1ff', '#0f4fa8') },
-  { name: 'Clan tima 3', role: 'Dodajte poziciju', mediaType: 'image', mediaSrc: createSvgPlaceholder('Clan tima 3', '#e8f1ff', '#0f4fa8') },
-  { name: 'Clan tima 4', role: 'Dodajte poziciju', mediaType: 'image', mediaSrc: createSvgPlaceholder('Clan tima 4', '#e8f1ff', '#0f4fa8') }
+  { name: 'Leo Škrobo', role: 'Direktor', mediaType: 'image', mediaSrc: 'slike/leo.png' },
+  { name: 'Ivana Stojčević', role: 'Financijska direktorica', mediaType: 'image', mediaSrc: 'slike/ivana.jpg' },
+  { name: 'Ena Stupar', role: 'Direktorica logistike', mediaType: 'image', mediaSrc: 'slike/ena.jpg' }
 ];
 
 const defaultTransportVisuals = {
@@ -173,6 +172,16 @@ function overwriteTeamMembers(members) {
   }
 }
 
+function getStoredDefaultTeamMembers() {
+  return defaultTeamMembers.map((member, index) => ({
+    id: index,
+    name: member.name,
+    role: member.role,
+    mediaType: member.mediaType,
+    mediaSrc: member.mediaSrc
+  }));
+}
+
 function overwriteKeyValueTable(tableName, payload) {
   const keys = Object.keys(payload);
   const deleteStatement = db.prepare(`DELETE FROM ${tableName}`);
@@ -195,13 +204,7 @@ function overwriteKeyValueTable(tableName, payload) {
 function seedDatabase() {
   if (rowCount('team_members') === 0) {
     const legacyMembers = readJsonFile(legacyTeamFile, null);
-    const seedMembers = normalizeMembers(legacyMembers) || defaultTeamMembers.map((member, index) => ({
-      id: index,
-      name: member.name,
-      role: member.role,
-      mediaType: member.mediaType,
-      mediaSrc: member.mediaSrc
-    }));
+    const seedMembers = normalizeMembers(legacyMembers) || getStoredDefaultTeamMembers();
     overwriteTeamMembers(seedMembers);
   }
 
@@ -228,14 +231,12 @@ function seedDatabase() {
   }
 
   const currentTeamMembers = fetchMembers();
-  if (matchesTeamMembers(currentTeamMembers, legacyDemoTeamMembers)) {
-    overwriteTeamMembers(defaultTeamMembers.map((member, index) => ({
-      id: index,
-      name: member.name,
-      role: member.role,
-      mediaType: member.mediaType,
-      mediaSrc: member.mediaSrc
-    })));
+  if (
+    currentTeamMembers.length !== defaultTeamMembers.length ||
+    matchesTeamMembers(currentTeamMembers, legacyDemoTeamMembers) ||
+    !matchesTeamMembers(currentTeamMembers, getStoredDefaultTeamMembers())
+  ) {
+    overwriteTeamMembers(getStoredDefaultTeamMembers());
   }
 
   const currentTransportVisuals = fetchTransportVisuals();
@@ -394,17 +395,7 @@ function fetchMembers() {
     return members;
   }
 
-  return defaultTeamMembers.map((member, index) => ({
-    id: index,
-    name: member.name,
-    role: member.role,
-    mediaType: member.mediaType,
-    mediaSrc: member.mediaSrc
-  }));
-}
-
-function saveMembers(members) {
-  overwriteTeamMembers(members);
+  return getStoredDefaultTeamMembers();
 }
 
 function handleTeamApi(req, res) {
@@ -418,31 +409,7 @@ function handleTeamApi(req, res) {
     return;
   }
 
-  if (req.method === 'PUT') {
-    readJsonBody(req, (parseErr, body) => {
-      if (parseErr) {
-        const statusCode = parseErr.statusCode || 400;
-        sendJson(res, statusCode, { error: statusCode === 413 ? 'Payload je prevelik za spremanje.' : 'Neispravan JSON payload.' });
-        return;
-      }
-
-      const members = normalizeMembers(body);
-      if (!members) {
-        sendJson(res, 400, { error: 'Podaci za tim nisu valjani.' });
-        return;
-      }
-
-      try {
-        saveMembers(members);
-        sendJson(res, 200, { ok: true });
-      } catch (saveErr) {
-        sendJson(res, 500, { error: 'Ne mogu spremiti podatke u bazu.' });
-      }
-    });
-    return;
-  }
-
-  res.writeHead(405, { 'Allow': 'GET, PUT' });
+  res.writeHead(405, { 'Allow': 'GET' });
   res.end('Method Not Allowed');
 }
 
