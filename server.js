@@ -269,6 +269,13 @@ const server = http.createServer((req, res) => {
   }
 
   let requestUrl = req.url.split('?')[0];
+  try {
+    requestUrl = decodeURIComponent(requestUrl);
+  } catch (error) {
+    res.writeHead(400);
+    res.end('Bad Request');
+    return;
+  }
 
   const cleanRoutes = {
     '/': '/index.html',

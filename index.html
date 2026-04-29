@@ -476,7 +476,16 @@
             text-align: center;
             width: 220px;
             max-width: 100%;
-            cursor: default;
+            cursor: pointer;
+            transition: transform 0.22s ease;
+        }
+        .team-card:hover {
+            transform: translateY(-8px);
+        }
+        .team-card:focus-visible {
+            outline: 3px solid #87aef5;
+            outline-offset: 6px;
+            border-radius: 24px;
         }
         .team-circle {
             width: 180px;
@@ -525,11 +534,13 @@
             font-weight: 600;
             color: #4f6086;
         }
-        .edit-hint {
-            font-size: 0.75rem;
-            color: #5d6f95;
-            margin-top: 6px;
-            opacity: 0.7;
+        .team-profile-trigger {
+            margin-top: 0.75rem;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: #5c76a6;
         }
 
         .team-modal {
@@ -604,6 +615,186 @@
             font-size: 0.7rem;
             color: gray;
             margin-top: 0.2rem;
+        }
+        .profile-viewer-shell {
+            width: min(96vw, 1100px);
+            padding: 0;
+            overflow: hidden;
+            border-radius: 32px;
+            background: linear-gradient(145deg, #f8fbff 0%, #e7f0ff 50%, #f9fbff 100%);
+        }
+        .profile-viewer-grid {
+            display: grid;
+            grid-template-columns: minmax(520px, 680px) minmax(280px, 1fr);
+            min-height: 520px;
+        }
+        .profile-viewer-stage {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2.4rem 2rem;
+            background:
+                radial-gradient(circle at top, rgba(255,255,255,0.9), rgba(255,255,255,0) 56%),
+                linear-gradient(160deg, #102f5d 0%, #1660bd 55%, #d9e8ff 100%);
+        }
+        .profile-viewer-stage::before,
+        .profile-viewer-stage::after {
+            content: "";
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .profile-viewer-stage::before {
+            width: 180px;
+            height: 180px;
+            top: 28px;
+            left: 20px;
+            background: rgba(255,255,255,0.16);
+            filter: blur(2px);
+        }
+        .profile-viewer-stage::after {
+            width: 220px;
+            height: 220px;
+            right: -30px;
+            bottom: 16px;
+            background: rgba(197,221,255,0.18);
+            filter: blur(8px);
+        }
+        .profile-card-scene {
+            position: relative;
+            width: min(100%, 560px);
+            aspect-ratio: 1.75;
+            perspective: 1800px;
+            z-index: 1;
+        }
+        .profile-card-3d {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            filter: drop-shadow(0 32px 42px rgba(10, 23, 47, 0.3));
+            transform-style: preserve-3d;
+            transition: transform 0.16s ease-out;
+            touch-action: none;
+            user-select: none;
+        }
+        .profile-card-3d.is-dragging {
+            cursor: grabbing;
+            transition: none;
+        }
+        .profile-card-face {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            border-radius: 28px;
+            background: #eff4ff;
+            border: 1px solid rgba(255,255,255,0.2);
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            transform-style: preserve-3d;
+        }
+        .profile-card-face.front {
+            transform: rotateY(0deg) translateZ(1px);
+        }
+        .profile-card-face img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            pointer-events: none;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            transform: translateZ(0);
+        }
+        .profile-card-3d.showing-back .profile-card-face.front img {
+            transform: translateZ(0) scaleX(-1);
+        }
+        .profile-card-face.back {
+            display: none;
+        }
+        .profile-card-shadow {
+            position: absolute;
+            left: 10%;
+            right: 10%;
+            bottom: -16px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(3, 11, 25, 0.28);
+            filter: blur(18px);
+            z-index: 0;
+        }
+        .profile-viewer-copy {
+            padding: 2.6rem 2.4rem;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .profile-viewer-copy h3 {
+            margin: 0;
+            color: #0f356f;
+            font-size: clamp(2rem, 3vw, 2.8rem);
+        }
+        .profile-viewer-role {
+            margin-top: 0.8rem;
+            display: inline-flex;
+            align-self: flex-start;
+            padding: 0.5rem 1rem;
+            border-radius: 999px;
+            background: #deebff;
+            color: #14509a;
+            font-weight: 700;
+        }
+        .profile-viewer-copy p {
+            margin: 1.2rem 0 0;
+            color: #50627f;
+            line-height: 1.7;
+        }
+        .profile-viewer-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 1.7rem;
+        }
+        .profile-viewer-btn {
+            border: none;
+            border-radius: 999px;
+            padding: 0.85rem 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s ease, filter 0.2s ease;
+        }
+        .profile-viewer-btn:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.02);
+        }
+        .profile-viewer-btn.primary {
+            background: linear-gradient(135deg, #0f4fa8, #1473e6);
+            color: white;
+        }
+        .profile-viewer-btn.secondary {
+            background: #e8f1ff;
+            color: #204a88;
+        }
+        .profile-viewer-note {
+            margin-top: 1rem;
+            font-size: 0.88rem;
+            color: #657a9d;
+        }
+        .profile-viewer-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(12, 39, 77, 0.12);
+            color: #0f4fa8;
+            cursor: pointer;
+            font-size: 1rem;
+            z-index: 3;
         }
 
         .cards-section {
@@ -792,6 +983,10 @@
             .team-circles-wrapper { gap: 1.5rem; }
             .team-card { width: 160px; }
             .team-circle { width: 140px; height: 140px; }
+            .profile-viewer-grid { grid-template-columns: 1fr; }
+            .profile-viewer-stage { min-height: 320px; padding: 1.4rem 1rem 0.8rem; }
+            .profile-viewer-copy { padding: 1.35rem 1.15rem 1.6rem; }
+            .profile-card-scene { width: min(84vw, 520px); }
             .detail-visual img { height: 200px; }
             .route-row { grid-template-columns: 1fr; }
             .hero-illustrations i {
@@ -1222,6 +1417,9 @@
             .team-modal-content {
                 max-height: min(80dvh, 720px);
             }
+            .profile-viewer-shell {
+                width: min(100vw - 1rem, 760px);
+            }
             .small-btn,
             .btn-pink {
                 width: 100%;
@@ -1385,6 +1583,37 @@
 
 <footer class="footer"><div class="footer-grid"><div><h4>Brzi linkovi</h4><a href="#hero">Početna</a><br><a href="#cestovni">Cestovni</a><br><a href="#zeljeznicki">Željeznički</a><br><a href="#zracni">Zračni</a><br><a href="#pomorski">Pomorski</a><br><a href="#cjevovodni">Cjevovodni</a><br><a href="/cjenik" style="color:#87e6c5; font-weight:700;">📄 Digitalni cjenik</a><br><a href="/pracenje-posiljke" style="color:#87e6c5; font-weight:700;">🗺 Praćenje pošiljke</a></div><div><h4>Kontakt</h4><p>📞 +385 97 652 2231<br>✉️ tszcargogroup@gmail.com<br>📍 Lokacija: Zagreb</p><p><strong>OIB: 57412893647</strong><br>Pravni oblik: Dioničko društvo<br><strong style="color:#87e6c5;">Temeljni kapital: 2.654.450,00 EUR</strong></p></div><div><h4>TŠZ Cargo Group</h4><p>„Kad teret krene s nama na put, stiže brže nego što kažeš TŠZ Cargo Group“ – više od 15 godina iskustva.</p><div class="social-icons"><i class="fab fa-instagram"></i><i class="fab fa-facebook"></i><i class="fab fa-linkedin"></i></div></div></div><div style="text-align:center; margin-top:2rem;">&copy; 2026 TŠZ Cargo Group – Logistika budućnosti. Sva prava pridržana.</div></footer>
 
+<div id="teamProfileModal" class="team-modal" aria-hidden="true">
+    <div class="team-modal-content profile-viewer-shell">
+        <button class="profile-viewer-close" id="closeTeamProfileModalBtn" type="button" aria-label="Zatvori prikaz člana tima"><i class="fas fa-times"></i></button>
+        <div class="profile-viewer-grid">
+            <div class="profile-viewer-stage">
+                <div class="profile-card-scene">
+                    <div class="profile-card-shadow"></div>
+                    <div class="profile-card-3d" id="teamProfileCard3d" role="button" tabindex="0" aria-label="Zakreni karticu člana tima">
+                        <div class="profile-card-face front">
+                            <img id="teamProfileCardFront" src="" alt="Prednja strana kartice člana tima">
+                        </div>
+                        <div class="profile-card-face back">
+                            <img id="teamProfileCardBack" src="" alt="Stražnja strana kartice člana tima">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="profile-viewer-copy">
+                <h3 id="teamProfileName">Član tima</h3>
+                <div class="profile-viewer-role" id="teamProfileRole">Pozicija</div>
+                <p id="teamProfileDescription"></p>
+                <div class="profile-viewer-actions">
+                    <button class="profile-viewer-btn primary" id="flipTeamProfileCardBtn" type="button">Zakreni 180°</button>
+                    <button class="profile-viewer-btn secondary" id="resetTeamProfileCardBtn" type="button">Vrati karticu ravno</button>
+                </div>
+                <div class="profile-viewer-note">Karticu možeš okretati mišem ili prstom u bilo kojem smjeru. Za brzi pogled na poleđinu koristi gumb za zakret od 180°.</div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div id="transportEditModal" class="team-modal">
     <div class="team-modal-content">
         <h3><i class="fas fa-image"></i> Uredi sliku sekcije</h3>
@@ -1426,6 +1655,49 @@
     };
     let transportVisuals = { ...defaultTransportVisuals };
     let currentTransportKey = '';
+    const teamProfileRotation = {
+        x: 0,
+        y: 0,
+        dragging: false,
+        startX: 0,
+        startY: 0,
+        originX: 0,
+        originY: 0,
+        pointerId: null
+    };
+
+    const teamCardAssetsByName = {
+        'Leo Škrobo': {
+            frontImage: 'kartice za slike/Leo kartice/1.png',
+            backImage: 'kartice za slike/Leo kartice/2.png',
+            description: 'Operativno vodi TŠZ Cargo Group, usmjerava razvoj tvrtke i koordinira ključne strateške odluke kroz sve prometne grane i logističke projekte.'
+        },
+        'Ivana Stojčević': {
+            frontImage: 'kartice za slike/Ivana kartice/1.png',
+            backImage: 'kartice za slike/Ivana kartice/2.png',
+            description: 'Vodi financijsko planiranje, kontrolu troškova i stabilnost poslovanja kako bi svaka operacija i investicija tvrtke bila precizno pokrivena.'
+        },
+        'Ena Stupar': {
+            frontImage: 'kartice za slike/Ena kartica/prva strana.png',
+            backImage: 'kartice za slike/Ena kartica/druga strana.png',
+            description: 'Zadužena je za logističke procese, organizaciju operativa i optimizaciju toka robe kako bi isporuke bile pouzdane, brze i uredno koordinirane.'
+        }
+    };
+
+    function enrichTeamMember(member) {
+        const cardAssets = teamCardAssetsByName[member.name] || {};
+        const frontImage = cardAssets.frontImage || member.mediaSrc;
+        const backImage = cardAssets.backImage && cardAssets.backImage !== frontImage
+            ? cardAssets.backImage
+            : member.mediaSrc;
+
+        return {
+            ...member,
+            cardFront: frontImage,
+            cardBack: backImage,
+            description: cardAssets.description || 'Pregled člana tima.'
+        };
+    }
 
     const fallbackTeamMembers = [
         { name: "Leo Škrobo", role: "Direktor", mediaType: "image", mediaSrc: "slike/leo.png" },
@@ -1433,7 +1705,7 @@
         { name: "Ena Stupar", role: "Direktorica logistike", mediaType: "image", mediaSrc: "slike/ena.jpg" }
     ];
 
-    let teamMembers = fallbackTeamMembers.map((member) => ({ ...member }));
+    let teamMembers = fallbackTeamMembers.map((member) => enrichTeamMember({ ...member }));
 
     async function loadTeamFromDatabase() {
         try {
@@ -1444,7 +1716,7 @@
 
             const data = await response.json();
             if (Array.isArray(data) && data.length === fallbackTeamMembers.length) {
-                teamMembers = data.map((item) => ({
+                teamMembers = data.map((item) => enrichTeamMember({
                     name: item.name,
                     role: item.role || '',
                     mediaType: item.mediaType,
@@ -1456,7 +1728,7 @@
             console.error(error);
         }
 
-        teamMembers = fallbackTeamMembers.map((member) => ({ ...member }));
+        teamMembers = fallbackTeamMembers.map((member) => enrichTeamMember({ ...member }));
     }
 
     function applyTransportVisuals() {
@@ -1573,6 +1845,9 @@
             const card = document.createElement("div");
             card.className = "team-card";
             card.setAttribute("data-index", idx);
+            card.tabIndex = 0;
+            card.setAttribute("role", "button");
+            card.setAttribute("aria-label", `Otvori profil člana ${member.name}`);
             const circleDiv = document.createElement("div");
             circleDiv.className = "team-circle";
             circleDiv.innerHTML = getMediaHTML(member);
@@ -1582,11 +1857,129 @@
             const roleSpan = document.createElement("div");
             roleSpan.className = "team-role";
             roleSpan.innerText = member.role || "Pozicija nije postavljena";
+            const triggerHint = document.createElement("div");
+            triggerHint.className = "team-profile-trigger";
+            triggerHint.innerText = "Otvori 3D karticu";
             card.appendChild(circleDiv);
             card.appendChild(nameSpan);
             card.appendChild(roleSpan);
+            card.appendChild(triggerHint);
+            card.addEventListener("click", () => openTeamProfileModal(idx));
+            card.addEventListener("keydown", (event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    openTeamProfileModal(idx);
+                }
+            });
             wrapper.appendChild(card);
         });
+    }
+
+    function setTeamProfileFlipped(isFlipped) {
+        setTeamProfileRotation(teamProfileRotation.x, isFlipped ? 180 : 0);
+    }
+
+    function setTeamProfileRotation(rotationX, rotationY) {
+        const cardElement = document.getElementById('teamProfileCard3d');
+        if (!cardElement) return;
+
+        teamProfileRotation.x = Math.max(-70, Math.min(70, rotationX));
+        teamProfileRotation.y = rotationY;
+        cardElement.style.transform = `rotateX(${teamProfileRotation.x}deg) rotateY(${teamProfileRotation.y}deg)`;
+        syncTeamProfileVisibleSide();
+    }
+
+    function syncTeamProfileVisibleSide() {
+        const cardElement = document.getElementById('teamProfileCard3d');
+        const frontImage = document.getElementById('teamProfileCardFront');
+        if (!cardElement || !frontImage) return;
+
+        const normalizedY = ((teamProfileRotation.y % 360) + 360) % 360;
+        const showBack = normalizedY > 90 && normalizedY < 270;
+        const targetSrc = showBack ? cardElement.dataset.backSrc : cardElement.dataset.frontSrc;
+        const targetAlt = showBack ? cardElement.dataset.backAlt : cardElement.dataset.frontAlt;
+
+        cardElement.classList.toggle('showing-back', showBack);
+
+        if (targetSrc && frontImage.getAttribute('src') !== targetSrc) {
+            frontImage.src = targetSrc;
+        }
+        if (targetAlt && frontImage.getAttribute('alt') !== targetAlt) {
+            frontImage.alt = targetAlt;
+        }
+    }
+
+    function resetTeamProfileRotation() {
+        setTeamProfileRotation(0, 0);
+    }
+
+    function startTeamProfileDrag(clientX, clientY, pointerId) {
+        const cardElement = document.getElementById('teamProfileCard3d');
+        if (!cardElement) return;
+
+        teamProfileRotation.dragging = true;
+        teamProfileRotation.startX = clientX;
+        teamProfileRotation.startY = clientY;
+        teamProfileRotation.originX = teamProfileRotation.x;
+        teamProfileRotation.originY = teamProfileRotation.y;
+        teamProfileRotation.pointerId = pointerId;
+        cardElement.classList.add('is-dragging');
+    }
+
+    function moveTeamProfileDrag(clientX, clientY) {
+        if (!teamProfileRotation.dragging) return;
+
+        const deltaX = clientX - teamProfileRotation.startX;
+        const deltaY = clientY - teamProfileRotation.startY;
+        const nextRotationY = teamProfileRotation.originY + deltaX * 0.45;
+        const nextRotationX = teamProfileRotation.originX - deltaY * 0.35;
+        setTeamProfileRotation(nextRotationX, nextRotationY);
+    }
+
+    function endTeamProfileDrag() {
+        if (!teamProfileRotation.dragging) return;
+
+        const cardElement = document.getElementById('teamProfileCard3d');
+        teamProfileRotation.dragging = false;
+        teamProfileRotation.pointerId = null;
+        if (cardElement) cardElement.classList.remove('is-dragging');
+    }
+
+    function openTeamProfileModal(index) {
+        const member = teamMembers[index];
+        const modal = document.getElementById('teamProfileModal');
+        if (!member || !modal) return;
+
+        document.getElementById('teamProfileName').textContent = member.name || 'Član tima';
+        document.getElementById('teamProfileRole').textContent = member.role || 'Pozicija';
+        document.getElementById('teamProfileDescription').textContent = member.description || 'Pregled člana tima.';
+        const frontImage = document.getElementById('teamProfileCardFront');
+        const backImage = document.getElementById('teamProfileCardBack');
+        const cardElement = document.getElementById('teamProfileCard3d');
+        cardElement.dataset.frontSrc = member.cardFront || member.mediaSrc;
+        cardElement.dataset.backSrc = member.cardBack || member.mediaSrc;
+        cardElement.dataset.frontAlt = `${member.name} kartica prednja strana`;
+        cardElement.dataset.backAlt = `${member.name} kartica stražnja strana`;
+        frontImage.src = cardElement.dataset.frontSrc;
+        frontImage.alt = cardElement.dataset.frontAlt;
+        backImage.src = cardElement.dataset.backSrc;
+        backImage.alt = cardElement.dataset.backAlt;
+        resetTeamProfileRotation();
+        modal.style.display = 'flex';
+        modal.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeTeamProfileModal() {
+        const modal = document.getElementById('teamProfileModal');
+        if (!modal) return;
+        endTeamProfileDrag();
+        modal.style.display = 'none';
+        modal.setAttribute('aria-hidden', 'true');
+        resetTeamProfileRotation();
+    }
+
+    function toggleTeamProfileCard() {
+        setTeamProfileRotation(teamProfileRotation.x, teamProfileRotation.y + 180);
     }
 
     async function initializeTeam() {
@@ -1598,6 +1991,46 @@
     loadTransportVisualsFromDatabase();
 
     // Eventi za modal
+    document.getElementById('closeTeamProfileModalBtn').addEventListener('click', closeTeamProfileModal);
+    document.getElementById('flipTeamProfileCardBtn').addEventListener('click', toggleTeamProfileCard);
+    document.getElementById('resetTeamProfileCardBtn').addEventListener('click', resetTeamProfileRotation);
+    document.getElementById('teamProfileCard3d').addEventListener('pointerdown', (event) => {
+        if (event.button !== undefined && event.button !== 0) return;
+        startTeamProfileDrag(event.clientX, event.clientY, event.pointerId);
+        event.currentTarget.setPointerCapture?.(event.pointerId);
+    });
+    document.getElementById('teamProfileCard3d').addEventListener('pointermove', (event) => {
+        if (teamProfileRotation.pointerId !== null && event.pointerId !== teamProfileRotation.pointerId) return;
+        moveTeamProfileDrag(event.clientX, event.clientY);
+    });
+    document.getElementById('teamProfileCard3d').addEventListener('pointerup', () => {
+        endTeamProfileDrag();
+    });
+    document.getElementById('teamProfileCard3d').addEventListener('pointercancel', () => {
+        endTeamProfileDrag();
+    });
+    document.getElementById('teamProfileCard3d').addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            toggleTeamProfileCard();
+        }
+        if (event.key === 'ArrowLeft') {
+            event.preventDefault();
+            setTeamProfileRotation(teamProfileRotation.x, teamProfileRotation.y - 20);
+        }
+        if (event.key === 'ArrowRight') {
+            event.preventDefault();
+            setTeamProfileRotation(teamProfileRotation.x, teamProfileRotation.y + 20);
+        }
+        if (event.key === 'ArrowUp') {
+            event.preventDefault();
+            setTeamProfileRotation(teamProfileRotation.x - 12, teamProfileRotation.y);
+        }
+        if (event.key === 'ArrowDown') {
+            event.preventDefault();
+            setTeamProfileRotation(teamProfileRotation.x + 12, teamProfileRotation.y);
+        }
+    });
     document.getElementById('closeTransportModalBtn').addEventListener('click', closeTransportModal);
     document.getElementById('saveTransportBtn').addEventListener('click', saveTransportVisual);
     document.querySelectorAll('.transport-edit-btn').forEach((button) => {
@@ -1607,8 +2040,16 @@
         });
     });
     window.addEventListener("click", (e) => {
+        const teamProfileModal = document.getElementById('teamProfileModal');
+        if (e.target === teamProfileModal) closeTeamProfileModal();
         const transportModal = document.getElementById('transportEditModal');
         if (e.target === transportModal) closeTransportModal();
+    });
+    window.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            closeTeamProfileModal();
+            closeTransportModal();
+        }
     });
 
     const menuToggle = document.getElementById('menuToggle');
