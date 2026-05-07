@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulacija narudžbe – TŠZ Cargo Group</title>
+    <title>Prodaja – TŠZ Cargo Group</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -32,8 +32,8 @@
             height: 64px; position: sticky; top: 0; z-index: 100;
             box-shadow: 0 2px 12px rgba(0,0,0,0.18);
         }
-        .nav-logo { color: #fff; font-size: 1.25rem; font-weight: 800; text-decoration: none; display: flex; align-items: center; gap: 0.5rem; }
-        .nav-logo img { height: 36px; border-radius: 6px; }
+        .nav-logo { color: #fff; font-size: 1.25rem; font-weight: 800; text-decoration: none; display: flex; align-items: center; gap: 0.65rem; }
+        .nav-logo img { height: 46px; border-radius: 10px; background: #fff; padding: 4px; box-shadow: 0 2px 10px rgba(0,0,0,0.35); }
         .nav-links { display: flex; gap: 1.2rem; list-style: none; }
         .nav-links a { color: #c2d6ff; text-decoration: none; font-size: 0.95rem; font-weight: 600; transition: color 0.2s; }
         .nav-links a:hover, .nav-links a.active { color: #fff; }
@@ -282,12 +282,122 @@
             box-shadow: 0 4px 16px rgba(20,115,230,0.25);
         }
 
+        /* HIDE DETALJI BUTTON - keep only Puni pregled */
+        .btn-track { display: none; }
+        .order-actions { justify-content: flex-end; }
+
+        /* ORDER FORM BANNER */
+        .order-form-banner {
+            background: linear-gradient(100deg, #082d6e 0%, #1473e6 60%, #1a90ff 100%);
+            padding: 1.5rem 2rem; display: flex; align-items: center;
+            justify-content: space-between; gap: 1.5rem; flex-wrap: wrap;
+        }
+        .order-form-banner-text h3 { color: #fff; font-size: 1.1rem; font-weight: 800; }
+        .order-form-banner-text p { color: rgba(255,255,255,0.8); font-size: 0.88rem; margin-top: 0.2rem; }
+        .btn-new-order {
+            background: #fff; color: var(--dark-blue);
+            border: none; border-radius: 999px;
+            padding: 0.75rem 1.8rem; font-weight: 800; font-size: 0.97rem;
+            cursor: pointer; white-space: nowrap; flex-shrink: 0;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.2);
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: inline-flex; align-items: center; gap: 0.5rem;
+        }
+        .btn-new-order:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,0,0,0.22); }
+
+        /* FORM MODAL */
+        .form-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(10,30,70,0.62); z-index: 2000;
+            align-items: center; justify-content: center; padding: 1rem;
+        }
+        .form-overlay.open { display: flex; }
+        .form-modal {
+            background: #fff; border-radius: 1.4rem;
+            max-width: 720px; width: 100%;
+            max-height: 92vh; overflow-y: auto;
+            box-shadow: 0 24px 72px rgba(0,0,0,0.28);
+            animation: modalIn 0.24s ease;
+        }
+        .form-header {
+            padding: 1.4rem 1.6rem 0;
+            position: sticky; top: 0; background: #fff; z-index: 1;
+            border-radius: 1.4rem 1.4rem 0 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .form-steps-bar { display: flex; gap: 0; margin-bottom: 1.2rem; }
+        .form-step-indicator {
+            flex: 1; text-align: center; position: relative; padding-bottom: 0.9rem;
+        }
+        .form-step-indicator:not(:last-child)::after {
+            content: ''; position: absolute;
+            bottom: 0; left: 50%; width: 100%; height: 3px;
+            background: var(--border);
+        }
+        .form-step-indicator.done:not(:last-child)::after,
+        .form-step-indicator.active:not(:last-child)::after { background: var(--blue); }
+        .step-num {
+            width: 28px; height: 28px; border-radius: 50%;
+            background: var(--border); color: #fff;
+            font-size: 0.82rem; font-weight: 800;
+            display: inline-flex; align-items: center; justify-content: center;
+            margin-bottom: 0.3rem; position: relative; z-index: 1;
+        }
+        .form-step-indicator.active .step-num { background: var(--blue); }
+        .form-step-indicator.done .step-num { background: var(--green); }
+        .step-label { font-size: 0.7rem; color: var(--muted); font-weight: 700; display: block; }
+        .form-step-indicator.active .step-label { color: var(--blue); }
+        .form-close-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .form-close-row h2 { font-size: 1.2rem; color: var(--dark-blue); font-weight: 800; }
+        .form-body { padding: 1.4rem 1.6rem; }
+        .form-section-title {
+            font-size: 0.77rem; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 0.07em; color: var(--blue); margin-bottom: 0.9rem;
+            padding-bottom: 0.4rem; border-bottom: 2px solid var(--light-bg);
+        }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+        .form-row.single { grid-template-columns: 1fr; }
+        .form-field { display: flex; flex-direction: column; gap: 0.3rem; }
+        .form-field label { font-size: 0.77rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+        .form-field input, .form-field select, .form-field textarea {
+            border: 1.5px solid var(--border); border-radius: 0.6rem;
+            padding: 0.6rem 0.8rem; font-size: 0.9rem; color: var(--text);
+            font-family: inherit; transition: border-color 0.2s; background: #fff;
+        }
+        .form-field input:focus, .form-field select:focus, .form-field textarea:focus {
+            outline: none; border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(20,115,230,0.12);
+        }
+        .form-field textarea { resize: vertical; min-height: 80px; }
+        .form-footer-btns { display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; gap: 1rem; }
+        .btn-back { background: #fff; color: var(--muted); border: 1.5px solid var(--border); border-radius: 999px; padding: 0.55rem 1.3rem; font-weight: 700; font-size: 0.88rem; cursor: pointer; }
+        .btn-next-form { background: var(--blue); color: #fff; border: none; border-radius: 999px; padding: 0.55rem 1.6rem; font-weight: 700; font-size: 0.88rem; cursor: pointer; }
+        .btn-next-form:hover { background: var(--dark-blue); }
+        .form-page { display: none; }
+        .form-page.active { display: block; }
+        .success-screen { text-align: center; padding: 2rem 1rem 1.5rem; }
+        .success-icon { font-size: 3.5rem; color: var(--green); margin-bottom: 0.8rem; }
+        .success-number { background: var(--light-bg); border: 1.5px solid var(--border); border-radius: 0.8rem; padding: 0.7rem 1.5rem; display: inline-block; font-size: 1.5rem; font-weight: 900; color: var(--dark-blue); letter-spacing: 0.05em; margin: 0.5rem 0 1rem; }
+        .success-details { background: #f7faff; border-radius: 0.8rem; padding: 0.9rem 1.1rem; text-align: left; margin-top: 0.8rem; }
+        .success-detail-row { display: flex; justify-content: space-between; padding: 0.4rem 0; border-bottom: 1px solid var(--border); font-size: 0.88rem; }
+        .success-detail-row:last-child { border-bottom: none; }
+        .success-detail-row span:first-child { color: var(--muted); }
+        .success-detail-row span:last-child { font-weight: 700; }
+
         /* RESPONSIVE */
         @media (max-width: 700px) {
             .orders-grid { grid-template-columns: 1fr; }
             .order-details-grid { grid-template-columns: 1fr 1fr; }
             .modal-info-grid { grid-template-columns: 1fr; }
             .hero h1 { font-size: 1.7rem; }
+            .order-form-banner { flex-direction: column; align-items: flex-start; }
+            .form-row { grid-template-columns: 1fr; }
+            .nav-links { display: none; }
+        }
+        @media (max-width: 480px) {
+            .order-route { flex-direction: column; align-items: flex-start; }
+            .route-arrow { transform: rotate(90deg); align-self: center; margin: 0.3rem 0; }
+            .nav-links { display: none; }
         }
     </style>
 </head>
@@ -300,7 +410,7 @@
         <li><a href="/o-nama">Poduzeće</a></li>
         <li><a href="/cjenik">Cjenik</a></li>
         <li><a href="/pracenje-posiljke">Praćenje</a></li>
-        <li><a href="/prodaja" class="active">Narudžbe</a></li>
+        <li><a href="/prodaja" class="active">Prodaja</a></li>
     </ul>
 </nav>
 
@@ -314,6 +424,9 @@
         <span class="hero-badge"><i class="fas fa-ship"></i> Pomorski</span>
         <span class="hero-badge"><i class="fas fa-oil-can"></i> Cjevovodni</span>
     </div>
+    <button class="btn-new-order" style="margin:1.8rem auto 0;" onclick="openFormModal()">
+        <i class="fas fa-plus-circle"></i> Kreiraj novu narudžbu
+    </button>
 </div>
 
 <div class="filter-bar" id="filterBar">
@@ -1239,6 +1352,114 @@
 
 </div><!-- /content -->
 
+<!-- ===== FORMA ZA NARUDŽBU ===== -->
+<div class="form-overlay" id="orderFormModal" onclick="if(event.target===this)closeFormModal()">
+    <div class="form-modal">
+        <div class="form-header">
+            <div class="form-close-row">
+                <h2><i class="fas fa-clipboard-list"></i> Nova narudžba transporta</h2>
+                <button class="modal-close" onclick="closeFormModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="form-steps-bar">
+                <div class="form-step-indicator active" id="fsi-1"><div class="step-num">1</div><span class="step-label">Klijent &amp; Grana</span></div>
+                <div class="form-step-indicator" id="fsi-2"><div class="step-num">2</div><span class="step-label">Ruta &amp; Datum</span></div>
+                <div class="form-step-indicator" id="fsi-3"><div class="step-num">3</div><span class="step-label">Teret</span></div>
+                <div class="form-step-indicator" id="fsi-4"><div class="step-num"><i class="fas fa-check"></i></div><span class="step-label">Potvrda</span></div>
+            </div>
+        </div>
+        <div class="form-body">
+            <div class="form-page active" id="fpage-1">
+                <div class="form-section-title"><i class="fas fa-building"></i> Podaci o klijentu</div>
+                <div class="form-row">
+                    <div class="form-field"><label>Naziv tvrtke *</label><input type="text" id="f-company" placeholder="npr. Konzum d.d."></div>
+                    <div class="form-field"><label>Kontakt osoba *</label><input type="text" id="f-contact" placeholder="Ime i prezime"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-field"><label>E-mail *</label><input type="email" id="f-email" placeholder="kontakt@tvrtka.hr"></div>
+                    <div class="form-field"><label>Telefon</label><input type="tel" id="f-phone" placeholder="+385 1 234 5678"></div>
+                </div>
+                <div class="form-section-title" style="margin-top:1.2rem;"><i class="fas fa-route"></i> Grana transporta</div>
+                <div class="form-row single">
+                    <div class="form-field"><label>Odaberi granu *</label>
+                        <select id="f-branch">
+                            <option value="">-- Odaberi granu --</option>
+                            <option value="cestovni">🚛 Cestovni promet</option>
+                            <option value="zeljeznicki">🚆 Željeznički promet</option>
+                            <option value="zracni">✈️ Zračni promet</option>
+                            <option value="pomorski">🚢 Pomorski promet</option>
+                            <option value="cjevovodni">🛢️ Cjevovodni promet</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-footer-btns">
+                    <span></span>
+                    <button class="btn-next-form" onclick="formNext(1)">Dalje <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+            <div class="form-page" id="fpage-2">
+                <div class="form-section-title"><i class="fas fa-map-marker-alt"></i> Ruta prijevoza</div>
+                <div class="form-row">
+                    <div class="form-field"><label>Polazni grad *</label><input type="text" id="f-origin-city" placeholder="npr. Zagreb"></div>
+                    <div class="form-field"><label>Polazna zemlja *</label><input type="text" id="f-origin-country" placeholder="npr. Hrvatska"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-field"><label>Odredišni grad *</label><input type="text" id="f-dest-city" placeholder="npr. Split"></div>
+                    <div class="form-field"><label>Odredišna zemlja *</label><input type="text" id="f-dest-country" placeholder="npr. Hrvatska"></div>
+                </div>
+                <div class="form-section-title" style="margin-top:1.2rem;"><i class="fas fa-calendar-alt"></i> Vremenski okvir</div>
+                <div class="form-row">
+                    <div class="form-field"><label>Željeni datum preuzimanja</label><input type="date" id="f-pickup-date"></div>
+                    <div class="form-field"><label>Rok isporuke (najkasnije)</label><input type="date" id="f-delivery-date"></div>
+                </div>
+                <div class="form-footer-btns">
+                    <button class="btn-back" onclick="formBack(2)"><i class="fas fa-arrow-left"></i> Natrag</button>
+                    <button class="btn-next-form" onclick="formNext(2)">Dalje <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+            <div class="form-page" id="fpage-3">
+                <div class="form-section-title"><i class="fas fa-box"></i> Opis tereta</div>
+                <div class="form-row single">
+                    <div class="form-field"><label>Vrsta robe *</label><input type="text" id="f-cargo-type" placeholder="npr. Prehrambeni proizvodi, strojevi, kemikalije..."></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-field"><label>Masa (kg)</label><input type="number" id="f-weight" placeholder="npr. 12400" min="0"></div>
+                    <div class="form-field"><label>Volumen (m³)</label><input type="number" id="f-volume" placeholder="npr. 38" min="0" step="0.1"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-field"><label>Temperaturni zahtjevi</label><input type="text" id="f-temp" placeholder="npr. +2 do +6 °C (ili ostavi prazno)"></div>
+                    <div class="form-field"><label>Opasna roba</label>
+                        <select id="f-dgr">
+                            <option value="ne">Ne</option>
+                            <option value="adr">Da – ADR (cestovni)</option>
+                            <option value="dgr">Da – IATA DGR (zračnog)</option>
+                            <option value="imdg">Da – IMDG (brodski)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row single">
+                    <div class="form-field"><label>Posebni zahtjevi / napomena</label>
+                        <textarea id="f-notes" placeholder="Npr. krhko, GPS nadzor, carinjenje u nadлеžnosti kupca..."></textarea>
+                    </div>
+                </div>
+                <div class="form-footer-btns">
+                    <button class="btn-back" onclick="formBack(3)"><i class="fas fa-arrow-left"></i> Natrag</button>
+                    <button class="btn-next-form" style="background:var(--green);" onclick="formSubmit()"><i class="fas fa-paper-plane"></i> Predaj narudžbu</button>
+                </div>
+            </div>
+            <div class="form-page" id="fpage-4">
+                <div class="success-screen">
+                    <div class="success-icon"><i class="fas fa-check-circle"></i></div>
+                    <h3 style="font-size:1.4rem;color:var(--dark-blue);font-weight:900;">Narudžba primljena!</h3>
+                    <p style="color:var(--muted);margin-top:0.5rem;">Naš tim će vas kontaktirati unutar 2 radna sata.</p>
+                    <div class="success-number" id="f-order-number">–</div>
+                    <div class="success-details" id="f-summary"></div>
+                    <button class="btn-next-form" style="margin-top:1.5rem;" onclick="closeFormModal()">Zatvori <i class="fas fa-times"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- ===== MODAL ===== -->
 <div class="modal-overlay" id="detailModal" onclick="if(event.target===this)closeModal()">
     <div class="modal" id="modalContent">
@@ -1546,8 +1767,68 @@ document.querySelectorAll('.filter-tab').forEach(tab => {
     });
 });
 
+// ===== ORDER FORM FUNCTIONS =====
+function openFormModal() {
+    document.getElementById('orderFormModal').classList.add('open');
+    showFormPage(1);
+}
+function closeFormModal() {
+    document.getElementById('orderFormModal').classList.remove('open');
+    setTimeout(() => showFormPage(1), 300);
+}
+function showFormPage(n) {
+    document.querySelectorAll('.form-page').forEach(p => p.classList.remove('active'));
+    document.getElementById('fpage-' + n).classList.add('active');
+    document.querySelectorAll('.form-step-indicator').forEach((el, i) => {
+        el.classList.remove('active', 'done');
+        if (i + 1 < n) el.classList.add('done');
+        else if (i + 1 === n) el.classList.add('active');
+    });
+}
+function formNext(step) {
+    if (step === 1) {
+        if (!document.getElementById('f-company').value.trim() || !document.getElementById('f-branch').value) {
+            alert('Popunite obavezna polja: naziv tvrtke i granu transporta.');
+            return;
+        }
+    }
+    if (step === 2) {
+        if (!document.getElementById('f-origin-city').value.trim() || !document.getElementById('f-dest-city').value.trim()) {
+            alert('Unesite polazni i odredišni grad.');
+            return;
+        }
+    }
+    showFormPage(step + 1);
+}
+function formBack(step) { showFormPage(step - 1); }
+function formSubmit() {
+    const cargo = document.getElementById('f-cargo-type').value.trim();
+    if (!cargo) { alert('Unesite vrstu robe.'); return; }
+    const prefixes = { cestovni:'C', zeljeznicki:'Z', zracni:'A', pomorski:'S', cjevovodni:'P' };
+    const branch = document.getElementById('f-branch').value;
+    const prefix = prefixes[branch] || 'X';
+    const num = String(Math.floor(Math.random() * 900) + 100).padStart(4, '0');
+    const orderNum = prefix + '-' + new Date().getFullYear() + '-' + num;
+    document.getElementById('f-order-number').textContent = '#' + orderNum;
+    const branchNames = { cestovni:'Cestovni promet 🚛', zeljeznicki:'Željeznički promet 🚆', zracni:'Zračni promet ✈️', pomorski:'Pomorski promet 🚢', cjevovodni:'Cjevovodni promet 🛢️' };
+    const origin = document.getElementById('f-origin-city').value + ', ' + (document.getElementById('f-origin-country').value || '');
+    const dest = document.getElementById('f-dest-city').value + ', ' + (document.getElementById('f-dest-country').value || '');
+    const weight = document.getElementById('f-weight').value;
+    const pickup = document.getElementById('f-pickup-date').value || '–';
+    document.getElementById('f-summary').innerHTML = [
+        ['Tvrtka', document.getElementById('f-company').value],
+        ['Kontakt', document.getElementById('f-contact').value || '–'],
+        ['E-mail', document.getElementById('f-email').value || '–'],
+        ['Grana', branchNames[branch] || branch],
+        ['Ruta', origin + ' → ' + dest],
+        ['Preuzimanje', pickup],
+        ['Teret', cargo + (weight ? ' · ' + Number(weight).toLocaleString() + ' kg' : '')]
+    ].map(r => `<div class="success-detail-row"><span>${r[0]}</span><span>${r[1]}</span></div>`).join('');
+    showFormPage(4);
+}
+
 document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') closeModal();
+    if (e.key === 'Escape') { closeModal(); closeFormModal(); }
 });
 </script>
 </body>
