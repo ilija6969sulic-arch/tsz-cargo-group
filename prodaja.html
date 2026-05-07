@@ -1,0 +1,1554 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulacija narudžbe – TŠZ Cargo Group</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --blue: #1473e6;
+            --dark-blue: #0f4fa8;
+            --light-bg: #eef4ff;
+            --card-bg: #fff;
+            --border: #c9dcf8;
+            --text: #1a2b4a;
+            --muted: #5a7099;
+            --green: #1a7f4e;
+            --green-bg: #e6f7ef;
+            --orange: #c05e00;
+            --orange-bg: #fff3e0;
+            --purple: #5c35c5;
+            --purple-bg: #ede8ff;
+        }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #e8f0fb; color: var(--text); min-height: 100vh; }
+
+        /* NAV */
+        nav {
+            background: #0c3675;
+            padding: 0 2rem;
+            display: flex; align-items: center; justify-content: space-between;
+            height: 64px; position: sticky; top: 0; z-index: 100;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+        }
+        .nav-logo { color: #fff; font-size: 1.25rem; font-weight: 800; text-decoration: none; display: flex; align-items: center; gap: 0.5rem; }
+        .nav-logo img { height: 36px; border-radius: 6px; }
+        .nav-links { display: flex; gap: 1.2rem; list-style: none; }
+        .nav-links a { color: #c2d6ff; text-decoration: none; font-size: 0.95rem; font-weight: 600; transition: color 0.2s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; }
+
+        /* HERO */
+        .hero {
+            background: linear-gradient(120deg, #0c3675 0%, #1473e6 100%);
+            color: #fff;
+            padding: 3.5rem 2rem 2.5rem;
+            text-align: center;
+        }
+        .hero h1 { font-size: 2.4rem; font-weight: 900; margin-bottom: 0.7rem; }
+        .hero p { font-size: 1.1rem; opacity: 0.88; max-width: 680px; margin: 0 auto; }
+        .hero-badges { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.6rem; margin-top: 1.4rem; }
+        .hero-badge {
+            background: rgba(255,255,255,0.18);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 999px;
+            padding: 0.3rem 1rem;
+            font-size: 0.85rem; font-weight: 700;
+        }
+
+        /* FILTER TABS */
+        .filter-bar {
+            background: #fff;
+            border-bottom: 2px solid var(--border);
+            padding: 0 2rem;
+            display: flex; gap: 0; overflow-x: auto;
+            position: sticky; top: 64px; z-index: 90;
+        }
+        .filter-tab {
+            padding: 1rem 1.4rem;
+            font-weight: 700; font-size: 0.92rem;
+            border: none; background: none;
+            cursor: pointer; color: var(--muted);
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s; white-space: nowrap;
+        }
+        .filter-tab:hover { color: var(--dark-blue); }
+        .filter-tab.active { color: var(--blue); border-bottom-color: var(--blue); }
+
+        /* MAIN CONTENT */
+        .content { max-width: 1200px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+        .section-header { margin-bottom: 1.8rem; display: flex; align-items: center; gap: 1rem; }
+        .section-icon { font-size: 2rem; }
+        .section-header h2 { font-size: 1.6rem; color: var(--dark-blue); font-weight: 800; }
+        .section-header p { font-size: 0.95rem; color: var(--muted); margin-top: 0.2rem; }
+
+        /* ORDER CARDS */
+        .orders-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(520px, 1fr)); gap: 2rem; margin-bottom: 4rem; }
+
+        .order-card {
+            background: var(--card-bg);
+            border-radius: 1.4rem;
+            box-shadow: 0 4px 24px rgba(20,115,230,0.10);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            transition: box-shadow 0.2s, transform 0.2s;
+        }
+        .order-card:hover { box-shadow: 0 8px 32px rgba(20,115,230,0.18); transform: translateY(-2px); }
+
+        .order-header {
+            padding: 1.2rem 1.5rem 1rem;
+            display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .order-header-left { flex: 1; }
+        .order-number { font-size: 0.8rem; color: var(--muted); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+        .order-title { font-size: 1.1rem; font-weight: 800; color: var(--dark-blue); margin-top: 0.15rem; }
+        .order-customer { font-size: 0.9rem; color: var(--muted); margin-top: 0.2rem; }
+        .order-customer strong { color: var(--text); }
+
+        .status-badge {
+            display: inline-flex; align-items: center; gap: 0.35rem;
+            padding: 0.3rem 0.85rem; border-radius: 999px;
+            font-size: 0.8rem; font-weight: 700; white-space: nowrap;
+        }
+        .status-badge.delivered { background: var(--green-bg); color: var(--green); }
+        .status-badge.in-transit { background: #e0f0ff; color: #0a5cbf; }
+        .status-badge.processing { background: var(--orange-bg); color: var(--orange); }
+        .status-badge.scheduled { background: var(--purple-bg); color: var(--purple); }
+
+        .order-body { padding: 1.2rem 1.5rem; }
+
+        .order-route {
+            display: flex; align-items: center; gap: 0.7rem;
+            background: var(--light-bg); border-radius: 0.8rem;
+            padding: 0.8rem 1rem; margin-bottom: 1rem;
+        }
+        .route-point { flex: 1; }
+        .route-label { font-size: 0.72rem; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+        .route-city { font-size: 1rem; font-weight: 800; color: var(--dark-blue); }
+        .route-country { font-size: 0.82rem; color: var(--muted); }
+        .route-arrow { color: var(--blue); font-size: 1.3rem; flex-shrink: 0; }
+
+        .order-details-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.7rem;
+            margin-bottom: 1rem;
+        }
+        .detail-item { }
+        .detail-label { font-size: 0.72rem; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+        .detail-value { font-size: 0.92rem; font-weight: 700; color: var(--text); margin-top: 0.1rem; }
+
+        /* TIMELINE */
+        .timeline { margin-top: 1.2rem; border-top: 1px solid var(--border); padding-top: 1rem; }
+        .timeline-title { font-size: 0.8rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.7rem; }
+        .timeline-steps { display: flex; gap: 0; position: relative; }
+        .timeline-step { flex: 1; text-align: center; position: relative; }
+        .timeline-step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 11px; left: 50%;
+            width: 100%; height: 2px;
+            background: var(--border);
+            z-index: 0;
+        }
+        .timeline-step.done:not(:last-child)::after { background: var(--blue); }
+        .timeline-dot {
+            width: 22px; height: 22px; border-radius: 50%;
+            background: var(--border); border: 2px solid #fff;
+            box-shadow: 0 0 0 2px var(--border);
+            margin: 0 auto 0.35rem; position: relative; z-index: 1;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.65rem; color: #fff;
+        }
+        .timeline-step.done .timeline-dot { background: var(--blue); box-shadow: 0 0 0 2px var(--blue); }
+        .timeline-step.current .timeline-dot { background: #fff; border: 2px solid var(--blue); box-shadow: 0 0 0 2px var(--blue); }
+        .timeline-step.current .timeline-dot::after {
+            content: ''; width: 8px; height: 8px; border-radius: 50%;
+            background: var(--blue); position: absolute;
+        }
+        .timeline-step-label { font-size: 0.7rem; color: var(--muted); font-weight: 600; line-height: 1.2; }
+        .timeline-step.done .timeline-step-label { color: var(--blue); }
+        .timeline-step.current .timeline-step-label { color: var(--dark-blue); font-weight: 800; }
+
+        .order-footer {
+            padding: 0.85rem 1.5rem;
+            border-top: 1px solid var(--border);
+            background: #f7faff;
+            display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .order-price { font-size: 1.3rem; font-weight: 900; color: var(--dark-blue); }
+        .order-price span { font-size: 0.82rem; font-weight: 600; color: var(--muted); }
+        .order-actions { display: flex; gap: 0.6rem; }
+        .btn-detail {
+            background: var(--blue); color: #fff;
+            border: none; border-radius: 999px;
+            padding: 0.45rem 1.1rem; font-weight: 700; font-size: 0.85rem;
+            cursor: pointer; transition: background 0.2s;
+        }
+        .btn-detail:hover { background: var(--dark-blue); }
+        .btn-track {
+            background: #fff; color: var(--blue);
+            border: 1.5px solid var(--blue); border-radius: 999px;
+            padding: 0.45rem 1.1rem; font-weight: 700; font-size: 0.85rem;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .btn-track:hover { background: var(--light-bg); }
+
+        /* MODAL */
+        .modal-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(10,30,70,0.55); z-index: 1000;
+            align-items: center; justify-content: center; padding: 1rem;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal {
+            background: #fff; border-radius: 1.4rem;
+            max-width: 680px; width: 100%;
+            max-height: 90vh; overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+            animation: modalIn 0.22s ease;
+        }
+        @keyframes modalIn { from { opacity:0; transform: scale(0.93) translateY(20px); } to { opacity:1; transform: none; } }
+
+        .modal-header {
+            padding: 1.4rem 1.6rem 1rem;
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem;
+            position: sticky; top: 0; background: #fff; z-index: 1;
+            border-radius: 1.4rem 1.4rem 0 0;
+        }
+        .modal-header h2 { font-size: 1.25rem; color: var(--dark-blue); font-weight: 800; }
+        .modal-header p { font-size: 0.88rem; color: var(--muted); margin-top: 0.2rem; }
+        .modal-close { background: none; border: none; font-size: 1.3rem; color: var(--muted); cursor: pointer; padding: 0.2rem; }
+        .modal-close:hover { color: var(--dark-blue); }
+
+        .modal-body { padding: 1.4rem 1.6rem; }
+        .modal-section { margin-bottom: 1.5rem; }
+        .modal-section-title {
+            font-size: 0.78rem; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 0.07em; color: var(--blue); margin-bottom: 0.7rem;
+            padding-bottom: 0.4rem; border-bottom: 2px solid var(--light-bg);
+        }
+        .modal-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+        .modal-info-item { }
+        .modal-info-label { font-size: 0.75rem; color: var(--muted); font-weight: 700; text-transform: uppercase; }
+        .modal-info-value { font-size: 0.95rem; font-weight: 700; color: var(--text); margin-top: 0.1rem; }
+
+        .process-steps { display: flex; flex-direction: column; gap: 0.7rem; }
+        .process-step {
+            display: flex; gap: 1rem; align-items: flex-start;
+            padding: 0.8rem 1rem; background: var(--light-bg);
+            border-radius: 0.8rem; border-left: 3px solid var(--blue);
+        }
+        .process-step-num {
+            width: 26px; height: 26px; border-radius: 50%;
+            background: var(--blue); color: #fff;
+            font-size: 0.8rem; font-weight: 800;
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        .process-step-content h4 { font-size: 0.92rem; font-weight: 800; color: var(--dark-blue); }
+        .process-step-content p { font-size: 0.85rem; color: var(--muted); margin-top: 0.2rem; }
+
+        .docs-list { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+        .doc-chip {
+            background: var(--light-bg); border: 1px solid var(--border);
+            border-radius: 0.5rem; padding: 0.3rem 0.7rem;
+            font-size: 0.82rem; font-weight: 600; color: var(--dark-blue);
+            display: inline-flex; align-items: center; gap: 0.35rem;
+        }
+        .doc-chip i { color: var(--blue); }
+
+        .price-breakdown { border: 1px solid var(--border); border-radius: 0.8rem; overflow: hidden; }
+        .price-row { display: flex; justify-content: space-between; padding: 0.6rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+        .price-row:last-child { border-bottom: none; font-weight: 800; font-size: 1rem; background: var(--light-bg); color: var(--dark-blue); }
+        .price-row span:first-child { color: var(--muted); font-weight: 600; }
+        .price-row:last-child span:first-child { color: var(--dark-blue); font-weight: 800; }
+
+        /* SECTION DIVIDERS */
+        .branch-section { margin-bottom: 3.5rem; }
+        .branch-divider {
+            display: flex; align-items: center; gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .branch-divider-line { flex: 1; height: 2px; background: linear-gradient(to right, var(--border), transparent); }
+        .branch-divider-badge {
+            background: linear-gradient(120deg, var(--dark-blue), var(--blue));
+            color: #fff; border-radius: 999px;
+            padding: 0.45rem 1.3rem;
+            font-size: 0.95rem; font-weight: 800;
+            display: flex; align-items: center; gap: 0.5rem;
+            box-shadow: 0 4px 16px rgba(20,115,230,0.25);
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 700px) {
+            .orders-grid { grid-template-columns: 1fr; }
+            .order-details-grid { grid-template-columns: 1fr 1fr; }
+            .modal-info-grid { grid-template-columns: 1fr; }
+            .hero h1 { font-size: 1.7rem; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="/" class="nav-logo"><img src="logo.png" alt="TŠZ logo"> TŠZ Cargo Group</a>
+    <ul class="nav-links">
+        <li><a href="/">Početna</a></li>
+        <li><a href="/o-nama">Poduzeće</a></li>
+        <li><a href="/cjenik">Cjenik</a></li>
+        <li><a href="/pracenje-posiljke">Praćenje</a></li>
+        <li><a href="/prodaja" class="active">Narudžbe</a></li>
+    </ul>
+</nav>
+
+<div class="hero">
+    <h1><i class="fas fa-box-open"></i> Simulacija narudžbe transporta</h1>
+    <p>Prikaz kako izgleda cijeli proces narudžbe i angažiranja prometne grane – od prvog kontakta do isporuke robe. Svaka grana ima dva stvarna primjera s detaljima.</p>
+    <div class="hero-badges">
+        <span class="hero-badge"><i class="fas fa-truck"></i> Cestovni</span>
+        <span class="hero-badge"><i class="fas fa-train"></i> Željeznički</span>
+        <span class="hero-badge"><i class="fas fa-plane"></i> Zračni</span>
+        <span class="hero-badge"><i class="fas fa-ship"></i> Pomorski</span>
+        <span class="hero-badge"><i class="fas fa-oil-can"></i> Cjevovodni</span>
+    </div>
+</div>
+
+<div class="filter-bar" id="filterBar">
+    <button class="filter-tab active" data-filter="all">Sve grane</button>
+    <button class="filter-tab" data-filter="cestovni"><i class="fas fa-truck"></i> Cestovni</button>
+    <button class="filter-tab" data-filter="zeljeznicki"><i class="fas fa-train"></i> Željeznički</button>
+    <button class="filter-tab" data-filter="zracni"><i class="fas fa-plane"></i> Zračni</button>
+    <button class="filter-tab" data-filter="pomorski"><i class="fas fa-ship"></i> Pomorski</button>
+    <button class="filter-tab" data-filter="cjevovodni"><i class="fas fa-oil-can"></i> Cjevovodni</button>
+</div>
+
+<div class="content">
+
+    <!-- ===== CESTOVNI ===== -->
+    <div class="branch-section" data-branch="cestovni">
+        <div class="branch-divider">
+            <div class="branch-divider-line"></div>
+            <div class="branch-divider-badge"><i class="fas fa-truck"></i> Cestovni promet</div>
+            <div class="branch-divider-line" style="background:linear-gradient(to left,var(--border),transparent)"></div>
+        </div>
+        <div class="orders-grid">
+
+            <!-- Cestovni #1 -->
+            <div class="order-card" data-order="C-2024-0483">
+                <div class="order-header">
+                    <div class="order-header-left">
+                        <div class="order-number">Narudžba #C-2024-0483</div>
+                        <div class="order-title">Prijevoz prehrambene robe – hladnjača</div>
+                        <div class="order-customer">Klijent: <strong>Konzum d.d.</strong> · Zagreb</div>
+                    </div>
+                    <span class="status-badge delivered"><i class="fas fa-check-circle"></i> Isporučeno</span>
+                </div>
+                <div class="order-body">
+                    <div class="order-route">
+                        <div class="route-point">
+                            <div class="route-label">Polazište</div>
+                            <div class="route-city">Zagreb</div>
+                            <div class="route-country">Hrvatska · 08:00</div>
+                        </div>
+                        <div class="route-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+                        <div class="route-point">
+                            <div class="route-label">Odredište</div>
+                            <div class="route-city">Split</div>
+                            <div class="route-country">Hrvatska · 14:30</div>
+                        </div>
+                    </div>
+                    <div class="order-details-grid">
+                        <div class="detail-item">
+                            <div class="detail-label">Vrsta robe</div>
+                            <div class="detail-value">Svježa hrana &amp; mliječni</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Masa / Volumen</div>
+                            <div class="detail-value">12.400 kg / 38 m³</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Vozilo</div>
+                            <div class="detail-value">Hladnjača 13,6 m</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Udaljenost</div>
+                            <div class="detail-value">412 km</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Temperatura</div>
+                            <div class="detail-value">+2 do +6 °C</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">GPS praćenje</div>
+                            <div class="detail-value">Da – TŠZ Track</div>
+                        </div>
+                    </div>
+                    <div class="timeline">
+                        <div class="timeline-title">Koraci procesa</div>
+                        <div class="timeline-steps">
+                            <div class="timeline-step done">
+                                <div class="timeline-dot"><i class="fas fa-check"></i></div>
+                                <div class="timeline-step-label">Narudžba primljena</div>
+                            </div>
+                            <div class="timeline-step done">
+                                <div class="timeline-dot"><i class="fas fa-check"></i></div>
+                                <div class="timeline-step-label">Vozač dodijeljen</div>
+                            </div>
+                            <div class="timeline-step done">
+                                <div class="timeline-dot"><i class="fas fa-check"></i></div>
+                                <div class="timeline-step-label">Utovar završen</div>
+                            </div>
+                            <div class="timeline-step done">
+                                <div class="timeline-dot"><i class="fas fa-check"></i></div>
+                                <div class="timeline-step-label">U prijevozu</div>
+                            </div>
+                            <div class="timeline-step done">
+                                <div class="timeline-dot"><i class="fas fa-check"></i></div>
+                                <div class="timeline-step-label">Isporučeno</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="order-footer">
+                    <div class="order-price">1.847,50 € <span>ukupno</span></div>
+                    <div class="order-actions">
+                        <button class="btn-track" onclick="openModal('C-2024-0483')"><i class="fas fa-search"></i> Detalji</button>
+                        <button class="btn-detail" onclick="openModal('C-2024-0483')">Puni pregled</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cestovni #2 -->
+            <div class="order-card" data-order="C-2024-0597">
+                <div class="order-header">
+                    <div class="order-header-left">
+                        <div class="order-number">Narudžba #C-2024-0597</div>
+                        <div class="order-title">Prijevoz građevinskog materijala – cerada</div>
+                        <div class="order-customer">Klijent: <strong>Zagorje-Tehnobeton d.d.</strong> · Zabok</div>
+                    </div>
+                    <span class="status-badge in-transit"><i class="fas fa-truck"></i> U prijevozu</span>
+                </div>
+                <div class="order-body">
+                    <div class="order-route">
+                        <div class="route-point">
+                            <div class="route-label">Polazište</div>
+                            <div class="route-city">Zabok</div>
+                            <div class="route-country">Hrvatska · 06:30</div>
+                        </div>
+                        <div class="route-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+                        <div class="route-point">
+                            <div class="route-label">Odredište</div>
+                            <div class="route-city">Osijek</div>
+                            <div class="route-country">Hrvatska · ~14:00</div>
+                        </div>
+                    </div>
+                    <div class="order-details-grid">
+                        <div class="detail-item">
+                            <div class="detail-label">Vrsta robe</div>
+                            <div class="detail-value">Armatura / beton blokovi</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Masa / Volumen</div>
+                            <div class="detail-value">21.800 kg / 68 m³</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Vozilo</div>
+                            <div class="detail-value">Cerada 13,6 m, 2 vozila</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Udaljenost</div>
+                            <div class="detail-value">318 km</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Osiguranje</div>
+                            <div class="detail-value">CMR – 380.000 €</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Rok isporuke</div>
+                            <div class="detail-value">Danas do 15:00</div>
+                        </div>
+                    </div>
+                    <div class="timeline">
+                        <div class="timeline-title">Koraci procesa</div>
+                        <div class="timeline-steps">
+                            <div class="timeline-step done">
+                                <div class="timeline-dot"><i class="fas fa-check"></i></div>
+                                <div class="timeline-step-label">Narudžba primljena</div>
+                            </div>
+                            <div class="timeline-step done">
+                                <div class="timeline-dot"><i class="fas fa-check"></i></div>
+                                <div class="timeline-step-label">Vozač dodijeljen</div>
+                            </div>
+                            <div class="timeline-step done">
+                                <div class="timeline-dot"><i class="fas fa-check"></i></div>
+                                <div class="timeline-step-label">Utovar završen</div>
+                            </div>
+                            <div class="timeline-step current">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-step-label">U prijevozu</div>
+                            </div>
+                            <div class="timeline-step">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-step-label">Isporučeno</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="order-footer">
+                    <div class="order-price">2.240,00 € <span>ukupno</span></div>
+                    <div class="order-actions">
+                        <button class="btn-track" onclick="openModal('C-2024-0597')"><i class="fas fa-search"></i> Detalji</button>
+                        <button class="btn-detail" onclick="openModal('C-2024-0597')">Puni pregled</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ===== ŽELJEZNIČKI ===== -->
+    <div class="branch-section" data-branch="zeljeznicki">
+        <div class="branch-divider">
+            <div class="branch-divider-line"></div>
+            <div class="branch-divider-badge"><i class="fas fa-train"></i> Željeznički promet</div>
+            <div class="branch-divider-line" style="background:linear-gradient(to left,var(--border),transparent)"></div>
+        </div>
+        <div class="orders-grid">
+
+            <!-- Željezn. #1 -->
+            <div class="order-card" data-order="Z-2024-0112">
+                <div class="order-header">
+                    <div class="order-header-left">
+                        <div class="order-number">Narudžba #Z-2024-0112</div>
+                        <div class="order-title">Prijevoz čeličnih cijevi – željeznica</div>
+                        <div class="order-customer">Klijent: <strong>CMC Steel Balkans d.o.o.</strong> · Sisak</div>
+                    </div>
+                    <span class="status-badge delivered"><i class="fas fa-check-circle"></i> Isporučeno</span>
+                </div>
+                <div class="order-body">
+                    <div class="order-route">
+                        <div class="route-point">
+                            <div class="route-label">Polazište</div>
+                            <div class="route-city">Sisak</div>
+                            <div class="route-country">Hrvatska · Ranžirni kolodvor</div>
+                        </div>
+                        <div class="route-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+                        <div class="route-point">
+                            <div class="route-label">Odredište</div>
+                            <div class="route-city">Wien Süd</div>
+                            <div class="route-country">Austrija · Ranžirni kolodvor</div>
+                        </div>
+                    </div>
+                    <div class="order-details-grid">
+                        <div class="detail-item">
+                            <div class="detail-label">Vrsta robe</div>
+                            <div class="detail-value">Čelične cijevi, HŽ vagon</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Masa / broj vagona</div>
+                            <div class="detail-value">58.000 kg / 2 vagona</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Prijevoznik</div>
+                            <div class="detail-value">HŽ Cargo + ÖBB Cargo</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Tranzit</div>
+                            <div class="detail-value">Zidani Most – Maribor</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Udaljenost</div>
+                            <div class="detail-value">480 km (pružna)</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Trajanje</div>
+                            <div class="detail-value">~18 sati</div>
+                        </div>
+                    </div>
+                    <div class="timeline">
+                        <div class="timeline-title">Koraci procesa</div>
+                        <div class="timeline-steps">
+                            <div class="timeline-step done">
+                                <div class="timeline-dot"><i class="fas fa-check"></i></div>
+                                <div class="timeline-step-label">Narudžba i carinska prijava</div>
+                            </div>
+                            <div class="timeline-step done">
+                                <div class="timeline-dot"><i class="fas fa-check"></i></div>
+                                <div class="timeline-step-label">Vagon rezerviran</div>
+                            </div>
+                            <div class="timeline-step done">
+                                <div class="timeline-dot"><i class="fas fa-check"></i></div>
+                                <div class="timeline-step-label">Utovaren i otpremljen</div>
+                            </div>
+                            <div class="timeline-step done">
+                                <div class="timeline-dot"><i class="fas fa-check"></i></div>
+                                <div class="timeline-step-label">Granična kontrola</div>
+                            </div>
+                            <div class="timeline-step done">
+                                <div class="timeline-dot"><i class="fas fa-check"></i></div>
+                                <div class="timeline-step-label">Isporučeno</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="order-footer">
+                    <div class="order-price">3.620,00 € <span>ukupno</span></div>
+                    <div class="order-actions">
+                        <button class="btn-track" onclick="openModal('Z-2024-0112')"><i class="fas fa-search"></i> Detalji</button>
+                        <button class="btn-detail" onclick="openModal('Z-2024-0112')">Puni pregled</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Željezn. #2 -->
+            <div class="order-card" data-order="Z-2024-0148">
+                <div class="order-header">
+                    <div class="order-header-left">
+                        <div class="order-number">Narudžba #Z-2024-0148</div>
+                        <div class="order-title">Intermodalni kontejner – željeznica + kamion</div>
+                        <div class="order-customer">Klijent: <strong>Pliva Hrvatska d.o.o.</strong> · Zagreb</div>
+                    </div>
+                    <span class="status-badge processing"><i class="fas fa-cog fa-spin"></i> U obradi</span>
+                </div>
+                <div class="order-body">
+                    <div class="order-route">
+                        <div class="route-point">
+                            <div class="route-label">Polazište</div>
+                            <div class="route-city">Zagreb</div>
+                            <div class="route-country">Hrvatska · Intermodalni terminal</div>
+                        </div>
+                        <div class="route-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+                        <div class="route-point">
+                            <div class="route-label">Odredište</div>
+                            <div class="route-city">Hamburg</div>
+                            <div class="route-country">Njemačka · CTA terminal</div>
+                        </div>
+                    </div>
+                    <div class="order-details-grid">
+                        <div class="detail-item">
+                            <div class="detail-label">Vrsta robe</div>
+                            <div class="detail-value">Farmaceutski pripravci</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Kontejner</div>
+                            <div class="detail-value">2× 20' TEU, 18.600 kg</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Modus</div>
+                            <div class="detail-value">Rail + Truck (zadnja milja)</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Udaljenost</div>
+                            <div class="detail-value">1.280 km (željeznica)</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Temperatura</div>
+                            <div class="detail-value">+15 do +25 °C (kontrolirano)</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Trajanje</div>
+                            <div class="detail-value">~42 sata</div>
+                        </div>
+                    </div>
+                    <div class="timeline">
+                        <div class="timeline-title">Koraci procesa</div>
+                        <div class="timeline-steps">
+                            <div class="timeline-step done">
+                                <div class="timeline-dot"><i class="fas fa-check"></i></div>
+                                <div class="timeline-step-label">Narudžba i carinska prijava</div>
+                            </div>
+                            <div class="timeline-step done">
+                                <div class="timeline-dot"><i class="fas fa-check"></i></div>
+                                <div class="timeline-step-label">Kontejner rezerviran</div>
+                            </div>
+                            <div class="timeline-step current">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-step-label">Utovar u tijeku</div>
+                            </div>
+                            <div class="timeline-step">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-step-label">U tranzitu</div>
+                            </div>
+                            <div class="timeline-step">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-step-label">Isporučeno</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="order-footer">
+                    <div class="order-price">5.910,00 € <span>ukupno</span></div>
+                    <div class="order-actions">
+                        <button class="btn-track" onclick="openModal('Z-2024-0148')"><i class="fas fa-search"></i> Detalji</button>
+                        <button class="btn-detail" onclick="openModal('Z-2024-0148')">Puni pregled</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ===== ZRAČNI ===== -->
+    <div class="branch-section" data-branch="zracni">
+        <div class="branch-divider">
+            <div class="branch-divider-line"></div>
+            <div class="branch-divider-badge"><i class="fas fa-plane"></i> Zračni promet</div>
+            <div class="branch-divider-line" style="background:linear-gradient(to left,var(--border),transparent)"></div>
+        </div>
+        <div class="orders-grid">
+
+            <!-- Zracni #1 -->
+            <div class="order-card" data-order="A-2024-0071">
+                <div class="order-header">
+                    <div class="order-header-left">
+                        <div class="order-number">Narudžba #A-2024-0071</div>
+                        <div class="order-title">Hitni cargo – medicinska oprema</div>
+                        <div class="order-customer">Klijent: <strong>KBC Zagreb</strong> · Zagreb</div>
+                    </div>
+                    <span class="status-badge delivered"><i class="fas fa-check-circle"></i> Isporučeno</span>
+                </div>
+                <div class="order-body">
+                    <div class="order-route">
+                        <div class="route-point">
+                            <div class="route-label">Polazište</div>
+                            <div class="route-city">Frankfurt</div>
+                            <div class="route-country">Njemačka · FRA · LH Cargo</div>
+                        </div>
+                        <div class="route-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+                        <div class="route-point">
+                            <div class="route-label">Odredište</div>
+                            <div class="route-city">Zagreb</div>
+                            <div class="route-country">Hrvatska · ZAG · Cargo centar</div>
+                        </div>
+                    </div>
+                    <div class="order-details-grid">
+                        <div class="detail-item">
+                            <div class="detail-label">Vrsta robe</div>
+                            <div class="detail-value">MRI uređaj + dijelovi</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Masa / Volumen</div>
+                            <div class="detail-value">2.200 kg / 8,4 m³</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Let</div>
+                            <div class="detail-value">LH 1412 · FRA–ZAG</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Udaljenost</div>
+                            <div class="detail-value">1.010 km</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Trajanje dostave</div>
+                            <div class="detail-value">Ukupno 9 sati</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Carinska prijava</div>
+                            <div class="detail-value">TŠZ Cargo (uvoz)</div>
+                        </div>
+                    </div>
+                    <div class="timeline">
+                        <div class="timeline-title">Koraci procesa</div>
+                        <div class="timeline-steps">
+                            <div class="timeline-step done">
+                                <div class="timeline-dot"><i class="fas fa-check"></i></div>
+                                <div class="timeline-step-label">Narudžba i Air Waybill</div>
+                            </div>
+                            <div class="timeline-step done">
+                                <div class="timeline-dot"><i class="fas fa-check"></i></div>
+                                <div class="timeline-step-label">Prihvat u FRA</div>
+                            </div>
+                            <div class="timeline-step done">
+                                <div class="timeline-dot"><i class="fas fa-check"></i></div>
+                                <div class="timeline-step-label">Let LH 1412</div>
+                            </div>
+                            <div class="timeline-step done">
+                                <div class="timeline-dot"><i class="fas fa-check"></i></div>
+                                <div class="timeline-step-label">Carinjenje ZAG</div>
+                            </div>
+                            <div class="timeline-step done">
+                                <div class="timeline-dot"><i class="fas fa-check"></i></div>
+                                <div class="timeline-step-label">Dostava klijentu</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="order-footer">
+                    <div class="order-price">8.340,00 € <span>ukupno</span></div>
+                    <div class="order-actions">
+                        <button class="btn-track" onclick="openModal('A-2024-0071')"><i class="fas fa-search"></i> Detalji</button>
+                        <button class="btn-detail" onclick="openModal('A-2024-0071')">Puni pregled</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Zracni #2 -->
+            <div class="order-card" data-order="A-2024-0089">
+                <div class="order-header">
+                    <div class="order-header-left">
+                        <div class="order-number">Narudžba #A-2024-0089</div>
+                        <div class="order-title">Air cargo – elektronička komponente</div>
+                        <div class="order-customer">Klijent: <strong>Rimac Technology d.o.o.</strong> · Sveta Nedelja</div>
+                    </div>
+                    <span class="status-badge scheduled"><i class="fas fa-calendar-alt"></i> Zakazano</span>
+                </div>
+                <div class="order-body">
+                    <div class="order-route">
+                        <div class="route-point">
+                            <div class="route-label">Polazište</div>
+                            <div class="route-city">Šangaj</div>
+                            <div class="route-country">Kina · PVG · Air China Cargo</div>
+                        </div>
+                        <div class="route-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+                        <div class="route-point">
+                            <div class="route-label">Odredište</div>
+                            <div class="route-city">Zagreb</div>
+                            <div class="route-country">Hrvatska · ZAG via VIE</div>
+                        </div>
+                    </div>
+                    <div class="order-details-grid">
+                        <div class="detail-item">
+                            <div class="detail-label">Vrsta robe</div>
+                            <div class="detail-value">Baterijski moduli, Li-ion</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Masa / Volumen</div>
+                            <div class="detail-value">1.840 kg / 12,6 m³</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Let</div>
+                            <div class="detail-value">CA 837 PVG–VIE + OS 714</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Udaljenost</div>
+                            <div class="detail-value">9.200 km + 470 km</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Trajanje</div>
+                            <div class="detail-value">~32 sata (s pretovarom)</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">DGR klasa</div>
+                            <div class="detail-value">Klasa 9 (baterije)</div>
+                        </div>
+                    </div>
+                    <div class="timeline">
+                        <div class="timeline-title">Koraci procesa</div>
+                        <div class="timeline-steps">
+                            <div class="timeline-step done">
+                                <div class="timeline-dot"><i class="fas fa-check"></i></div>
+                                <div class="timeline-step-label">Air Waybill izdan</div>
+                            </div>
+                            <div class="timeline-step done">
+                                <div class="timeline-dot"><i class="fas fa-check"></i></div>
+                                <div class="timeline-step-label">DGR deklaracija</div>
+                            </div>
+                            <div class="timeline-step current">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-step-label">Prihvat u PVG</div>
+                            </div>
+                            <div class="timeline-step">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-step-label">Let CA 837</div>
+                            </div>
+                            <div class="timeline-step">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-step-label">Dostava Rimac</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="order-footer">
+                    <div class="order-price">14.660,00 € <span>ukupno</span></div>
+                    <div class="order-actions">
+                        <button class="btn-track" onclick="openModal('A-2024-0089')"><i class="fas fa-search"></i> Detalji</button>
+                        <button class="btn-detail" onclick="openModal('A-2024-0089')">Puni pregled</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ===== POMORSKI ===== -->
+    <div class="branch-section" data-branch="pomorski">
+        <div class="branch-divider">
+            <div class="branch-divider-line"></div>
+            <div class="branch-divider-badge"><i class="fas fa-ship"></i> Pomorski promet</div>
+            <div class="branch-divider-line" style="background:linear-gradient(to left,var(--border),transparent)"></div>
+        </div>
+        <div class="orders-grid">
+
+            <!-- Pomorski #1 -->
+            <div class="order-card" data-order="S-2024-0034">
+                <div class="order-header">
+                    <div class="order-header-left">
+                        <div class="order-number">Narudžba #S-2024-0034</div>
+                        <div class="order-title">FCL kontejnerski prijevoz – strojevi</div>
+                        <div class="order-customer">Klijent: <strong>Đuro Đaković Specijalna Vozila d.d.</strong> · Slavonski Brod</div>
+                    </div>
+                    <span class="status-badge in-transit"><i class="fas fa-ship"></i> Na moru</span>
+                </div>
+                <div class="order-body">
+                    <div class="order-route">
+                        <div class="route-point">
+                            <div class="route-label">Polazište</div>
+                            <div class="route-city">Rijeka</div>
+                            <div class="route-country">Hrvatska · Luka Rijeka</div>
+                        </div>
+                        <div class="route-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+                        <div class="route-point">
+                            <div class="route-label">Odredište</div>
+                            <div class="route-city">Istanbul</div>
+                            <div class="route-country">Turska · Haydarpaşa terminal</div>
+                        </div>
+                    </div>
+                    <div class="order-details-grid">
+                        <div class="detail-item">
+                            <div class="detail-label">Vrsta robe</div>
+                            <div class="detail-value">Industrijski strojevi</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Kontejner</div>
+                            <div class="detail-value">1× 40' HC, 24.800 kg</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Plovidba</div>
+                            <div class="detail-value">Jadransko + Crno more</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Udaljenost</div>
+                            <div class="detail-value">1.640 nautičkih milja</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Trajanje</div>
+                            <div class="detail-value">~6 dana</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">B/L dokument</div>
+                            <div class="detail-value">Izdao TŠZ Cargo</div>
+                        </div>
+                    </div>
+                    <div class="timeline">
+                        <div class="timeline-title">Koraci procesa</div>
+                        <div class="timeline-steps">
+                            <div class="timeline-step done">
+                                <div class="timeline-dot"><i class="fas fa-check"></i></div>
+                                <div class="timeline-step-label">Booking &amp; B/L</div>
+                            </div>
+                            <div class="timeline-step done">
+                                <div class="timeline-dot"><i class="fas fa-check"></i></div>
+                                <div class="timeline-step-label">Ukrcaj Rijeka</div>
+                            </div>
+                            <div class="timeline-step current">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-step-label">Na moru</div>
+                            </div>
+                            <div class="timeline-step">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-step-label">Iskrcaj Istanbul</div>
+                            </div>
+                            <div class="timeline-step">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-step-label">Carinjenje i dostava</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="order-footer">
+                    <div class="order-price">4.280,00 € <span>ukupno</span></div>
+                    <div class="order-actions">
+                        <button class="btn-track" onclick="openModal('S-2024-0034')"><i class="fas fa-search"></i> Detalji</button>
+                        <button class="btn-detail" onclick="openModal('S-2024-0034')">Puni pregled</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pomorski #2 -->
+            <div class="order-card" data-order="S-2024-0051">
+                <div class="order-header">
+                    <div class="order-header-left">
+                        <div class="order-number">Narudžba #S-2024-0051</div>
+                        <div class="order-title">Bulk teret – žitarice Ro-Ro</div>
+                        <div class="order-customer">Klijent: <strong>Agrokor Commodities d.o.o.</strong> · Zagreb</div>
+                    </div>
+                    <span class="status-badge delivered"><i class="fas fa-check-circle"></i> Isporučeno</span>
+                </div>
+                <div class="order-body">
+                    <div class="order-route">
+                        <div class="route-point">
+                            <div class="route-label">Polazište</div>
+                            <div class="route-city">Ploče</div>
+                            <div class="route-country">Hrvatska · Luka Ploče</div>
+                        </div>
+                        <div class="route-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+                        <div class="route-point">
+                            <div class="route-label">Odredište</div>
+                            <div class="route-city">Piraeus</div>
+                            <div class="route-country">Grčka · Mediteran terminal</div>
+                        </div>
+                    </div>
+                    <div class="order-details-grid">
+                        <div class="detail-item">
+                            <div class="detail-label">Vrsta robe</div>
+                            <div class="detail-value">Pšenica – bulk</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Masa</div>
+                            <div class="detail-value">4.200 tona (bulk)</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Brod</div>
+                            <div class="detail-value">MV Adriatic Star</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Udaljenost</div>
+                            <div class="detail-value">580 nautičkih milja</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Trajanje</div>
+                            <div class="detail-value">~2,5 dana</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Certifikat</div>
+                            <div class="detail-value">Fitosanitarni certifikat</div>
+                        </div>
+                    </div>
+                    <div class="timeline">
+                        <div class="timeline-title">Koraci procesa</div>
+                        <div class="timeline-steps">
+                            <div class="timeline-step done">
+                                <div class="timeline-dot"><i class="fas fa-check"></i></div>
+                                <div class="timeline-step-label">Charter ugovor</div>
+                            </div>
+                            <div class="timeline-step done">
+                                <div class="timeline-dot"><i class="fas fa-check"></i></div>
+                                <div class="timeline-step-label">Ukrcaj Ploče</div>
+                            </div>
+                            <div class="timeline-step done">
+                                <div class="timeline-dot"><i class="fas fa-check"></i></div>
+                                <div class="timeline-step-label">Na moru</div>
+                            </div>
+                            <div class="timeline-step done">
+                                <div class="timeline-dot"><i class="fas fa-check"></i></div>
+                                <div class="timeline-step-label">Iskrcaj Piraeus</div>
+                            </div>
+                            <div class="timeline-step done">
+                                <div class="timeline-dot"><i class="fas fa-check"></i></div>
+                                <div class="timeline-step-label">Isporučeno</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="order-footer">
+                    <div class="order-price">38.500,00 € <span>ukupno</span></div>
+                    <div class="order-actions">
+                        <button class="btn-track" onclick="openModal('S-2024-0051')"><i class="fas fa-search"></i> Detalji</button>
+                        <button class="btn-detail" onclick="openModal('S-2024-0051')">Puni pregled</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ===== CJEVOVODNI ===== -->
+    <div class="branch-section" data-branch="cjevovodni">
+        <div class="branch-divider">
+            <div class="branch-divider-line"></div>
+            <div class="branch-divider-badge"><i class="fas fa-oil-can"></i> Cjevovodni promet</div>
+            <div class="branch-divider-line" style="background:linear-gradient(to left,var(--border),transparent)"></div>
+        </div>
+        <div class="orders-grid">
+
+            <!-- Cjevovodni #1 -->
+            <div class="order-card" data-order="P-2024-0018">
+                <div class="order-header">
+                    <div class="order-header-left">
+                        <div class="order-number">Narudžba #P-2024-0018</div>
+                        <div class="order-title">Transport sirove nafte – JANAF cjevovod</div>
+                        <div class="order-customer">Klijent: <strong>INA d.d.</strong> · Zagreb</div>
+                    </div>
+                    <span class="status-badge delivered"><i class="fas fa-check-circle"></i> Isporučeno</span>
+                </div>
+                <div class="order-body">
+                    <div class="order-route">
+                        <div class="route-point">
+                            <div class="route-label">Polazište</div>
+                            <div class="route-city">Omišalj</div>
+                            <div class="route-country">Hrvatska · Prihvatni terminal</div>
+                        </div>
+                        <div class="route-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+                        <div class="route-point">
+                            <div class="route-label">Odredište</div>
+                            <div class="route-city">Sisak</div>
+                            <div class="route-country">Hrvatska · Rafinerija INA</div>
+                        </div>
+                    </div>
+                    <div class="order-details-grid">
+                        <div class="detail-item">
+                            <div class="detail-label">Vrsta medija</div>
+                            <div class="detail-value">Sirova nafta – Brent</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Volumen</div>
+                            <div class="detail-value">80.000 m³ (500.000 bbl)</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Operator cjevovoda</div>
+                            <div class="detail-value">JANAF d.d.</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Duljina dionice</div>
+                            <div class="detail-value">306 km</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Tlak / Protok</div>
+                            <div class="detail-value">60 bar / 3.000 m³/h</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Trajanje</div>
+                            <div class="detail-value">~27 sati</div>
+                        </div>
+                    </div>
+                    <div class="timeline">
+                        <div class="timeline-title">Koraci procesa</div>
+                        <div class="timeline-steps">
+                            <div class="timeline-step done">
+                                <div class="timeline-dot"><i class="fas fa-check"></i></div>
+                                <div class="timeline-step-label">Ugovor s JANAF-om</div>
+                            </div>
+                            <div class="timeline-step done">
+                                <div class="timeline-dot"><i class="fas fa-check"></i></div>
+                                <div class="timeline-step-label">Analiza kvalitete nafte</div>
+                            </div>
+                            <div class="timeline-step done">
+                                <div class="timeline-dot"><i class="fas fa-check"></i></div>
+                                <div class="timeline-step-label">Ukrcaj Omišalj</div>
+                            </div>
+                            <div class="timeline-step done">
+                                <div class="timeline-dot"><i class="fas fa-check"></i></div>
+                                <div class="timeline-step-label">Protok kroz cjevovod</div>
+                            </div>
+                            <div class="timeline-step done">
+                                <div class="timeline-dot"><i class="fas fa-check"></i></div>
+                                <div class="timeline-step-label">Primljeno u Sisku</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="order-footer">
+                    <div class="order-price">142.800,00 € <span>ukupno</span></div>
+                    <div class="order-actions">
+                        <button class="btn-track" onclick="openModal('P-2024-0018')"><i class="fas fa-search"></i> Detalji</button>
+                        <button class="btn-detail" onclick="openModal('P-2024-0018')">Puni pregled</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cjevovodni #2 -->
+            <div class="order-card" data-order="P-2024-0025">
+                <div class="order-header">
+                    <div class="order-header-left">
+                        <div class="order-number">Narudžba #P-2024-0025</div>
+                        <div class="order-title">Transport prirodnog plina – Plinacro</div>
+                        <div class="order-customer">Klijent: <strong>HEP d.d.</strong> · Zagreb</div>
+                    </div>
+                    <span class="status-badge in-transit"><i class="fas fa-wind"></i> Aktivan protok</span>
+                </div>
+                <div class="order-body">
+                    <div class="order-route">
+                        <div class="route-point">
+                            <div class="route-label">Polazište</div>
+                            <div class="route-city">Rogatec</div>
+                            <div class="route-country">Slovenija · Ulazna mjerna stanica</div>
+                        </div>
+                        <div class="route-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+                        <div class="route-point">
+                            <div class="route-label">Odredište</div>
+                            <div class="route-city">Zagreb TE-TO</div>
+                            <div class="route-country">Hrvatska · Toplinska elektrana</div>
+                        </div>
+                    </div>
+                    <div class="order-details-grid">
+                        <div class="detail-item">
+                            <div class="detail-label">Vrsta medija</div>
+                            <div class="detail-value">Prirodni plin (CH₄)</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Volumen (godišnji)</div>
+                            <div class="detail-value">420 mil. m³ / god</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Operator</div>
+                            <div class="detail-value">Plinacro d.o.o.</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Duljina dionice</div>
+                            <div class="detail-value">186 km</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Tlak / Promjer</div>
+                            <div class="detail-value">50 bar / DN 500 mm</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Monitoring</div>
+                            <div class="detail-value">SCADA 24/7</div>
+                        </div>
+                    </div>
+                    <div class="timeline">
+                        <div class="timeline-title">Koraci procesa</div>
+                        <div class="timeline-steps">
+                            <div class="timeline-step done">
+                                <div class="timeline-dot"><i class="fas fa-check"></i></div>
+                                <div class="timeline-step-label">Ugovor HEP–Plinacro</div>
+                            </div>
+                            <div class="timeline-step done">
+                                <div class="timeline-dot"><i class="fas fa-check"></i></div>
+                                <div class="timeline-step-label">ENTSOG nominacija</div>
+                            </div>
+                            <div class="timeline-step done">
+                                <div class="timeline-dot"><i class="fas fa-check"></i></div>
+                                <div class="timeline-step-label">Otvaranje ventila Rogatec</div>
+                            </div>
+                            <div class="timeline-step current">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-step-label">Kontinuirani protok</div>
+                            </div>
+                            <div class="timeline-step">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-step-label">Isporuka TE-TO</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="order-footer">
+                    <div class="order-price">1.260.000,00 € <span>godišnje</span></div>
+                    <div class="order-actions">
+                        <button class="btn-track" onclick="openModal('P-2024-0025')"><i class="fas fa-search"></i> Detalji</button>
+                        <button class="btn-detail" onclick="openModal('P-2024-0025')">Puni pregled</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div><!-- /content -->
+
+<!-- ===== MODAL ===== -->
+<div class="modal-overlay" id="detailModal" onclick="if(event.target===this)closeModal()">
+    <div class="modal" id="modalContent">
+        <div class="modal-header">
+            <div>
+                <h2 id="modalTitle">Detalji narudžbe</h2>
+                <p id="modalSubtitle"></p>
+            </div>
+            <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body" id="modalBody"></div>
+    </div>
+</div>
+
+<footer style="background:#0c3675;color:#dbe8ff;padding:2rem;text-align:center;margin-top:0;">
+    <p>© 2026 TŠZ Cargo Group – Simulacija narudžbe prometnih grana</p>
+    <p style="margin-top:0.4rem;font-size:0.85rem;opacity:0.7;">Svi podaci su primjeri – stvarni procesi variraju prema uvjetima</p>
+</footer>
+
+<script>
+const orders = {
+    'C-2024-0483': {
+        title: 'Prijevoz prehrambene robe – hladnjača',
+        number: '#C-2024-0483',
+        branch: 'Cestovni promet 🚛',
+        customer: 'Konzum d.d., Zagreb',
+        process: [
+            { title: '1. Inicijalni upit i ponuda', desc: 'Klijent šalje upit putem TŠZ sustava. Dispečer provjerava dostupnost vozila i šalje ponudu s cijenom unutar 2 sata.' },
+            { title: '2. Potvrda narudžbe', desc: 'Klijent potvrđuje narudžbu. Generira se CMR teretnica i nalog za prijevoz. Vozaču se dodjeljuje ruta Zagreb–Split.' },
+            { title: '3. Utovar robe', desc: 'Vozač dolazi u distribucijski centar Konzuma u 07:00. Hladnjača je prethodno temperirana na +4°C. Roba se utovara i versira do 08:00.' },
+            { title: '4. Prijevoz s GPS nadzorom', desc: 'Vozač kreće autocestom A1 prema Splitu. TŠZ Cargo Control Room prati poziciju i temperaturu u realnom vremenu svake 5 minuta.' },
+            { title: '5. Isporuka i potvrda', desc: 'Vozač dolazi u distribucijski centar Splita u 14:30. Primatelj potvrđuje isporuku digitalnim potpisom na PDA uređaju. Zatvara se nalog.' }
+        ],
+        docs: ['CMR teretnica', 'Temperaturni zapis', 'GPS izvještaj', 'Otpremnica', 'Potvrda primitka'],
+        price: [
+            { label: 'Prijevoz (412 km × 3,60 €/km)', value: '1.483,20 €' },
+            { label: 'Čekanje na utovaru (30 min)', value: '37,50 €' },
+            { label: 'Gorivo surcharge (8%)', value: '118,66 €' },
+            { label: 'Osiguranje tereta', value: '67,00 €' },
+            { label: 'Ukupno (bez PDV-a)', value: '1.706,36 €' },
+            { label: 'PDV (25%)', value: '426,59 €' },
+            { label: '✦ UKUPNO', value: '2.132,95 €' }
+        ]
+    },
+    'C-2024-0597': {
+        title: 'Prijevoz građevinskog materijala – cerada',
+        number: '#C-2024-0597',
+        branch: 'Cestovni promet 🚛',
+        customer: 'Zagorje-Tehnobeton d.d., Zabok',
+        process: [
+            { title: '1. Upit i kapaciteta provjera', desc: 'Klijent traži prijevoz 21,8 tona armature. TŠZ dispečer potvrđuje 2 ceradna kamiona. Cijena dogovorena na 2.240 € + PDV.' },
+            { title: '2. Izdavanje dostavnice i CMR', desc: 'TŠZ Cargo priprema dva skupa CMR teretnica. Klijent potvrđuje mjesta utovara (tvornica u Zaboku) i istovara (gradilište u Osijeku).' },
+            { title: '3. Utovar teških tereta', desc: 'Vilicari utovare ploče i armaturu na platforma vozila. Vezači tereta osiguravaju robu metalnim sponama i rememenima prema EN 12195-2.' },
+            { title: '4. Prijevoz uz pratnju', desc: 'Konvoj od 2 vozila kreće prema Osijeku putem A2 i A3. Koordinacija putem TŠZ radija i mobilne aplikacije za dispečere.' },
+            { title: '5. Isporuka na gradilište', desc: 'Vozač provjerava pristup gradilištu s voditeljem gradnje. Iskrcaj kranovima. Potpisuje se primka za oba vozila. Nalog zatvoren.' }
+        ],
+        docs: ['CMR × 2', 'Popis tereta', 'Potvrda vezanja tereta', 'Isporučnica', 'Fotografska dokumentacija'],
+        price: [
+            { label: 'Prijevoz (318 km × 3,60 €/km × 2 vozila)', value: '2.289,60 €' },
+            { label: 'Gorivo surcharge (8%)', value: '183,17 €' },
+            { label: 'Posebno osiguranje tereta', value: '95,00 €' },
+            { label: 'Ukupno (bez PDV-a)', value: '2.567,77 €' },
+            { label: 'PDV (25%)', value: '641,94 €' },
+            { label: '✦ UKUPNO', value: '3.209,71 €' }
+        ]
+    },
+    'Z-2024-0112': {
+        title: 'Prijevoz čeličnih cijevi – željeznica',
+        number: '#Z-2024-0112',
+        branch: 'Željeznički promet 🚆',
+        customer: 'CMC Steel Balkans d.o.o., Sisak',
+        process: [
+            { title: '1. Booking vagona kod HŽ Cargo', desc: 'TŠZ Cargo kontaktira HŽ Cargo za rezervaciju 2 plošna vagona (tip Rnoos). Dogovorena relacija Sisak – Zidani Most – Maribor – Wien Süd Kledering.' },
+            { title: '2. Carinska deklaracija – izvoz', desc: 'TŠZ priprema ECS izvoznu deklaraciju u NCTS-u. Carinarnica Zagreb odobrava puštanje robe u rok od 4 sata.' },
+            { title: '3. Utovar i fiksacija', desc: 'Čelične cijevi se utovare na vagone u lučkom terminalu Sisak. Specijalizirani radnici vežu robu prema UIC propisima. Provjera statičkog opterećenja.' },
+            { title: '4. Tranzit kroz Sloveniju', desc: 'HŽ Cargo predaje vagone SŽ Cargu na Zidanom Mostu. Tranzit kroz Maribor i Šentilj. Granična dokumentacija T1 carinski dokument.' },
+            { title: '5. Prihvat u Austriji i isporuka', desc: 'ÖBB Cargo preuzima vagone u Šentilju i dostavlja do Wien Süd ranžirnog kolodvora. Primatelj vrši iskrcaj. Zatvara se tranzitni nalog.' }
+        ],
+        docs: ['Teretni list (CIM)', 'ECS izvozna deklaracija', 'T1 tranzitni dokument', 'Packing lista', 'Certifikat o podrijetlu robe'],
+        price: [
+            { label: 'Prijevoz HŽ Cargo (SIS–ZMB, 2 vagona)', value: '1.240,00 €' },
+            { label: 'Prijevoz SŽ Cargo (tranzit)', value: '620,00 €' },
+            { label: 'Prijevoz ÖBB Cargo (terminal)', value: '480,00 €' },
+            { label: 'Carinski zastupnik', value: '280,00 €' },
+            { label: 'Ukupno (bez PDV-a)', value: '2.620,00 €' },
+            { label: 'PDV (25%)', value: '655,00 €' },
+            { label: '✦ UKUPNO', value: '3.275,00 €' }
+        ]
+    },
+    'Z-2024-0148': {
+        title: 'Intermodalni kontejner – željeznica + kamion',
+        number: '#Z-2024-0148',
+        branch: 'Željeznički promet 🚆',
+        customer: 'Pliva Hrvatska d.o.o., Zagreb',
+        process: [
+            { title: '1. Narudžba i planiranje rute', desc: 'Pliva zahtijeva intermodalni prijevoz za 2 TEU kontejnera s farmaceutskim pripravcima. TŠZ planira rutu: Zagreb ITC → Hamburg CTA.' },
+            { title: '2. Temperatura i DGR provjera', desc: 'Roba zahtijeva kontrolirano okruženje +15–25°C. TŠZ koordinira specijalne izolirane kontejnere. Farmaceutska dokumentacija GDP certifikat.' },
+            { title: '3. Utovar u zagreb intermodalnom terminalu', desc: 'Kontejneri se vilicarem stavljaju na vagone u intermodalnom terminalu Zagreb. Genset uređaj osigurava temperaturu tijekom prijevoza.' },
+            { title: '4. Prijevoz željeznicom do Hamburga', desc: 'Direktni train Zagreb–Hamburg (1.280 km, ~30 sati). DB Cargo preuzima vlak na austrijsko-njemačkoj granici i dovozi do CTA Hamburga.' },
+            { title: '5. Zadnja milja kamionom', desc: 'TŠZ Cargo angažira podkontraktor za dostavu kontejnera kamionom od CTA terminala do skladišta primatelja u Hamburgu (15 km).' }
+        ],
+        docs: ['CIM teretni list (2 komada)', 'GDP certifikat', 'Temperaturni logger', 'Izvozna deklaracija', 'B/L za kamionsku dopremu'],
+        price: [
+            { label: 'Intermodalni prijevoz (ZAG–HH, 2 TEU)', value: '3.800,00 €' },
+            { label: 'Specijalni izolirani kontejner (×2)', value: '480,00 €' },
+            { label: 'Genset napajanje', value: '220,00 €' },
+            { label: 'Zadnja milja Hamburga', value: '180,00 €' },
+            { label: 'Dokumentacija i carinjenje', value: '310,00 €' },
+            { label: 'Ukupno (bez PDV-a)', value: '4.990,00 €' },
+            { label: '✦ UKUPNO (+ PDV)', value: '6.237,50 €' }
+        ]
+    },
+    'A-2024-0071': {
+        title: 'Hitni cargo – medicinska oprema',
+        number: '#A-2024-0071',
+        branch: 'Zračni promet ✈️',
+        customer: 'KBC Zagreb',
+        process: [
+            { title: '1. Hitna narudžba i Air Waybill', desc: 'KBC Zagreb šalje hitni zahtjev za MRI uređaj. TŠZ Cargo kontaktira LH Cargo FRA. Air Waybill (AWB 020-12345678) izdan unutar 1 sata.' },
+            { title: '2. Prihvat robe u Frankfurtu', desc: 'Dobavljač Siemens Healthineers dostavlja MRI komore na FRA cargo centar LH. TŠZ zastupnik provjerava dimenzije, masu i dokumentaciju.' },
+            { title: '3. Ukrcaj na LH 1412', desc: 'Roba ukrcana na let LH 1412 FRA–ZAG. Paleta klase P1 u putnički avion A321. Ukrcaj potvrđen od strane Load Control oficira.' },
+            { title: '4. Slijetanje Zagreb i carinjenje', desc: 'Avion slijeće u ZAG u 16:45. TŠZ carinski zastupnik podnosi uvoznu deklaraciju. Carinski pregled završen u roku 90 minuta.' },
+            { title: '5. Dostava u KBC Zagreb', desc: 'TŠZ kamion preuzima paletu s cargo centra ZAG. Dostava u KBC Zagreb (10 km) unutar 1 sata. Primlje tehničkim referentom bolnice.' }
+        ],
+        docs: ['Air Waybill (AWB)', 'Uvozna carinska deklaracija', 'Certifikat conformité CE', 'CMR (zadnja milja)', 'Potvrda primitka KBC'],
+        price: [
+            { label: 'Air cargo LH (2.200 kg × 3,20 €/kg)', value: '7.040,00 €' },
+            { label: 'Fuel surcharge', value: '480,00 €' },
+            { label: 'Carinski zastupnik ZAG', value: '380,00 €' },
+            { label: 'Dostava ZAG–KBC (kamion)', value: '95,00 €' },
+            { label: 'Hitna naknada (express +15%)', value: '1.199,25 €' },
+            { label: 'Ukupno (bez PDV-a)', value: '9.194,25 €' },
+            { label: '✦ UKUPNO (+ PDV)', value: '11.492,81 €' }
+        ]
+    },
+    'A-2024-0089': {
+        title: 'Air cargo – elektroničke komponente',
+        number: '#A-2024-0089',
+        branch: 'Zračni promet ✈️',
+        customer: 'Rimac Technology d.o.o., Sveta Nedelja',
+        process: [
+            { title: '1. DGR procjena i rezervacija', desc: 'Li-ion baterije spadaju u IATA DGR klasu 9. TŠZ Cargo priprema DGD (Shipper Declaration for Dangerous Goods) i rezervira cargo prostor na CA 837.' },
+            { title: '2. Pakiranje i označavanje', desc: 'Baterije su pakirane u UN 3480 odobrenim kutijama. Svaki paket označen odgovarajućim DGR naljepnicama. Provjera od DGR-certificiranog agenta.' },
+            { title: '3. Prihvat i screening u PVG', desc: 'Roba prihvaćena u PVG cargo centru. Security screening i X-ray. DGD dokumenti verificirani od Air China Cargo operativca.' },
+            { title: '4. Let CA 837 PVG–VIE (pretovarna točka)', desc: 'Let traje 11,5 sati. Pretovarna točka u Beču VIE. TŠZ koordinira pretovarne procedure kod AUA Cargo. Novi AWB za OS714 VIE–ZAG.' },
+            { title: '5. Let OS 714 VIE–ZAG i dostava Rimcu', desc: 'Kraći let od 55 min. Po dolasku u ZAG uvozno carinjenje i dostava do Rimac tvornice u Svetoj Nedelji kamionom Cargo-Vana. Roba preuzeta u R&D laboratoriju.' }
+        ],
+        docs: ['AWB (×2 segmenta)', 'DGD – Shipper Declaration', 'UN 3480 certifikat pakiranja', 'ECS – izvozna deklaracija CN', 'Uvozna deklaracija HR', 'Potvrda primitka Rimac'],
+        price: [
+            { label: 'Air cargo PVG–VIE (1.840 kg × 5,80 €/kg)', value: '10.672,00 €' },
+            { label: 'Air cargo VIE–ZAG', value: '920,00 €' },
+            { label: 'DGR handling surcharge', value: '640,00 €' },
+            { label: 'Carinski zastupnik ZAG (uvoz)', value: '420,00 €' },
+            { label: 'Dostava ZAG–Sv. Nedelja', value: '85,00 €' },
+            { label: 'Ukupno (bez PDV-a)', value: '12.737,00 €' },
+            { label: '✦ UKUPNO (+ PDV)', value: '15.921,25 €' }
+        ]
+    },
+    'S-2024-0034': {
+        title: 'FCL kontejnerski prijevoz – strojevi',
+        number: '#S-2024-0034',
+        branch: 'Pomorski promet 🚢',
+        customer: 'Đuro Đaković Specijalna Vozila d.d., Slavonski Brod',
+        process: [
+            { title: '1. Booking brodskog prostora', desc: 'TŠZ Cargo kontaktira Hapag-Lloyd za rezervaciju 40\' HC kontejnera na relaciji Rijeka–Istanbul. Booking potvrđen za polazak MSC Adriatica.' },
+            { title: '2. Izrada Bill of Lading', desc: 'TŠZ Cargo zastupnik priprema B/L (Bill of Lading) s opisom robe, shipper/consignee podacima, Incoterms CPT Istanbul. Lučka špediterska deklaracija.' },
+            { title: '3. Utovar u Luci Rijeka', desc: 'Kamion TŠZ Cargo dostavlja stroje do gatea Luke Rijeka. Crane operater stavlja kontejner na brod MSC Adriatica. VGM (Verified Gross Mass) potvrđen: 24.800 kg.' },
+            { title: '4. Plovidba Jadranskim i Crnim morem', desc: 'Brod plovi relacijom Rijeka – Bosphorus – Istanbul (6 dana). TŠZ prati status putem AIS sustava i portala prijevoznika.' },
+            { title: '5. Iskrcaj u Haydarpaşa i carinjenje', desc: 'Kontejner iskrcan u Haydarpaşa terminalu Istanbula. Turski carinski zastupnik TŠZ partnera provodi uvozni postupak. Dostava kamionom do tvornice kupca.' }
+        ],
+        docs: ['Bill of Lading (OBL)', 'Packing lista', 'Komercijalna faktura', 'Certifikat o podrijetlu', 'VGM potvrda', 'Turska uvozna deklaracija'],
+        price: [
+            { label: 'Ocean freight Rijeka–Istanbul (40\' HC)', value: '1.840,00 €' },
+            { label: 'THC Rijeka (terminal handling)', value: '280,00 €' },
+            { label: 'B/L dokumentacija', value: '120,00 €' },
+            { label: 'Lučke pristojbe Rijeka', value: '185,00 €' },
+            { label: 'Špediter Istanbul + carinjenje', value: '480,00 €' },
+            { label: 'Dostava do tvornice (kamion)', value: '195,00 €' },
+            { label: 'Ukupno (bez PDV-a)', value: '3.100,00 €' },
+            { label: '✦ UKUPNO (+ PDV)', value: '3.875,00 €' }
+        ]
+    },
+    'S-2024-0051': {
+        title: 'Bulk teret – žitarice Ro-Ro',
+        number: '#S-2024-0051',
+        branch: 'Pomorski promet 🚢',
+        customer: 'Agrokor Commodities d.o.o., Zagreb',
+        process: [
+            { title: '1. Charter ugovor i inspekcija broda', desc: 'TŠZ Cargo sklapa voyage charter ugovor za MV Adriatic Star (3.800 DWT). SGS inspekcija potvrđuje stanje brodskog podruma za prijevoz pšenice.' },
+            { title: '2. Fitosanitarna dokumentacija', desc: 'Hrvatski zavod za poljoprivredu izdaje fitosanitarni certifikat. TŠZ zastupnik priprema EUR.1 certifikat o podrijetlu za prodaju u Grčkoj.' },
+            { title: '3. Ukrcaj u Luci Ploče', desc: 'Pneumatski elevator tovari 4.200 tona pšenice iz silosnih kapaciteta u luke Ploče na brod. Uzimaju se uzorci za analizu kvalitete. Ukrcaj traje 14 sati.' },
+            { title: '4. Plovidba Jadranom i Jonskim morem', desc: 'Brod plovi Jadranskim i Jonskim morem prema Pireju (580 nautičkih milja, ~2,5 dana). TŠZ prati kretanje putem MarineTraffic sustava.' },
+            { title: '5. Iskrcaj u Pireju i isporuka', desc: 'Brod privezuje u Mediteran žitnom terminalu Pirejusa. Pneumatski elevator iskrcava pšenicu u silose kupca. Potpisuje se Notice of Readiness i Time Sheet.' }
+        ],
+        docs: ['Voyage Charter Party', 'Bill of Lading (bulk)', 'Fitosanitarni certifikat', 'EUR.1 podrijetlo', 'Notice of Readiness', 'Quality Certificate SGS'],
+        price: [
+            { label: 'Brodski najam (charter) 2,5 dana', value: '22.000,00 €' },
+            { label: 'Lučke pristojbe Ploče', value: '3.800,00 €' },
+            { label: 'Lučke pristojbe Pirej', value: '2.400,00 €' },
+            { label: 'SGS inspekcija + analiza', value: '1.200,00 €' },
+            { label: 'Dokumentacija i agenti', value: '580,00 €' },
+            { label: 'Ukupno (bez PDV-a)', value: '29.980,00 €' },
+            { label: '✦ UKUPNO (+ PDV)', value: '37.475,00 €' }
+        ]
+    },
+    'P-2024-0018': {
+        title: 'Transport sirove nafte – JANAF cjevovod',
+        number: '#P-2024-0018',
+        branch: 'Cjevovodni promet 🛢️',
+        customer: 'INA d.d., Zagreb',
+        process: [
+            { title: '1. Sklapanje transportnog ugovora s JANAF-om', desc: 'TŠZ Cargo posreduje između INA d.d. i JANAF d.d. u pregovorima o tarifi i vremenskom rasporedu transporta. Ugovor na 3 mjeseca – 80.000 m³/isporuka.' },
+            { title: '2. Nominacija i raspored', desc: 'INA podnosi nominaciju kapaciteta 45 dana unaprijed prema ENTSOG/BAL proceduri. JANAF potvrđuje slot i priprema terminal u Omišlju za prihvat tankera.' },
+            { title: '3. Prihvat nafte s tankera i analiza', desc: 'Tanker s Brent naftom pristaje u Omišalj (STS – shore to ship). Uzorci se šalju u laboratorij za analizu API gustoće i sumpornog sadržaja. Prihvat potvrđen.' },
+            { title: '4. Pumpanje kroz JANAF cjevovod', desc: 'Nafta se pumpa kroz cjevovod Omišalj–Sisak (306 km) uz tlak 60 bara i protok od 3.000 m³/h. JANAF SCADA sustav nadzire cjevovod 24/7.' },
+            { title: '5. Primanje u rafineriji Sisak i obračun', desc: 'INA rafinerija u Sisku bilježi ulazni volumetar: 80.000 m³ ± 0,1% tolerancija. Energetska bilanca potvrđena. Faktura JANAF-u ispostavljena po ugovorenoj tarifi.' }
+        ],
+        docs: ['Transportni ugovor JANAF', 'Nominacija kapaciteta', 'Laboratorijska analiza nafte', 'JANAF volumetrijski zapisnik', 'Faktura za transport', 'SCADA izvještaj'],
+        price: [
+            { label: 'Tarifa JANAF (80.000 m³ × 1,48 €/m³)', value: '118.400,00 €' },
+            { label: 'Pristanišne naknade Omišalj', value: '8.200,00 €' },
+            { label: 'Laboratorijska analiza', value: '1.800,00 €' },
+            { label: 'TŠZ Cargo posredovanje', value: '4.200,00 €' },
+            { label: 'Ukupno (bez PDV-a)', value: '132.600,00 €' },
+            { label: '✦ UKUPNO (+ PDV)', value: '165.750,00 €' }
+        ]
+    },
+    'P-2024-0025': {
+        title: 'Transport prirodnog plina – Plinacro',
+        number: '#P-2024-0025',
+        branch: 'Cjevovodni promet 🛢️',
+        customer: 'HEP d.d., Zagreb',
+        process: [
+            { title: '1. Godišnji transportni ugovor i ENTSOG nominacija', desc: 'HEP potpisuje godišnji ugovor o transportu s Plinacro d.o.o. TŠZ Cargo savjetuje pri pregovorima. Kapacitet: 420 mil. m³/god na ulaznoj točki Rogatec (SLO/HR granica).' },
+            { title: '2. Dnevna nominacija i raspoređivanje', desc: 'HEP svakodnevno nominira traženi kapacitet za sljedeći dan do 14:00 prema ENTSOG Balancing proceduri. Plinacro potvrđuje alokaciju do 16:00.' },
+            { title: '3. Mjerna stanica Rogatec – preuzimanje plina', desc: 'Na mjernoj stanici Rogatec instaliran je elektronički plinski mjerač (EFM). Mjerenje volumena, tlaka i energetskog sadržaja uz kalorimetrijsku analizu.' },
+            { title: '4. Kontinuirani transport i SCADA nadzor', desc: 'Plin teče kroz DN 500 mm cjevovod pri tlaku 50 bara. SCADA sustav Plinacra nadzire sve parametre u realnom vremenu. TŠZ prati energetsku bilanciju.' },
+            { title: '5. Isporuka TE-TO Zagreb i obračun', desc: 'Plin stiže u TE-TO Zagreb gdje se spušta tlak na distribucijsku razinu. Kvartalni obračun prema izmjerenom GCV volumenu. HEP dobiva certificiran energetski izvještaj.' }
+        ],
+        docs: ['Godišnji transportni ugovor', 'ENTSOG nominacija', 'EFM mjerni izvještaj', 'Energetska bilanca', 'Faktura za transport (kvartalna)', 'SCADA log izvještaj'],
+        price: [
+            { label: 'Tarifa Plinacro (420 mil m³ × 2,80 €/1000 m³)', value: '1.176.000,00 €' },
+            { label: 'Mjerne naknade Rogatec', value: '18.000,00 €' },
+            { label: 'Balancing troškovi', value: '24.000,00 €' },
+            { label: 'TŠZ savjetodavna naknada (god)', value: '42.000,00 €' },
+            { label: 'Ukupno godišnje (bez PDV-a)', value: '1.260.000,00 €' },
+            { label: '✦ UKUPNO godišnje (+ PDV)', value: '1.575.000,00 €' }
+        ]
+    }
+};
+
+function openModal(orderId) {
+    const order = orders[orderId];
+    if (!order) return;
+    document.getElementById('modalTitle').textContent = order.title;
+    document.getElementById('modalSubtitle').textContent = order.number + ' · ' + order.branch + ' · ' + order.customer;
+
+    let html = '';
+
+    // Process steps
+    html += '<div class="modal-section"><div class="modal-section-title"><i class="fas fa-list-ol"></i> Tijek procesa narudžbe</div>';
+    html += '<div class="process-steps">';
+    order.process.forEach((step, i) => {
+        html += `<div class="process-step"><div class="process-step-num">${i+1}</div><div class="process-step-content"><h4>${step.title}</h4><p>${step.desc}</p></div></div>`;
+    });
+    html += '</div></div>';
+
+    // Documents
+    html += '<div class="modal-section"><div class="modal-section-title"><i class="fas fa-file-alt"></i> Potrebna dokumentacija</div>';
+    html += '<div class="docs-list">';
+    order.docs.forEach(doc => {
+        html += `<span class="doc-chip"><i class="fas fa-file-check"></i>${doc}</span>`;
+    });
+    html += '</div></div>';
+
+    // Price breakdown
+    html += '<div class="modal-section"><div class="modal-section-title"><i class="fas fa-receipt"></i> Struktura cijene</div>';
+    html += '<div class="price-breakdown">';
+    order.price.forEach(row => {
+        html += `<div class="price-row"><span>${row.label}</span><span>${row.value}</span></div>`;
+    });
+    html += '</div></div>';
+
+    document.getElementById('modalBody').innerHTML = html;
+    document.getElementById('detailModal').classList.add('open');
+}
+
+function closeModal() {
+    document.getElementById('detailModal').classList.remove('open');
+}
+
+// Filter tabs
+document.querySelectorAll('.filter-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        const filter = tab.dataset.filter;
+        document.querySelectorAll('.branch-section').forEach(section => {
+            if (filter === 'all' || section.dataset.branch === filter) {
+                section.style.display = '';
+            } else {
+                section.style.display = 'none';
+            }
+        });
+    });
+});
+
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeModal();
+});
+</script>
+</body>
+</html>

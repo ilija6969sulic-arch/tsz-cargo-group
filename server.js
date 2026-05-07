@@ -281,7 +281,8 @@ const server = http.createServer((req, res) => {
     '/': '/index.html',
     '/o-nama': '/poduzece.html',
     '/cjenik': '/cijenik.html',
-    '/pracenje-posiljke': '/pracenje.html'
+    '/pracenje-posiljke': '/pracenje.html',
+    '/prodaja': '/prodaja.html'
   };
 
   if (cleanRoutes[requestUrl]) {
